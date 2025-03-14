@@ -1,4 +1,4 @@
-package com.vakantes.Vakantes.model;
+package com.DevProj.Vakantes.model;
 
 import jakarta.persistence.*;
 import lombok.*;
