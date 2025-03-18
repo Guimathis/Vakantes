@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 
+import java.util.List;
+
 @Controller
 public class RegistroController {
 
@@ -30,5 +32,11 @@ public class RegistroController {
     public String registrarUsuario(@ModelAttribute Usuario usuario) {
         usuarioService.salvarUsuario(usuario);
         return "redirect:/registro?success";
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @GetMapping("/listar")
+    public List<Usuario> listarUsuarios() {
+        return usuarioService.listarUsuarios();
     }
 }

@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 @SpringBootApplication
 public class VakantesApplication {
 
-    @GetMapping
+    @GetMapping("/helloworld")
     public String home() {
         return "Hello World";
     }
