@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html lang="pt-br" xmlns:th="http://thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<html lang="pt-br" xmlns:th="http://thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="http://www.w3.org/1999/xhtml">
 
 <head>
 
@@ -35,16 +36,15 @@
                             <img th:src="${'/images/perfil-vazio.png'}"
                                  class="rounded-circle" width="35" height="35" alt="Foto do Usuário"
                                  style="margin-right: 10px;">
-                            <span class="ms-2" th:text="Nome_Usuario">Usuário</span>
+                            <span th:text="${nomeUsuario}"></span>
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
                             <li><a class="dropdown-item" href="/configuracoes">Configurações</a></li>
                             <li><hr class="dropdown-divider"></li>
                             <li>
-                                <form th:action="@{/logout}" method="post">
+                                <form th:action="@{/auth/logout}" method="get">
                                     <button type="submit" class="dropdown-item text-danger">Sair</button>
                                 </form>
-                            </li>
                         </ul>
                     </li>
                 </ul>
@@ -53,7 +53,6 @@
     </nav>
 </header>
 
-<!-- Container Centralizado -->
 <div class="container d-flex justify-content-center align-items-center flex-grow-1">
     <div class="col-md-6">
         <div class="card text-center shadow-lg">
@@ -66,6 +65,9 @@
                     <a href="#" class="btn btn-primary botão-index">Clientes</a>
                     <a href="#" class="btn btn-primary botão-index">Vagas</a>
                     <a href="#" class="btn btn-primary botão-index">Candidatos</a>
+                    <div sec:authorize="hasRole('ADMIN')">
+                        <a href="/admin/registro" class="btn btn-primary">Cadastrar Usuário</a>
+                    </div>
                 </div>
             </div>
         </div>

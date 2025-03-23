@@ -21,8 +21,8 @@ public class Usuario{
     @Column(name = "nome_completo", length = 100)
     private String nomeCompleto;
 
-    @Column(name = "login", nullable = false, length = 50, unique = true)
-    private String login;
+    @Column(name = "Email", nullable = false, length = 50, unique = true)
+    private String email;
 
     @Column(name = "senha", nullable = false, unique = true)
     private String senha;
@@ -71,12 +71,12 @@ public class Usuario{
         this.nomeCompleto = nomeCompleto;
     }
 
-    public String getLogin() {
-        return login;
+    public String getEmail() {
+        return email;
     }
 
-    public void setLogin(String login) {
-        this.login = login;
+    public void setEmail(String login) {
+        this.email = login;
     }
 
     public UserRole getUserRole() {
