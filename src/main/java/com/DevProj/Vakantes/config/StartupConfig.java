@@ -25,7 +25,7 @@ public class StartupConfig {
                 user.setSenha(passwordEncoder.encode("admin")); // Criptografando a senha
                 user.setUserRole(UserRole.ADMIN);
 
-                usuarioRepository.save(admin);
+                usuarioRepository.save(user);
                 System.out.println("Usuário ADMIN criado com sucesso!");
             }
 
@@ -35,7 +35,7 @@ public class StartupConfig {
                 Usuario user = new Usuario();
                 user.setNomeCompleto("Usuario");
                 user.setEmail("user@vaka.com");
-                user.setSenha(passwordEncoder.encode("user")); // Criptografando a senha
+                user.setSenha(passwordEncoder.encode("admin")); // Criptografando a senha
                 user.setUserRole(UserRole.USER);
 
                 usuarioRepository.save(user);

@@ -1,13 +1,8 @@
 package com.DevProj.Vakantes.model;
 
 import jakarta.persistence.*;
-import lombok.*;
 
-@Getter
-@Setter
-@ToString
-@AllArgsConstructor
-@RequiredArgsConstructor
+
 @Entity
 @SequenceGenerator(name = "contato_id", sequenceName = "vakantes.contato_id_seq", allocationSize = 1, initialValue = 1)
 public class Contato {
@@ -19,6 +14,34 @@ public class Contato {
     @Column(name = "telefone")
     private String telefone;
 
-    @Column(name = "email", unique = true)
-    private String email;
+    @Column(name = "email_contato", unique = true)
+    private String emailContato;
+
+    public Contato() {
+    }
+
+    public Contato(String telefone, String emailContato) {
+        this.telefone = telefone;
+        this.emailContato = emailContato;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public String getEmailContato() {
+        return emailContato;
+    }
+
+    public void setEmailContato(String emailContato) {
+        this.emailContato = emailContato;
+    }
+
+    public String getTelefone() {
+        return telefone;
+    }
+
+    public void setTelefone(String telefone) {
+        this.telefone = telefone;
+    }
 }

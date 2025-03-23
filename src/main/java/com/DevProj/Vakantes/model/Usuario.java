@@ -2,13 +2,8 @@ package com.DevProj.Vakantes.model;
 
 import com.DevProj.Vakantes.model.enums.UserRole;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.ToString;
 import java.util.Date;
 
-
-@ToString
-@AllArgsConstructor
 @Entity
 @SequenceGenerator(name = "usuario_id", sequenceName = "vakantes.usuario_id_seq", allocationSize = 1, initialValue = 1)
 public class Usuario{
@@ -31,7 +26,7 @@ public class Usuario{
     @Column(name = "user_role", nullable = false)
     private UserRole userRole;
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL)
     private Contato contato;
 
     @Temporal(TemporalType.TIMESTAMP)
@@ -53,14 +48,19 @@ public class Usuario{
     }
 
     public Usuario() {
+        this.contato = new Contato();
+    }
+
+    public Usuario(String nomeCompleto, String email, String senha, UserRole userRole, Contato contato) {
+        this.nomeCompleto = nomeCompleto;
+        this.email = email;
+        this.senha = senha;
+        this.userRole = userRole;
+        this.contato = contato;
     }
 
     public Long getId() {
         return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
     }
 
     public String getNomeCompleto() {
@@ -75,8 +75,16 @@ public class Usuario{
         return email;
     }
 
-    public void setEmail(String login) {
-        this.email = login;
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getSenha() {
+        return senha;
+    }
+
+    public void setSenha(String senha) {
+        this.senha = senha;
     }
 
     public UserRole getUserRole() {
@@ -99,23 +107,7 @@ public class Usuario{
         return createdAt;
     }
 
-    public void setCreatedAt(Date createdAt) {
-        this.createdAt = createdAt;
-    }
-
     public Date getUpdatedAt() {
         return updatedAt;
-    }
-
-    public void setUpdatedAt(Date updatedAt) {
-        this.updatedAt = updatedAt;
-    }
-
-    public String getSenha() {
-        return senha;
-    }
-
-    public void setSenha(String senha) {
-        this.senha = senha;
     }
 }
