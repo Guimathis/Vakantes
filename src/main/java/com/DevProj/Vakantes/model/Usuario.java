@@ -2,6 +2,8 @@ package com.DevProj.Vakantes.model;
 
 import com.DevProj.Vakantes.model.enums.UserRole;
 import jakarta.persistence.*;
+import org.springframework.context.annotation.Primary;
+
 import java.util.Date;
 
 @Entity
@@ -61,6 +63,10 @@ public class Usuario{
 
     public Long getId() {
         return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getNomeCompleto() {

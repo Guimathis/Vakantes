@@ -14,7 +14,7 @@ public class Contato {
     @Column(name = "telefone")
     private String telefone;
 
-    @Column(name = "email_contato", unique = true)
+    @Column(name = "email_contato")
     private String emailContato;
 
     public Contato() {

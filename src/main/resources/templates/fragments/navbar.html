@@ -21,7 +21,7 @@
                             <span th:text="${nomeUsuario}"></span>
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
-                            <li><a class="dropdown-item" href="/configuracoes">Configurações</a></li>
+                            <li><a class="dropdown-item"  th:href="@{|/usuario/${idUsuario}|}" >Perfil</a></li>
                             <li><hr class="dropdown-divider"></li>
                             <li>
                                 <form th:action="@{/auth/logout}" method="get">

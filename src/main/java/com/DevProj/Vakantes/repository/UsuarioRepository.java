@@ -14,4 +14,7 @@ public interface UsuarioRepository extends CrudRepository<Usuario, Long> {
     Optional<Usuario> findById(Long id);
 
     void deleteUsuarioById(Long id);
+
+    boolean existsByEmail(String email);
+
 }
