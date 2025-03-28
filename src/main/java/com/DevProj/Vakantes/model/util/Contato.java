@@ -1,13 +1,15 @@
-package com.DevProj.Vakantes.model;
+package com.DevProj.Vakantes.model.util;
 
 import jakarta.persistence.*;
 
 
 @Entity
-@SequenceGenerator(name = "contato_id", sequenceName = "vakantes.contato_id_seq", allocationSize = 1, initialValue = 1)
+@Table(name = "contato", schema = "util")
+
 public class Contato {
 
     @Id
+    @SequenceGenerator(name = "contato_id", sequenceName = "util.contato_id_seq", allocationSize = 1, initialValue = 1)
     @GeneratedValue(strategy = GenerationType.IDENTITY, generator = "contato_id")
     private Long id;
 

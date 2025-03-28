@@ -21,7 +21,12 @@ public class HomeController {
     }
 
     @GetMapping("/")
-    public String redirectToNewUrl() {
+    public String redirectHome() {
+        return "redirect:http://localhost:3000/home/index";
+    }
+
+    @GetMapping("/home")
+    public String redirectHome1() {
         return "redirect:http://localhost:3000/home/index";
     }
 

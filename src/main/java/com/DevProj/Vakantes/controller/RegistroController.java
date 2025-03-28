@@ -1,6 +1,6 @@
 package com.DevProj.Vakantes.controller;
 
-import com.DevProj.Vakantes.model.Usuario;
+import com.DevProj.Vakantes.model.usuario.Usuario;
 import com.DevProj.Vakantes.service.CookieService;
 import com.DevProj.Vakantes.service.UsuarioService;
 import com.DevProj.Vakantes.service.exceptions.DataBindingViolationException;

@@ -1,16 +1,18 @@
-package com.DevProj.Vakantes.model;
+package com.DevProj.Vakantes.model.usuario;
 
 import com.DevProj.Vakantes.model.enums.UserRole;
+import com.DevProj.Vakantes.model.util.Contato;
 import jakarta.persistence.*;
-import org.springframework.context.annotation.Primary;
 
 import java.util.Date;
 
 @Entity
-@SequenceGenerator(name = "usuario_id", sequenceName = "vakantes.usuario_id_seq", allocationSize = 1, initialValue = 1)
+@Table(name = "usuario", schema = "usuario")
+
 public class Usuario{
 
     @Id
+    @SequenceGenerator(name = "usuario_id", sequenceName = "usuario.usuario_id_seq", allocationSize = 1, initialValue = 1)
     @GeneratedValue(strategy = GenerationType.AUTO, generator = "usuario_id")
     @Column(name = "id", unique = true)
     private Long id;

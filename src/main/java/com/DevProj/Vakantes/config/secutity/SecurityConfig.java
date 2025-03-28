@@ -23,9 +23,10 @@ public class SecurityConfig {
                 .addFilterBefore(cookieAuthFilter, UsernamePasswordAuthenticationFilter.class)
                 .exceptionHandling(exception -> exception
                         .authenticationEntryPoint((request, response, authException) -> {
-                            if (CookieService.getCookie(request, "usuarioId") != null){
-                                response.sendRedirect("/home/index");
-                            } else {
+                            if (CookieService.getCookie(request, "usuarioId") == null){
+//                                response.sendRedirect("/home/index");
+//                            }
+//                            else {
                                 response.sendRedirect("/auth/login");
                             }
 
