@@ -1,9 +1,11 @@
 <!DOCTYPE html>
 <html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
 <body>
-    <nav th:fragment="navbar" class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top" style="height: 60px">
+    <nav th:fragment="navbar" class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top" style="height: 60px; background-color: #191a1a !important;">
         <div class="container-fluid">
-            <a class="navbar-brand" href="/home/index">Vakantes</a>
+            <a th:href="@{/home/index}">
+                <img src="/images/logo.png" alt="Logo" class="card-logo img-fluid" style="max-width: 150px;">
+            </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
                     aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
@@ -18,7 +20,7 @@
                             <img th:src="${'/images/perfil-vazio.png'}"
                                  class="rounded-circle" width="35" height="35" alt="Foto do Usuário"
                                  style="margin-right: 10px;">
-                            <span th:text="${nomeUsuario}"></span>
+                            <span th:text="${session.nomeUsuario}"></span>
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
                             <li><a class="dropdown-item"  th:href="@{|/usuario/${idUsuario}|}" >Perfil</a></li>

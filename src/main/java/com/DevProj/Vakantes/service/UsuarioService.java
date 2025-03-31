@@ -30,6 +30,7 @@ public class UsuarioService {
         this.passwordEncoder = passwordEncoder;
     }
 
+
     @Transactional
     public void salvar(Usuario usuario) throws DataBindingViolationException {
         if (isEmailValido(usuario.getEmail())) {
@@ -70,6 +71,7 @@ public class UsuarioService {
         Usuario usuario = usuarioRepository.findByEmail(email);
 
         if (usuario != null && passwordEncoder.matches(senha, usuario.getSenha())) {
+
             return usuario;
         }
         return null;

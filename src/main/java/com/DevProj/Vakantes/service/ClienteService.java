@@ -1,6 +1,7 @@
 package com.DevProj.Vakantes.service;
 
 import com.DevProj.Vakantes.model.empresa.Cliente;
+import com.DevProj.Vakantes.model.usuario.Usuario;
 import com.DevProj.Vakantes.repository.ClienteRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -23,6 +24,10 @@ public class ClienteService {
 
     public List<Cliente> listarClientes() {
         return clienteRepository.findAll();
+    }
+
+    public List<Cliente> buscarClientePorResponsavel(Usuario usuario) {
+        return clienteRepository.getClientesByUsuarioResponsavel(usuario);
     }
 
     // Outros métodos como listar, atualizar, deletar...

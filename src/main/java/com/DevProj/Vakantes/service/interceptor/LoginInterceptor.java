@@ -1,4 +1,4 @@
-package com.DevProj.Vakantes.service.authenticator;
+package com.DevProj.Vakantes.service.interceptor;
 
 import com.DevProj.Vakantes.service.CookieService;
 import jakarta.servlet.http.HttpServletRequest;

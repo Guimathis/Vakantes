@@ -8,7 +8,6 @@ import java.util.Date;
 
 @Entity
 @Table(name = "usuario", schema = "usuario")
-
 public class Usuario{
 
     @Id
@@ -73,6 +72,10 @@ public class Usuario{
 
     public String getNomeCompleto() {
         return nomeCompleto;
+    }
+
+    public String getPrimeiroNome() {
+        return nomeCompleto.split("\\s+")[0];
     }
 
     public void setNomeCompleto(String nomeCompleto) {

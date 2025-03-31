@@ -29,7 +29,6 @@ public class RegistroController {
     @GetMapping("/registro")
     public String mostrarFormularioRegistro(Model model, HttpServletRequest request) throws UnsupportedEncodingException {
         model.addAttribute("usuario", new Usuario());
-        model.addAttribute("nomeUsuario", CookieService.getCookie(request, "nomeUsuario"));
         return "admin/registro";
     }
 

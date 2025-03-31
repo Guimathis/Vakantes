@@ -1,9 +1,14 @@
 package com.DevProj.Vakantes.model.empresa;
 
+import com.DevProj.Vakantes.model.candidato.Candidato;
 import com.DevProj.Vakantes.model.enums.TipoPessoa;
+import com.DevProj.Vakantes.model.usuario.Usuario;
 import com.DevProj.Vakantes.model.util.Contato;
 import com.DevProj.Vakantes.model.util.Endereco;
+import com.DevProj.Vakantes.model.vaga.Vaga;
 import jakarta.persistence.*;
+
+import java.util.List;
 
 @Entity()
 @Table(name = "cliente", schema = "empresa")
@@ -28,6 +33,13 @@ public class Cliente {
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "contato_id", referencedColumnName = "id")
     private Contato contato;
+
+    @OneToOne
+    @JoinColumn(name = "responsavel_id", referencedColumnName = "id", unique = false)
+    private Usuario usuarioResponsavel;
+
+    @OneToMany(mappedBy = "cliente", cascade = CascadeType.REMOVE)
+    private List<Vaga> vagas;
 
     public Long getId() {
         return id;
@@ -75,5 +87,21 @@ public class Cliente {
 
     public void setContato(Contato contato) {
         this.contato = contato;
+    }
+
+    public Usuario getUsuarioResponsavel() {
+        return usuarioResponsavel;
+    }
+
+    public void setUsuarioResponsavel(Usuario usuarioResponsavel) {
+        this.usuarioResponsavel = usuarioResponsavel;
+    }
+
+    public List<Vaga> getVagas() {
+        return vagas;
+    }
+
+    public void setVagas(List<Vaga> vagas) {
+        this.vagas = vagas;
     }
 }

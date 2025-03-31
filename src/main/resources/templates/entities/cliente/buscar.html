@@ -27,41 +27,46 @@
                     <p>Nenhum cliente cadastrado.</p>
                 </div>
                 <div th:unless="${clientes.empty}">
-                    <table class="table table-striped">
-                        <thead>
-                        <tr>
-                            <th>Nome</th>
-                            <th>Tipo Pessoa</th>
-                            <th>Documento</th>
-                            <th>Rua</th>
-                            <th>Número</th>
-                            <th>Cidade</th>
-                            <th>Estado</th>
-                            <th>CEP</th>
-                            <th>Telefone</th>
-                            <th>Ações</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        <tr th:each="cliente : ${clientes}">
-                            <td th:text="${cliente.nome}"></td>
-                            <td th:text="${cliente.tipoPessoa}"></td>
-                            <td th:text="${cliente.documento}"></td>
-                            <td th:text="${cliente.endereco.rua}"></td>
-                            <td th:text="${cliente.endereco.numero}"></td>
-                            <td th:text="${cliente.endereco.cidade}"></td>
-                            <td th:text="${cliente.endereco.estado}"></td>
-                            <td th:text="${cliente.endereco.cep}"></td>
-                            <td th:text="${cliente.contato.telefone}"></td>
-                            <td>
-                                <a th:href="@{/cliente/buscar/{id}(id=${cliente.id})}" class="btn btn-primary btn-sm">Editar</a>
-                            </td>
-                        </tr>
-                        </tbody>
-                    </table>
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                            <tr>
+                                <th>Nome</th>
+                                <th>Tipo Pessoa</th>
+                                <th>Documento</th>
+                                <th>Rua</th>
+                                <th>Número</th>
+                                <th>Cidade</th>
+                                <th>Estado</th>
+                                <th>CEP</th>
+                                <th>Telefone</th>
+                                <th>Ações</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="cliente : ${clientes}">
+                                <td th:text="${cliente.nome}"></td>
+                                <td th:text="${cliente.tipoPessoa}"></td>
+                                <td th:text="${cliente.documento}"></td>
+                                <td th:text="${cliente.endereco.rua}"></td>
+                                <td th:text="${cliente.endereco.numero}"></td>
+                                <td th:text="${cliente.endereco.cidade}"></td>
+                                <td th:text="${cliente.endereco.estado}"></td>
+                                <td th:text="${cliente.endereco.cep}"></td>
+                                <td th:text="${cliente.contato.telefone}"></td>
+                                <td>
+                                    <a th:href="@{/cliente/buscar/{id}(id=${cliente.id})}"
+                                       class="btn btn-primary btn-sm bi bi-pencil"> Editar</a>
+                                    <a th:href="@{/cliente/buscar/{id}(id=${cliente.id})}"
+                                       class="btn btn-primary btn-sm bi bi-plus-lg"> Vaga</a>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
                 <div class="row">
-                    <div class="col-md-12 d-flex justify-content-center">
+                    <div class="col-md-12">
                         <a href="/cliente/cadastro" class="btn btn-primary">Cadastrar Novo Cliente</a>
                     </div>
                 </div>
