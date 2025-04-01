@@ -1,6 +1,6 @@
 package com.DevProj.Vakantes.controller;
 
-import com.DevProj.Vakantes.model.Usuario;
+import com.DevProj.Vakantes.model.usuario.Usuario;
 import com.DevProj.Vakantes.service.CookieService;
 import com.DevProj.Vakantes.service.UsuarioService;
 import com.DevProj.Vakantes.service.exceptions.DataBindingViolationException;
@@ -29,7 +29,6 @@ public class RegistroController {
     @GetMapping("/registro")
     public String mostrarFormularioRegistro(Model model, HttpServletRequest request) throws UnsupportedEncodingException {
         model.addAttribute("usuario", new Usuario());
-        model.addAttribute("nomeUsuario", CookieService.getCookie(request, "nomeUsuario"));
         return "admin/registro";
     }
 

@@ -1,6 +1,6 @@
 package com.DevProj.Vakantes.controller;
 
-import com.DevProj.Vakantes.model.Usuario;
+import com.DevProj.Vakantes.model.usuario.Usuario;
 import com.DevProj.Vakantes.service.CookieService;
 import com.DevProj.Vakantes.service.UsuarioService;
 import com.DevProj.Vakantes.service.exceptions.ObjectNotFoundException;
@@ -44,9 +44,9 @@ public class UsuarioController {
             throw new ObjectNotFoundException("Voce não tem permissao");
         }
         if(Objects.equals(usuarioRequisitado.get().getId(), usuarioRequisitou.get().getId())) {
-            model.addAttribute("nomeUsuario", usuarioRequisitado.get().getNomeCompleto());
+            request.getSession().setAttribute("nomeUsuario", usuarioRequisitado.get().getPrimeiroNome());
         } else {
-            model.addAttribute("nomeUsuario", usuarioRequisitou.get().getNomeCompleto());
+            request.getSession().setAttribute("nomeUsuario", usuarioRequisitou.get().getPrimeiroNome());
         }
         model.addAttribute("usuario", usuarioRequisitado.get());
         return "entities/usuario/perfil";
@@ -56,14 +56,8 @@ public class UsuarioController {
     @PostMapping("/salvar")
     public String editarUsuario(@ModelAttribute Usuario usuario, HttpServletResponse response) throws UnsupportedEncodingException {
         usuarioService.atualizar(usuario);
-        CookieService.setCookie(response, "nomeUsuario", usuario.getNomeCompleto(), 10000);
+        CookieService.setCookie(response, "nomeUsuario", usuario.getPrimeiroNome(), 10000);
         return "redirect:/usuario/" + usuario.getId();
-    }
-
-    @GetMapping("/edit/{id}")
-    public String editarUsuario(@PathVariable Long id, Model model) {
-        model.addAttribute("usuario", usuarioService.buscarPorId(id));
-        return "/form";
     }
 
     @GetMapping("/delete/{id}")

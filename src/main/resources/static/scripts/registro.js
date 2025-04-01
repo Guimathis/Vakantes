@@ -33,19 +33,3 @@ editarBtn.addEventListener('click', () => {
     editarBtn.style.display = 'none';
     salvarBtn.style.display = 'block';
 });
-
-// salvarBtn.addEventListener('click', () => {
-//     inputNomeCompleto.disabled = true;
-//     inputEmail.disabled = true;
-//     inputTelefone.disabled = true;
-//     inputEmailContato.disabled = true;
-//
-//     editarBtn.style.display = 'block';
-//     salvarBtn.style.display = 'none';
-//
-//     // Aqui você pode adicionar lógica para enviar as alterações para o servidor
-//     console.log("Nome Completo:", inputNomeCompleto.value);
-//     console.log("Email:", inputEmail.value);
-//     console.log("Telefone:", inputTelefone.value);
-//     console.log("Email Contato:", inputEmailContato.value);
-// });

@@ -1,6 +1,6 @@
 package com.DevProj.Vakantes.config.secutity;
 
-import com.DevProj.Vakantes.model.Usuario;
+import com.DevProj.Vakantes.model.usuario.Usuario;
 import com.DevProj.Vakantes.repository.UsuarioRepository;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;

@@ -1,9 +1,8 @@
 package com.DevProj.Vakantes.config;
 
-import com.DevProj.Vakantes.model.Usuario;
+import com.DevProj.Vakantes.model.usuario.Usuario;
 import com.DevProj.Vakantes.model.enums.UserRole;
 import com.DevProj.Vakantes.repository.UsuarioRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

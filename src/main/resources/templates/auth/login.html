@@ -16,12 +16,12 @@
     <form th:action="@{/auth/logar}" method="post">
         <div class="mb-3 input-group">
             <label class="input-group-text" for="inputEmail">E-mail</label>
-            <input id="inputEmail" type="text" class="form-control" name="email" placeholder="Usuário" required>
+            <input id="inputEmail" type="text" class="form-control" name="username" placeholder="Usuário" required>
         </div>
 
         <div class="mb-3 input-group">
             <label class="input-group-text" for="inputSenha">Senha</label>
-            <input id="inputSenha" type="password" class="form-control" name="senha" placeholder="Senha" required>
+            <input id="inputSenha" type="password" class="form-control" name="password" placeholder="Senha" required>
         </div>
 
         <button type="submit" class="btn btn-primary w-100 py-2">Entrar</button>

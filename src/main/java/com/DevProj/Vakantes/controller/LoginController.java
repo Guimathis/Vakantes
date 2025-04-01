@@ -1,9 +1,11 @@
 package com.DevProj.Vakantes.controller;
 
-import com.DevProj.Vakantes.model.Usuario;
+import com.DevProj.Vakantes.model.usuario.Usuario;
+import com.DevProj.Vakantes.model.usuario.UsuarioDTO;
 import com.DevProj.Vakantes.repository.UsuarioRepository;
 import com.DevProj.Vakantes.service.CookieService;
 import com.DevProj.Vakantes.service.UsuarioService;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -30,12 +32,12 @@ public class LoginController {
     }
 
     @PostMapping("/logar")
-    public String logar(Usuario usuario, HttpServletResponse response, RedirectAttributes redirectAttributes) throws UnsupportedEncodingException {
-        Usuario usuarioLogado = usuarioService.autenticarUsuario(usuario.getEmail(), usuario.getSenha());
+    public String logar(UsuarioDTO usuarioDTO, HttpServletResponse response, HttpServletRequest request, RedirectAttributes redirectAttributes) throws UnsupportedEncodingException {
+        Usuario usuarioLogado = usuarioService.autenticarUsuario(usuarioDTO.getUsername(), usuarioDTO.getPassword());
 
         if (usuarioLogado != null) {
             CookieService.setCookie(response, "usuarioId", String.valueOf(usuarioLogado.getId()), 10000);
-            CookieService.setCookie(response, "nomeUsuario", usuarioLogado.getNomeCompleto(), 10000);
+            request.getSession().setAttribute("nomeUsuario", usuarioLogado.getPrimeiroNome());
             return "redirect:/home/index";
         }
         redirectAttributes.addFlashAttribute("erro", "Email ou senha incorretos.");

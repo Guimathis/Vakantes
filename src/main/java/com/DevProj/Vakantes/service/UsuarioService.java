@@ -1,7 +1,7 @@
 package com.DevProj.Vakantes.service;
 
 import com.DevProj.Vakantes.repository.UsuarioRepository;
-import com.DevProj.Vakantes.model.Usuario;
+import com.DevProj.Vakantes.model.usuario.Usuario;
 import com.DevProj.Vakantes.service.exceptions.DataBindingViolationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -29,6 +29,7 @@ public class UsuarioService {
         this.usuarioRepository = usuarioRepository;
         this.passwordEncoder = passwordEncoder;
     }
+
 
     @Transactional
     public void salvar(Usuario usuario) throws DataBindingViolationException {
@@ -70,6 +71,7 @@ public class UsuarioService {
         Usuario usuario = usuarioRepository.findByEmail(email);
 
         if (usuario != null && passwordEncoder.matches(senha, usuario.getSenha())) {
+
             return usuario;
         }
         return null;

@@ -1,4 +1,4 @@
-package com.DevProj.Vakantes.service.authenticator;
+package com.DevProj.Vakantes.service.interceptor;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;

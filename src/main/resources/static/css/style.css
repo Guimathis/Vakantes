@@ -1,3 +1,21 @@
+@import url("https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css");
+
 .botão-index{
     width: 150px;
+}
+
+.padding-navbar{
+    padding-top: 60px;
+}
+
+.card-logo{
+    background: aliceblue;
+    padding: 5px;
+    border-radius: 10px;
+}
+.navbar{
+    background: #191a1a !important;
+}
+.footer{
+    background: #191a1a !important;
 }
