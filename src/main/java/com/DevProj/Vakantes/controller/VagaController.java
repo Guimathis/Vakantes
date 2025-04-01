@@ -74,6 +74,7 @@ public class VagaController {
 		VagaDTO vagaDTO = new VagaDTO(vaga);
 		model.addAttribute("vaga", vagaDTO);
 		model.addAttribute("clientes", clienteRepository.findAll());
+		model.addAttribute("editar", false);
 		return "entities/vaga/cadastro";
 	}
 
@@ -123,12 +124,14 @@ public class VagaController {
 
 	// Métodos que atualizam vaga
 	// formulário edição de vaga
-	@RequestMapping(value = "/editar-vaga", method = RequestMethod.GET)
-	public ModelAndView editarVaga(long codigo) {
+	@GetMapping(value = "/editar/{codigo}")
+	public String editarVaga(Model model, @PathVariable long codigo) {
 		Vaga vaga = vr.findByCodigo(codigo);
-		ModelAndView mv = new ModelAndView("vaga/update-vaga");
-		mv.addObject("vaga", vaga);
-		return mv;
+		VagaDTO vagaDTO = new VagaDTO(vaga);
+		model.addAttribute("vaga", vagaDTO);
+		model.addAttribute("clientes", clienteRepository.findAll());
+		model.addAttribute("editar", true);
+		return "entities/vaga/cadastro";
 	}
 
 	// UPDATE vaga

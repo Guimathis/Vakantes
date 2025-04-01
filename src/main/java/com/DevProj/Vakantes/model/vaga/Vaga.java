@@ -54,6 +54,7 @@ public class Vaga implements Serializable {
 	}
 
 	public Vaga(VagaDTO vagaDTO, Cliente cliente) {
+		this.codigo = vagaDTO.getCodigo();
 		this.nome = vagaDTO.getNome();
 		this.descricao = vagaDTO.getDescricao();
 		this.data = vagaDTO.getData();
