@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Optional;
 
 import com.DevProj.Vakantes.model.candidato.Candidato;
-import com.DevProj.Vakantes.model.vaga.Vaga;
+import com.DevProj.Vakantes.model.util.Status;
 import org.springframework.data.repository.CrudRepository;
 
 public interface CandidatoRepository extends CrudRepository<Candidato, String> {
@@ -14,13 +14,11 @@ public interface CandidatoRepository extends CrudRepository<Candidato, String> {
 
 	Optional<Candidato> findByCpf(String cpf);
 
-	Optional<Candidato> findById(long id);
+	Optional<Candidato> findByIdAndStatus(long id, Status status);
 
 	Optional<Candidato> findByCpfIn(Collection<String> cpfs);
 
 	List<Candidato> findAllByCpfIn(Collection<String> cpfs);
 
-	
-	
 	List<Candidato> findByNomeCandidato(String nomeCandidato);
 }

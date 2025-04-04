@@ -2,8 +2,7 @@ package com.DevProj.Vakantes.controller;
 
 import com.DevProj.Vakantes.model.empresa.Cliente;
 import com.DevProj.Vakantes.model.enums.TipoPessoa;
-import com.DevProj.Vakantes.model.vaga.Vaga;
-import com.DevProj.Vakantes.model.vaga.VagaDTO;
+import com.DevProj.Vakantes.model.util.Status;
 import com.DevProj.Vakantes.service.ClienteService;
 import com.DevProj.Vakantes.service.CookieService;
 import com.DevProj.Vakantes.service.UsuarioService;
@@ -12,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.io.UnsupportedEncodingException;
 
@@ -37,7 +37,7 @@ public class ClienteController {
     public String buscarCliente(@PathVariable Long id, Model model, HttpServletRequest request) throws UnsupportedEncodingException {
         model.addAttribute("idUsuario", CookieService.getCookie(request, "usuarioId"));
         model.addAttribute("tiposPessoa", TipoPessoa.values());
-        model.addAttribute("cliente", clienteService.buscarClientePorId(id));
+        model.addAttribute("cliente", clienteService.buscarClientePorIdAndStatus(id, Status.ATIVO));
         return "entities/cliente/cadastro";
     }
 
@@ -59,18 +59,29 @@ public class ClienteController {
 
     @GetMapping("/buscar/{id}")
     public String listarCliente(@PathVariable Long id, Model model) {
-        model.addAttribute("cliente", clienteService.buscarClientePorId(id));
+        model.addAttribute("cliente", clienteService.buscarClientePorIdAndStatus(id, Status.ATIVO));
         model.addAttribute("tiposPessoa", TipoPessoa.values());
         model.addAttribute("editar", false);
         return "entities/cliente/cadastro";
     }
 
-    // formulário edição de cliente
     @GetMapping(value = "/editar/{id}")
     public String editarCliente(Model model, @PathVariable long id) {
-        model.addAttribute("cliente", clienteService.buscarClientePorId(id));
+        model.addAttribute("cliente", clienteService.buscarClientePorIdAndStatus(id, Status.ATIVO));
         model.addAttribute("tiposPessoa", TipoPessoa.values());
         model.addAttribute("editar", true);
         return "entities/cliente/cadastro";
     }
+
+    @GetMapping("/deletar/{id}")
+    public String deletarCliente(@PathVariable Long id, RedirectAttributes attributes) {
+        try {
+            clienteService.deletarCliente(id);
+            attributes.addFlashAttribute("mensagem", "Candidato deletado com sucesso!");
+        } catch (Exception e) {
+            attributes.addFlashAttribute("mensagem_erro", e.getMessage());
+        }
+        return "redirect:/cliente/buscar";
+    }
+
 }

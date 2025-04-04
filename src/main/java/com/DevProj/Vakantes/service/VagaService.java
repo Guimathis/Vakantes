@@ -1,6 +1,7 @@
 package com.DevProj.Vakantes.service;
 
 import com.DevProj.Vakantes.model.candidato.Candidato;
+import com.DevProj.Vakantes.model.util.Status;
 import com.DevProj.Vakantes.model.vaga.Vaga;
 import com.DevProj.Vakantes.model.vaga.VagaDTO;
 import com.DevProj.Vakantes.repository.CandidatoRepository;
@@ -8,12 +9,10 @@ import com.DevProj.Vakantes.repository.ClienteRepository;
 import com.DevProj.Vakantes.repository.VagaRepository;
 import com.DevProj.Vakantes.service.exceptions.DataBindingViolationException;
 import com.DevProj.Vakantes.service.exceptions.ObjectNotFoundException;
-import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class VagaService {
@@ -27,8 +26,12 @@ public class VagaService {
     @Autowired
     ClienteRepository clienteRepository;
 
+    public Iterable<Vaga> buscarTodas() {
+        return vagaRepository.findAllByStatus(Status.ATIVO);
+    }
+
     public void inscreverCandidatos(Long vagaId, List<String> cpfs) {
-        Vaga vaga = vagaRepository.findByCodigo(vagaId)
+        Vaga vaga = vagaRepository.findByCodigoAndStatus(vagaId, Status.ATIVO)
                 .orElseThrow(() -> new ObjectNotFoundException("Vaga não encontrada"));
 
         List<Candidato> candidatos = candidatoRepository.findAllByCpfIn(cpfs);
@@ -51,23 +54,32 @@ public class VagaService {
         vagaRepository.save(vaga);
     }
 
-public void adicionarCandidatoAVaga(long codigo, Candidato candidato) {
-    Vaga vaga = vagaRepository.findByCodigo(codigo).orElseThrow(() -> new ObjectNotFoundException("Vaga não encontrada"));
+    public void adicionarCandidatoAVaga(long codigo, Candidato candidato) {
+        Vaga vaga = vagaRepository.findByCodigoAndStatus(codigo, Status.ATIVO).orElseThrow(() -> new ObjectNotFoundException("Vaga não encontrada"));
 
-    // Verifica se o candidato já está cadastrado na vaga
-    if (vaga.getCandidatos().stream().anyMatch(c -> c.getCpf().equals(candidato.getCpf()) || c.getRg().equals(candidato.getRg()))) {
-        throw new DataBindingViolationException("Candidato já cadastrado na vaga.");
+        // Verifica se o candidato já está cadastrado na vaga
+        if (vaga.getCandidatos().stream().anyMatch(c -> c.getCpf().equals(candidato.getCpf()) || c.getRg().equals(candidato.getRg()))) {
+            throw new DataBindingViolationException("Candidato já cadastrado na vaga.");
+        }
+
+        candidato.getVagas().add(vaga);
+        vaga.getCandidatos().add(candidato);
+        candidatoRepository.save(candidato);
+        vagaRepository.save(vaga);
     }
-
-    candidato.getVagas().add(vaga);
-    vaga.getCandidatos().add(candidato);
-    candidatoRepository.save(candidato);
-    vagaRepository.save(vaga);
-}
 
     public Long cadastrarVaga(VagaDTO vagaDTO) {
         Vaga vaga = new Vaga(vagaDTO, clienteRepository.findById(vagaDTO.getIdCliente()).get());
         vagaRepository.save(vaga);
         return vaga.getCodigo();
+    }
+
+    public void deletarVaga(Long codigo) {
+        Vaga vaga = vagaRepository.findByCodigoAndStatus(codigo, Status.ATIVO).orElseThrow(() -> new ObjectNotFoundException("Vaga não encontrada"));
+        try {
+            vaga.setStatus(Status.INATIVO);
+        } catch (Exception e) {
+            throw new DataBindingViolationException("Não foi possível deletar a vaga " + vaga.getNome() + ", pois há candidatos vinculados a ela.");
+        }
     }
 }

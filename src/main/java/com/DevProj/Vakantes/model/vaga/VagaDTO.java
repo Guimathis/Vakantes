@@ -17,18 +17,16 @@ public class VagaDTO {
 
     private Long idCliente;
 
-    private Cliente cliente;
 
     public VagaDTO() {
     }
 
-    public VagaDTO(String nome, String descricao, String data, BigDecimal salario, Long idCliente, Cliente cliente) {
+    public VagaDTO(String nome, String descricao, String data, BigDecimal salario, Long idCliente) {
         this.nome = nome;
         this.descricao = descricao;
         this.data = data;
         this.salario = salario;
         this.idCliente = idCliente;
-        this.cliente = cliente;
     }
 
     public VagaDTO(Vaga vaga) {
@@ -38,15 +36,6 @@ public class VagaDTO {
         this.data = vaga.getData();
         this.salario = vaga.getSalario();
         this.idCliente = vaga.getCliente().getId();
-        this.cliente = vaga.getCliente();
-    }
-
-    public Cliente getCliente() {
-        return cliente;
-    }
-
-    public void setCliente(Cliente cliente) {
-        this.cliente = cliente;
     }
 
     public long getCodigo() {

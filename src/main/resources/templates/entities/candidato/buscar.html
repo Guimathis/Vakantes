@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=0.5">
-    <title>Lista de Clientes</title>
+    <title>Lista de Candidatos</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
           integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
@@ -20,22 +20,22 @@
     <div class="col-md-12">
         <div class="card shadow-lg">
             <div class="card-header text-center">
-                <h3>Lista de Clientes</h3>
+                <h3>Lista de Candidatos</h3>
             </div>
-            <div th:insert="~{fragments/mensagemValidacao :: validation}"></div>
+                <div class="md-9" th:insert="~{fragments/mensagemValidacao :: validation}"></div>
             <div class="card-body">
-
-                <div th:if="${clientes.empty}">
-                    <p>Nenhum cliente cadastrado.</p>
+                <div th:if="${candidatos.empty}">
+                    <p>Nenhum candidato cadastrado.</p>
                 </div>
-                <div th:unless="${clientes.empty}">
+                <div th:unless="${candidatos.empty}">
                     <div class="table-responsive">
                         <table class="table table-striped">
                             <thead>
                             <tr>
                                 <th>Nome</th>
-                                <th>Tipo Pessoa</th>
-                                <th>Documento</th>
+                                <th>CPF</th>
+                                <th>RG</th>
+                                <th>Data de Nascimento</th>
                                 <th>Rua</th>
                                 <th>Número</th>
                                 <th>Cidade</th>
@@ -46,21 +46,20 @@
                             </tr>
                             </thead>
                             <tbody>
-                            <tr th:each="cliente : ${clientes}">
-                                <td th:text="${cliente.nome}"></td>
-                                <td th:text="${cliente.tipoPessoa}"></td>
-                                <td th:text="${cliente.documento}"></td>
-                                <td th:text="${cliente.endereco.rua}"></td>
-                                <td th:text="${cliente.endereco.numero}"></td>
-                                <td th:text="${cliente.endereco.cidade}"></td>
-                                <td th:text="${cliente.endereco.estado}"></td>
-                                <td th:text="${cliente.endereco.cep}"></td>
-                                <td th:text="${cliente.contato.telefone}"></td>
+                            <tr th:each="candidato : ${candidatos}">
+                                <td th:text="${candidato.nomeCandidato}"></td>
+                                <td th:text="${candidato.cpf}"></td>
+                                <td th:text="${candidato.rg}"></td>
+                                <td th:text="${candidato.dataNascimento}"></td>
+                                <td th:text="${candidato.endereco.rua}"></td>
+                                <td th:text="${candidato.endereco.numero}"></td>
+                                <td th:text="${candidato.endereco.cidade}"></td>
+                                <td th:text="${candidato.endereco.estado}"></td>
+                                <td th:text="${candidato.endereco.cep}"></td>
+                                <td th:text="${candidato.contato.telefone}"></td>
                                 <td>
-                                    <a th:href="@{/cliente/buscar/{id}(id=${cliente.id})}"
+                                    <a th:href="@{/candidato/buscar/{id}(id=${candidato.id})}"
                                        class="btn btn-primary bi bi-pencil"> Editar</a>
-                                    <a th:href="@{/vaga/cadastro/{id}(id=${cliente.id})}"
-                                       class="btn btn-success bi bi-plus-lg bi bi-plus-lg"> Vaga</a>
                                 </td>
                             </tr>
                             </tbody>
@@ -69,7 +68,7 @@
                 </div>
                 <div class="row">
                     <div class="col-md-12">
-                        <a href="/cliente/cadastro" class="btn btn-primary bi bi-plus-lg">Novo Cliente</a>
+                        <a href="/candidato/cadastro" class="btn btn-primary bi bi-plus-lg"> Novo Candidato</a>
                         <a href="/home/index" class="btn btn-secondary">Voltar</a>
                     </div>
                 </div>

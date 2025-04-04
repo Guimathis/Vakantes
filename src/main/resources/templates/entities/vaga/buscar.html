@@ -27,6 +27,7 @@
             <div class="card-header text-center">
                 <h3>Lista de Vagas Cadastradas</h3>
             </div>
+            <div th:insert="~{fragments/mensagemValidacao :: validation}"></div>
             <div class="card-body">
                 <div th:if="${vagas.empty}">
                     <p>Nenhuma vaga cadastrada.</p>
@@ -64,6 +65,7 @@
                 <div class="row">
                     <div class="col-md-12">
                         <a href="/vaga/cadastro" class="btn btn-primary bi bi-plus-lg"> Nova vaga</a>
+                        <a href="/home/index" class="btn btn-secondary">Voltar</a>
                     </div>
                 </div>
             </div>

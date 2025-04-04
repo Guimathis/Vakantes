@@ -4,32 +4,27 @@ import com.DevProj.Vakantes.model.candidato.Candidato;
 import com.DevProj.Vakantes.model.empresa.Cliente;
 import com.DevProj.Vakantes.model.util.Contato;
 import com.DevProj.Vakantes.model.util.Endereco;
+import com.DevProj.Vakantes.model.util.Status;
 import com.DevProj.Vakantes.model.vaga.Vaga;
 import com.DevProj.Vakantes.model.vaga.VagaDTO;
 import com.DevProj.Vakantes.repository.CandidatoRepository;
 import com.DevProj.Vakantes.repository.ClienteRepository;
 import com.DevProj.Vakantes.repository.VagaRepository;
 import com.DevProj.Vakantes.service.CandidatoService;
+import com.DevProj.Vakantes.service.ClienteService;
 import com.DevProj.Vakantes.service.CookieService;
 import com.DevProj.Vakantes.service.VagaService;
-import com.DevProj.Vakantes.service.exceptions.DataBindingViolationException;
 import com.DevProj.Vakantes.service.exceptions.ObjectNotFoundException;
-import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.io.UnsupportedEncodingException;
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 @Controller("VC")
@@ -44,19 +39,19 @@ public class VagaController {
 
 	@Autowired
 	CandidatoService candidatoService;
+	@Autowired
+	ClienteService clienteService;
 
 	@Autowired
 	VagaService vagaService;
 
-	@Autowired
-	private CandidatoRepository cr;
     @Autowired
     private CandidatoRepository candidatoRepository;
 
 	// CADASTRA VAGA
 	@GetMapping(value = "/cadastro")
 	public String form(Model model) {
-		model.addAttribute("clientes", clienteRepository.findAll());
+		model.addAttribute("clientes", clienteService.buscarTodos());
 		model.addAttribute("vaga" , new VagaDTO());
 		return "entities/vaga/cadastro";
 	}
@@ -68,7 +63,7 @@ public class VagaController {
         try {
 			Cliente cliente = clienteRepository.findById(id).orElseThrow(() -> new ObjectNotFoundException("Cliente não encontrado"));
 			vaga.setIdCliente(cliente.getId());
-			model.addAttribute("clientes", clienteRepository.findAll());
+			model.addAttribute("clientes", clienteService.buscarTodos());
 			model.addAttribute("vaga", vaga);
         } catch (ObjectNotFoundException e) {
 			attributes.addFlashAttribute("mensagem_erro", e.getMessage());
@@ -82,7 +77,7 @@ public class VagaController {
 
 		if (result.hasErrors()) {
 			model.addAttribute("vaga", vagaDTO);
-			model.addAttribute("clientes", clienteRepository.findAll());
+			model.addAttribute("clientes", clienteService.buscarTodos());
 			attributes.addFlashAttribute("mensagem_erro", "Verifique os campos...");
 			return "entities/vaga/cadastro";
 		}
@@ -102,17 +97,17 @@ public class VagaController {
 	public String listaVaga(Model model, HttpServletRequest request) throws UnsupportedEncodingException {
 		String idUsuario = CookieService.getCookie(request, "usuarioId");
 		model.addAttribute("idUsuario",idUsuario);
-		model.addAttribute("vagas", vr.findAll());
+		model.addAttribute("vagas", vagaService.buscarTodas());
 		return "entities/vaga/buscar";
 	}
 
 	//
 	@GetMapping ("/buscar/{codigo}")
 	public String detalhesVaga(@PathVariable("codigo") long codigo, Model model) {
-		Vaga vaga = vr.findByCodigo(codigo).orElseThrow(() -> new ObjectNotFoundException("Vaga não encontrada"));
+		Vaga vaga = vr.findByCodigoAndStatus(codigo, Status.ATIVO).orElseThrow(() -> new ObjectNotFoundException("Vaga não encontrada"));
 		VagaDTO vagaDTO = new VagaDTO(vaga);
 		model.addAttribute("vaga", vagaDTO);
-		model.addAttribute("clientes", clienteRepository.findAll());
+		model.addAttribute("clientes", clienteService.buscarTodos());
 		model.addAttribute("editar", false);
 		return "entities/vaga/cadastro";
 	}
@@ -121,10 +116,10 @@ public class VagaController {
 	// formulário edição de vaga
 	@GetMapping(value = "/editar/{codigo}")
 	public String editarVaga(Model model, @PathVariable long codigo) {
-		Vaga vaga = vr.findByCodigo(codigo).orElseThrow(() -> new ObjectNotFoundException("Vaga não encontrada"));;
+		Vaga vaga = vr.findByCodigoAndStatus(codigo, Status.ATIVO).orElseThrow(() -> new ObjectNotFoundException("Vaga não encontrada"));;
 		VagaDTO vagaDTO = new VagaDTO(vaga);
 		model.addAttribute("vaga", vagaDTO);
-		model.addAttribute("clientes", clienteRepository.findAll());
+		model.addAttribute("clientes", clienteService.buscarTodos());
 		model.addAttribute("editar", true);
 		return "entities/vaga/cadastro";
 	}
@@ -132,10 +127,10 @@ public class VagaController {
 
 	@GetMapping(value = "/detalhes/{codigo}")
 	public String detalhesVaga(Model model, @PathVariable long codigo){
-		Vaga vaga = vr.findByCodigo(codigo).orElseThrow(() -> new ObjectNotFoundException("Vaga não encontrada"));;
+		Vaga vaga = vr.findByCodigoAndStatus(codigo, Status.ATIVO).orElseThrow(() -> new ObjectNotFoundException("Vaga não encontrada"));;
 		VagaDTO vagaDTO = new VagaDTO(vaga);
 		model.addAttribute("vaga", vagaDTO);
-		model.addAttribute("candidato", new Candidato("0000000", "0000000", "Guilherme Mathias", LocalDate.now(), new Contato("(67) 99999-99999", "gmail@gmail.com"),  new Endereco("Rua B", "456", "Bairro X", "Rio de Janeiro", "RJ", "20000-000")));
+		model.addAttribute("candidato", new Candidato("0000000", "0000000", "Guilherme Mathias", "", new Contato("(67) 99999-99999", "gmail@gmail.com"),  new Endereco("Rua B", "456", "Bairro X", "Rio de Janeiro", "RJ", "20000-000")));
 		model.addAttribute("candidatosCadastrados", vaga.getCandidatos());
 		model.addAttribute("candidatosSistema", candidatoRepository.findAll());
 		return "entities/vaga/detalhes";
@@ -144,11 +139,15 @@ public class VagaController {
 
 
 	// DELETA VAGA
-	@RequestMapping("/deletarVaga")
-	public String deletarVaga(long codigo) {
-		Vaga vaga = vr.findByCodigo(codigo).orElseThrow(() -> new ObjectNotFoundException("Vaga não encontrada"));;
-		vr.delete(vaga);
-		return "redirect:/vagas";
+	@RequestMapping("/deletar/{id}")
+	public String deletarVaga(@PathVariable Long id, RedirectAttributes attributes) {
+		try {
+			vagaService.deletarVaga(id);
+			attributes.addFlashAttribute("mensagem", "Vaga deletada com sucesso!");
+		} catch (Exception e) {
+			attributes.addFlashAttribute("mensagem_erro", e.getMessage());
+		}
+		return "redirect:/vaga/buscar";
 	}
 
 	// ADICIONAR CANDIDATO

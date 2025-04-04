@@ -10,6 +10,7 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -42,7 +43,7 @@ public class Candidato {
 
 	@Column(nullable = false)
 	@NotNull(message = "A data de nascimento é obrigatória")
-	private LocalDate dataNascimento;
+	private String dataNascimento;
 
 	@OneToOne(cascade = CascadeType.ALL)
 	@JoinColumn(name = "contato_id", referencedColumnName = "id")
@@ -68,11 +69,11 @@ public class Candidato {
 	private Date atualizadoEm;
 
 	public Candidato() {
-		this.situacao = SituacaoCandidato.INSCRITO;
+		this.situacao = SituacaoCandidato.CADASTRADO;
 		this.status = Status.ATIVO;
 	}
 
-	public Candidato(String rg, String cpf, String nomeCandidato, LocalDate dataNascimento,
+	public Candidato(String rg, String cpf, String nomeCandidato, String dataNascimento,
 					 Contato contato, Endereco endereco) {
 		this.rg = rg;
 		this.cpf = cpf;
@@ -80,7 +81,7 @@ public class Candidato {
 		this.dataNascimento = dataNascimento;
 		this.contato = contato;
 		this.endereco = endereco;
-		this.situacao = SituacaoCandidato.INSCRITO;
+		this.situacao = SituacaoCandidato.CADASTRADO;
 		this.status = Status.ATIVO;
 	}
 
@@ -143,11 +144,11 @@ public class Candidato {
 		this.nomeCandidato = nomeCandidato;
 	}
 
-	public LocalDate getDataNascimento() {
+	public String getDataNascimento() {
 		return dataNascimento;
 	}
 
-	public void setDataNascimento(LocalDate dataNascimento) {
+	public void setDataNascimento(String dataNascimento) {
 		this.dataNascimento = dataNascimento;
 	}
 
