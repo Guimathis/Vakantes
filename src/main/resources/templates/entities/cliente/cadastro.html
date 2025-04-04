@@ -11,7 +11,7 @@
     <link rel="stylesheet" href="/css/style.css">
     <!--    <link rel="stylesheet" href="/css/fonts.css">-->
 </head>
-<body  class="d-flex flex-column min-vh-100 padding-navbar">
+<body class="d-flex flex-column min-vh-100 padding-navbar">
 
 <header>
     <div th:insert="~{fragments/navbar :: navbar}"></div>
@@ -26,29 +26,31 @@
             </div>
             <div class="card-body">
                 <div th:insert="~{fragments/mensagemValidacao :: validation}"></div>
-                <form th:action="@{/cliente/salvar}" th:object="${cliente}" method="post">
+                <form id="formSalvar" th:action="@{/cliente/salvar}" th:object="${cliente}" method="post">
                     <div class="row">
                         <div class="input-group mb-3">
                             <input type="number" class="form-control"
-                                   th:field="${cliente.id}"  th:value="${cliente.id}" hidden="hidden">
+                                   th:field="${cliente.id}" th:value="${cliente.id}" hidden="hidden">
                         </div>
                         <div class="col-md-6 mb-3">
                             <label for="nome" class="form-label">Nome:</label>
-                            <input type="text" id="nome" class="form-control" th:field="*{nome}" required>
+                            <input type="text" id="nome" class="form-control" th:field="*{nome}"
+                                   th:disabled="${editar == false}" required>
                         </div>
                         <div class="col-md-6 mb-3">
                             <label for="tipoPessoa" class="form-label">Tipo de Pessoa:</label>
-                            <select name="tipoPessoa" id="tipoPessoa" class="form-select">
+                            <select name="tipoPessoa" id="tipoPessoa" class="form-select"
+                                    th:disabled="${editar == false}">
                                 <option th:each="tipo : ${tiposPessoa}"
-                                        th:value="${tipo}"
-                                        th:text="${tipo.getDescricao()}"></option>
+                                        th:value="${tipo}" th:field="${cliente.tipoPessoa}" th:text="${tipo.getDescricao()}"></option>
                             </select>
                         </div>
                     </div>
                     <div class="row">
                         <div class="col-md-6 mb-3">
                             <label for="documento" class="form-label">Documento:</label>
-                            <input type="text" id="documento" class="form-control" th:field="*{documento}" required>
+                            <input type="text" id="documento" class="form-control" th:field="*{documento}"
+                                   th:disabled="${editar == false}" required>
                         </div>
                     </div>
                     <div class="row">
@@ -58,11 +60,13 @@
                                 <div class="col-md-9 mb-3">
                                     <label for="rua" class="form-label">Rua:</label>
                                     <input type="text" id="rua" class="form-control" th:field="*{endereco.rua}"
+                                           th:disabled="${editar == false}"
                                            required>
                                 </div>
                                 <div class="col-md-3 mb-3">
                                     <label for="numero" class="form-label">Número:</label>
                                     <input type="text" id="numero" class="form-control" th:field="*{endereco.numero}"
+                                           th:disabled="${editar == false}"
                                            required>
                                 </div>
                             </div>
@@ -70,16 +74,19 @@
                                 <div class="col-md-4 mb-3">
                                     <label for="cidade" class="form-label">Cidade:</label>
                                     <input type="text" id="cidade" class="form-control" th:field="*{endereco.cidade}"
+                                           th:disabled="${editar == false}"
                                            required>
                                 </div>
                                 <div class="col-md-4 mb-3">
                                     <label for="estado" class="form-label">Estado:</label>
                                     <input type="text" id="estado" class="form-control" th:field="*{endereco.estado}"
+                                           th:disabled="${editar == false}"
                                            required>
                                 </div>
                                 <div class="col-md-4 mb-3">
                                     <label for="cep" class="form-label">CEP:</label>
                                     <input type="text" id="cep" class="form-control" th:field="*{endereco.cep}"
+                                           th:disabled="${editar == false}"
                                            required>
                                 </div>
                             </div>
@@ -90,24 +97,31 @@
                                 <div class="col-md-4 mb-3">
                                     <label for="telefone" class="form-label">Telefone:</label>
                                     <input type="text" id="telefone" class="form-control" th:field="*{contato.telefone}"
+                                           th:disabled="${editar == false}"
                                            required>
                                 </div>
 
                                 <div class="col-md-8 mb-3">
                                     <label for="email" class="form-label">Email:</label>
-                                    <input type="email" id="email" class="form-control"
-                                           th:field="*{contato.emailContato}" required>
+                                    <input type="email" id="email" class="form-control" th:disabled="${editar == false}"
+                                           th:field="*{contato.email}" required>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <div class="row">
-                        <div class="col-md-6 d-flex gap-2 ">
-                            <button type="submit" class="btn btn-primary">Salvar</button>
-                            <a href="/cliente/buscar" class="btn btn-secondary">Voltar</a>
-                        </div>
-                    </div>
                 </form>
+                <div class="md-3 d-flex" style="gap: 10px;">
+                    <form th:action="@{/cliente/editar/{id}(id=${cliente.id})}" method="get">
+                        <button class="btn btn-primary" type="submit" th:hidden="${editar == true or editar == null}">
+                            Editar
+                        </button>
+                    </form>
+                    <button id="btnSalvar" class="btn btn-primary" type="submit" th:hidden="${editar == false}">Salvar
+                    </button>
+                    <a th:href="@{/cliente/deletar/{id}(id=${cliente.id})}" class="btn btn-danger" th:hidden="${cliente.id == null}" > Excluir</a>
+                    <a href="/cliente/buscar" class="btn btn-secondary">Voltar</a>
+                </div>
+
             </div>
         </div>
     </div>
@@ -121,5 +135,11 @@
 <script src="/scripts/registro.js"></script>
 <script src="/scripts/toast.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+
+<script>
+    document.getElementById('btnSalvar').addEventListener('click', function () {
+        document.getElementById('formSalvar').submit();
+    });
+</script>
 </body>
 </html>

@@ -2,11 +2,12 @@ package com.DevProj.Vakantes.controller;
 
 import com.DevProj.Vakantes.model.empresa.Cliente;
 import com.DevProj.Vakantes.model.enums.TipoPessoa;
+import com.DevProj.Vakantes.model.vaga.Vaga;
+import com.DevProj.Vakantes.model.vaga.VagaDTO;
 import com.DevProj.Vakantes.service.ClienteService;
 import com.DevProj.Vakantes.service.CookieService;
 import com.DevProj.Vakantes.service.UsuarioService;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.websocket.Session;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -58,7 +59,18 @@ public class ClienteController {
 
     @GetMapping("/buscar/{id}")
     public String listarCliente(@PathVariable Long id, Model model) {
-        model.addAttribute("busca", clienteService.buscarClientePorId(id));
-        return "redirect:/cliente/cadastro/" + id;
+        model.addAttribute("cliente", clienteService.buscarClientePorId(id));
+        model.addAttribute("tiposPessoa", TipoPessoa.values());
+        model.addAttribute("editar", false);
+        return "entities/cliente/cadastro";
+    }
+
+    // formulário edição de cliente
+    @GetMapping(value = "/editar/{id}")
+    public String editarCliente(Model model, @PathVariable long id) {
+        model.addAttribute("cliente", clienteService.buscarClientePorId(id));
+        model.addAttribute("tiposPessoa", TipoPessoa.values());
+        model.addAttribute("editar", true);
+        return "entities/cliente/cadastro";
     }
 }

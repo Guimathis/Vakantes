@@ -23,6 +23,7 @@
                 <h3>Lista de Clientes</h3>
             </div>
             <div class="card-body">
+
                 <div th:if="${clientes.empty}">
                     <p>Nenhum cliente cadastrado.</p>
                 </div>
@@ -56,9 +57,9 @@
                                 <td th:text="${cliente.contato.telefone}"></td>
                                 <td>
                                     <a th:href="@{/cliente/buscar/{id}(id=${cliente.id})}"
-                                       class="btn btn-primary btn-sm bi bi-pencil"> Editar</a>
-                                    <a th:href="@{/cliente/buscar/{id}(id=${cliente.id})}"
-                                       class="btn btn-primary btn-sm bi bi-plus-lg"> Vaga</a>
+                                       class="btn btn-primary bi bi-pencil"> Editar</a>
+                                    <a th:href="@{/vaga/cadastro/{id}(id=${cliente.id})}"
+                                       class="btn btn-success bi bi-plus-lg bi bi-plus-lg"> Vaga</a>
                                 </td>
                             </tr>
                             </tbody>

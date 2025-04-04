@@ -2,6 +2,7 @@ package com.DevProj.Vakantes.config;
 
 import com.DevProj.Vakantes.model.usuario.Usuario;
 import com.DevProj.Vakantes.model.enums.UserRole;
+import com.DevProj.Vakantes.model.util.Status;
 import com.DevProj.Vakantes.repository.UsuarioRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
@@ -23,6 +24,7 @@ public class StartupConfig {
                 user.setEmail("admin@vaka.com");
                 user.setSenha(passwordEncoder.encode("admin")); // Criptografando a senha
                 user.setUserRole(UserRole.ADMIN);
+                user.setStatus(Status.ATIVO);
 
                 usuarioRepository.save(user);
                 System.out.println("Usuário ADMIN criado com sucesso!");
@@ -36,6 +38,7 @@ public class StartupConfig {
                 user.setEmail("user@vaka.com");
                 user.setSenha(passwordEncoder.encode("admin")); // Criptografando a senha
                 user.setUserRole(UserRole.USER);
+                user.setStatus(Status.ATIVO);
 
                 usuarioRepository.save(user);
                 System.out.println("Usuário USER criado com sucesso!");

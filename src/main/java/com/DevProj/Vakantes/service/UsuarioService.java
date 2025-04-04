@@ -36,7 +36,7 @@ public class UsuarioService {
         if (isEmailValido(usuario.getEmail())) {
             throw new DataBindingViolationException("O e-mail informado não é válido.");
         }
-        if (isEmailValido(usuario.getContato().getEmailContato())) {
+        if (isEmailValido(usuario.getContato().getEmail())) {
             throw new DataBindingViolationException("O e-mail de contato informado não é válido.");
         }
         if (usuarioRepository.existsByEmail(usuario.getEmail())) {

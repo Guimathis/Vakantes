@@ -5,9 +5,12 @@ import com.DevProj.Vakantes.model.enums.TipoPessoa;
 import com.DevProj.Vakantes.model.usuario.Usuario;
 import com.DevProj.Vakantes.model.util.Contato;
 import com.DevProj.Vakantes.model.util.Endereco;
+import com.DevProj.Vakantes.model.util.Status;
 import com.DevProj.Vakantes.model.vaga.Vaga;
 import jakarta.persistence.*;
 
+import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 
 @Entity()
@@ -41,6 +44,46 @@ public class Cliente {
     @OneToMany(mappedBy = "cliente", cascade = CascadeType.REMOVE)
     private List<Vaga> vagas;
 
+    @Column(nullable = false)
+    private Status status;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "criado_em", updatable = false)
+    private Date criadoEm;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "atualizado_em", nullable = true)
+    private Date atualizadoEm;
+
+    @PrePersist
+    protected void onCreate() {
+        criadoEm = new Date();
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        atualizadoEm = new Date();
+    }
+
+    public Cliente() {
+        status = Status.ATIVO;
+    }
+
+    public Date getCriadoEm() {
+        return criadoEm;
+    }
+
+    public Date getAtualizadoEm() {
+        return atualizadoEm;
+    }
+
+    public Status getStatus() {
+        return status;
+    }
+
+    public void setStatus(Status status) {
+        this.status = status;
+    }
     public Long getId() {
         return id;
     }

@@ -49,10 +49,10 @@
                             <small class="form-text text-muted"><i>* Data em que a vaga expira.</i></small>
                         </div>
                         <div class="col-md-4 mb-3">
-                            <label for="cliente" class="form-label"><b>Data de expiração:</b></label>
+                            <label for="cliente" class="form-label"><b>Empresa ofertante:</b></label>
                             <select name="idCliente" th:type="Long" id="cliente" class="form-select" required th:disabled="${editar == false}">
-                                <option value="0">Selecione</option>
-                                <option th:each="cliente : ${clientes}" th:value="${cliente.id}"
+                                <option >Selecione</option>
+                                <option  th:each="cliente : ${clientes}" th:value="${cliente.id}"
                                         th:field="${vaga.idCliente}" th:text="${cliente.getNome()}">
                                 </option>
                             </select>
@@ -79,9 +79,10 @@
                 </form>
                 <div class="md-3 d-flex" style="gap: 10px;">
                     <form th:action="@{/vaga/editar/{codigo}(codigo=${vaga.codigo})}" method="get">
-                        <button class="btn btn-primary" type="submit" th:hidden="${editar == true}">Editar</button>
+                        <button class="btn btn-primary" type="submit" th:hidden="${editar == true or editar == null}">Editar</button>
                     </form>
-                        <button id="btnSalvar" class="btn btn-primary" type="submit" th:hidden="${editar == false}">Salvar</button>
+                    <button id="btnSalvar" class="btn btn-primary" type="submit" th:hidden="${editar == false}">Salvar</button>
+                    <a th:href="@{/vaga/deletar/{codigo}(codigo=${vaga.codigo})}" class="btn btn-danger" th:hidden="${vaga.codigo == 0}" > Excluir</a>
                     <a href="/vaga/buscar" class="btn btn-secondary">Voltar</a>
                 </div>
             </div>

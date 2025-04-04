@@ -33,10 +33,6 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http, CookieAuthFilter cookieAuthFilter) throws Exception {
-        AuthenticationManagerBuilder authenticationManagerBuilder = http
-                .getSharedObject(AuthenticationManagerBuilder.class);
-        authenticationManagerBuilder.userDetailsService(this.userDetailsService).passwordEncoder(bCryptPasswordEncoder.passwordEncoder());
-        this.authenticationManager = authenticationManagerBuilder.build();
 
         http
                 .csrf(AbstractHttpConfigurer::disable)
@@ -44,7 +40,7 @@ public class SecurityConfig {
                         .requestMatchers("/auth/**", "/images/**", "/css/**", "/js/**", "/helloworld").permitAll()
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
-                ).authenticationManager(authenticationManager)
+                )
                 .addFilterBefore(cookieAuthFilter, UsernamePasswordAuthenticationFilter.class)
                 .exceptionHandling(exception -> exception
                                 .authenticationEntryPoint((request, response, authException) -> {

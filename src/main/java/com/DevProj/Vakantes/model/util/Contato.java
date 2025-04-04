@@ -1,6 +1,8 @@
 package com.DevProj.Vakantes.model.util;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 
 
 @Entity
@@ -16,27 +18,29 @@ public class Contato {
     @Column(name = "telefone")
     private String telefone;
 
-    @Column(name = "email_contato")
-    private String emailContato;
+    @Column(name = "email", nullable = false, unique = true)
+    @NotBlank(message = "O e-mail é obrigatório")
+    @Email(message = "Formato de e-mail inválido")
+    private String email;
 
     public Contato() {
     }
 
-    public Contato(String telefone, String emailContato) {
+    public Contato(String telefone, String email) {
         this.telefone = telefone;
-        this.emailContato = emailContato;
+        this.email = email;
     }
 
     public Long getId() {
         return id;
     }
 
-    public String getEmailContato() {
-        return emailContato;
+    public String getEmail() {
+        return email;
     }
 
-    public void setEmailContato(String emailContato) {
-        this.emailContato = emailContato;
+    public void setEmail(String emailContato) {
+        this.email = emailContato;
     }
 
     public String getTelefone() {

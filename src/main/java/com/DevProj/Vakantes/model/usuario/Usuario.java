@@ -2,6 +2,7 @@ package com.DevProj.Vakantes.model.usuario;
 
 import com.DevProj.Vakantes.model.enums.UserRole;
 import com.DevProj.Vakantes.model.util.Contato;
+import com.DevProj.Vakantes.model.util.Status;
 import jakarta.persistence.*;
 
 import java.util.Date;
@@ -32,22 +33,25 @@ public class Usuario{
     @OneToOne(cascade = CascadeType.ALL)
     private Contato contato;
 
+    @Column(nullable = false)
+    private Status status;
+
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "criado_em", updatable = false)
-    private Date createdAt;
+    private Date criadoEm;
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "atualizado_em", nullable = true)
-    private Date updatedAt;
+    private Date atualizadoEm;
 
     @PrePersist
     protected void onCreate() {
-        createdAt = new Date();
+        criadoEm = new Date();
     }
 
     @PreUpdate
     protected void onUpdate() {
-        updatedAt = new Date();
+        atualizadoEm = new Date();
     }
 
     public Usuario() {
@@ -60,6 +64,16 @@ public class Usuario{
         this.senha = senha;
         this.userRole = userRole;
         this.contato = contato;
+    }
+
+
+
+    public Status getStatus() {
+        return status;
+    }
+
+    public void setStatus(Status status) {
+        this.status = status;
     }
 
     public Long getId() {
@@ -114,11 +128,11 @@ public class Usuario{
         this.contato = contato;
     }
 
-    public Date getCreatedAt() {
-        return createdAt;
+    public Date getCriadoEm() {
+        return criadoEm;
     }
 
-    public Date getUpdatedAt() {
-        return updatedAt;
+    public Date getAtualizadoEm() {
+        return atualizadoEm;
     }
 }

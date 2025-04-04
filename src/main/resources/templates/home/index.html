@@ -18,7 +18,7 @@
 
 <body class="d-flex flex-column min-vh-100">
 <header>
-    <div th:insert="~{fragments/navbar :: navbar(id=${idUsuario})}"></div>
+    <div th:insert="~{fragments/navbar :: navbar}"></div>
 </header>
 
 <div class="container d-flex justify-content-center align-items-center flex-grow-1">
@@ -32,7 +32,7 @@
                 <div class="d-grid gap-2 justify-content-center align-items-center">
                     <a href="/cliente/buscar" class="btn btn-primary botão-index">Clientes</a>
                     <a href="/vaga/buscar" class="btn btn-primary botão-index">Vagas</a>
-                    <a href="#" class="btn btn-primary botão-index">Candidatos</a>
+                    <a href="/candidato/buscar" class="btn btn-primary botão-index">Candidatos</a>
                     <div sec:authorize="hasRole('ADMIN')">
                         <a href="/admin/registro" class="btn btn-primary">Cadastrar Usuário</a>
                     </div>
