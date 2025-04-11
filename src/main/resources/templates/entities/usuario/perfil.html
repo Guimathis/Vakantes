@@ -9,7 +9,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
 
     <link rel="stylesheet" href="/css/style.css">
-    <link rel="stylesheet" href="/css/fonts.css">
 
 </head>
 <body class="d-flex flex-column min-vh-100">
@@ -26,10 +25,6 @@
                 <div class="card-header text-center d-flex justify-content-between align-items-center">
                     <img th:src="${'/images/perfil-vazio.png'}" class="rounded-circle"
                          width="90" height="90" alt="Foto do Usuário" style="margin-right: 10px;">
-                    <button id="salvarBtn" type="submit" class="btn btn-primary mt-auto" style="display: none;">Salvar
-                        Alterações
-                    </button>
-                    <button id="editarBtn" type="button" class="btn btn-primary mt-auto">Editar</button>
                 </div>
                 <div class="card-body">
 
@@ -65,6 +60,15 @@
                         <input id="inputUserRole" type="text" class="form-control" th:field="${usuario.userRole}">
                     </div>
 
+                <div class="row">
+                    <div class="col-md-6 d-flex gap-2 ">
+                        <button id="salvarBtn" type="submit" class="btn btn-primary mt-auto" style="display: none;">Salvar
+                            Alterações
+                        </button>
+                        <button id="editarBtn" type="button" class="btn btn-primary mt-auto">Editar</button>
+                        <a href="/home/index" class="btn btn-secondary">Voltar</a>
+                    </div>
+                </div>
                 </div>
             </form>
         </div>

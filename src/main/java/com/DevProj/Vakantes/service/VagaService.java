@@ -78,6 +78,7 @@ public class VagaService {
         Vaga vaga = vagaRepository.findByCodigoAndStatus(codigo, Status.ATIVO).orElseThrow(() -> new ObjectNotFoundException("Vaga não encontrada"));
         try {
             vaga.setStatus(Status.INATIVO);
+            vagaRepository.save(vaga);
         } catch (Exception e) {
             throw new DataBindingViolationException("Não foi possível deletar a vaga " + vaga.getNome() + ", pois há candidatos vinculados a ela.");
         }

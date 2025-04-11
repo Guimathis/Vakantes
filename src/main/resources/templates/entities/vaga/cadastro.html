@@ -38,7 +38,7 @@
                         <label for="nome" class="form-label"><b>Nome do cargo:</b></label>
                         <input type="text" id="nome" class="form-control" th:field="*{nome}"
                                th:disabled="${editar == false}"
-                               placeholder="Insira o nome do cargo" required>
+                               placeholder="Insira o nome do cargo" th:required="true">
                         <small class="form-text text-muted"><i>* Utilize nomes e termos mais utilizados no mercado.</i></small>
                     </div>
                     <div class="row">
@@ -51,7 +51,7 @@
                         <div class="col-md-4 mb-3">
                             <label for="cliente" class="form-label"><b>Empresa ofertante:</b></label>
                             <select name="idCliente" th:type="Long" id="cliente" class="form-select" required th:disabled="${editar == false}">
-                                <option >Selecione</option>
+                                <option th:value="${null}">Selecione</option>
                                 <option  th:each="cliente : ${clientes}" th:value="${cliente.id}"
                                         th:field="${vaga.idCliente}" th:text="${cliente.getNome()}">
                                 </option>
@@ -63,8 +63,7 @@
                             <div class="input-group">
                                 <span class="input-group-text">R$</span>
                                 <input type="number" id="salario" name="salario" class="form-control" th:disabled="${editar == false}"
-                                       th:value="*{salario}"
-                                       pattern="^\d+(\.|\,)\d{2}$" required/>
+                                       th:value="*{salario}" required/>
                             </div>
                             <small class="form-text text-muted"><i>* Utilize valores considerando vírgula e
                                 ponto.</i></small>
@@ -83,8 +82,7 @@
                     </form>
                     <button id="btnSalvar" class="btn btn-primary" type="submit" th:hidden="${editar == false}">Salvar</button>
                     <a th:href="@{/vaga/deletar/{codigo}(codigo=${vaga.codigo})}" class="btn btn-danger" th:hidden="${vaga.codigo == 0}" > Excluir</a>
-<!--                    <a href="/vaga/buscar" class="btn btn-secondary">Voltar</a>-->
-                    <a href="javascript:history.back()" class="btn btn-secondary">Voltar</a>
+                    <a href="/vaga/buscar" class="btn btn-secondary">Voltar</a>
                 </div>
             </div>
         </div>
@@ -97,10 +95,12 @@
         integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
         crossorigin="anonymous"></script>
 <script src="/scripts/registro.js"></script>
+<script src="https://unpkg.com/imask"></script>
 <script>
     document.getElementById('btnSalvar').addEventListener('click', function() {
         document.getElementById('formSalvar').submit();
     });
+
 </script>
 </body>
 </html>

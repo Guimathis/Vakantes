@@ -56,6 +56,7 @@ public class Usuario{
 
     public Usuario() {
         this.contato = new Contato();
+        this.status = Status.ATIVO;
     }
 
     public Usuario(String nomeCompleto, String email, String senha, UserRole userRole, Contato contato) {

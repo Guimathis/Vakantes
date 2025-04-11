@@ -1,22 +1,29 @@
 package com.DevProj.Vakantes.model.vaga;
 
 import com.DevProj.Vakantes.model.empresa.Cliente;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 
 import java.math.BigDecimal;
 
 public class VagaDTO {
     private long codigo;
 
+    @NotEmpty(message = "Nome da vaga não pode estar vazio.")
     private String nome;
 
+    @NotEmpty(message = "Descrição da vaga não pode estar vazia.")
     private String descricao;
 
+    @NotEmpty(message = "Selecione a data de expiração da vaga.")
     private String data;
 
+    @NotNull(message = "Salário não pode ser nulo.")
     private BigDecimal salario;
 
+    @NotNull(message = "Selecione um cliente.")
     private Long idCliente;
-
 
     public VagaDTO() {
     }

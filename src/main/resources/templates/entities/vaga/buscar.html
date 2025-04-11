@@ -27,8 +27,8 @@
             <div class="card-header text-center">
                 <h3>Lista de Vagas Cadastradas</h3>
             </div>
-            <div th:insert="~{fragments/mensagemValidacao :: validation}"></div>
             <div class="card-body">
+            <div th:insert="~{fragments/mensagemValidacao :: validation}"></div>
                 <div th:if="${vagas.empty}">
                     <p>Nenhuma vaga cadastrada.</p>
                 </div>

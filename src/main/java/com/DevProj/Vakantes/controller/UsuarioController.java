@@ -10,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.io.UnsupportedEncodingException;
 import java.util.Objects;
@@ -30,7 +29,7 @@ public class UsuarioController {
     }
 
     @GetMapping("/{id}")
-    public String perfil(@PathVariable Long id, Model model, HttpServletRequest request, RedirectAttributes redirectAttributes) throws UnsupportedEncodingException {
+    public String perfil(@PathVariable Long id, Model model, HttpServletRequest request) throws UnsupportedEncodingException {
         String usuarioId = CookieService.getCookie(request, "usuarioId");
         Optional<Usuario> usuarioRequisitou = usuarioService.buscarPorId(Long.parseLong(usuarioId));
         if(usuarioRequisitou.isEmpty()) {
@@ -54,7 +53,7 @@ public class UsuarioController {
 
 
     @PostMapping("/salvar")
-    public String editarUsuario(@ModelAttribute Usuario usuario, HttpServletResponse response) throws UnsupportedEncodingException {
+    public String editarUsuario(@ModelAttribute Usuario usuario, HttpServletRequest request, HttpServletResponse response) throws UnsupportedEncodingException {
         usuarioService.atualizar(usuario);
         CookieService.setCookie(response, "nomeUsuario", usuario.getPrimeiroNome(), 10000);
         return "redirect:/usuario/" + usuario.getId();

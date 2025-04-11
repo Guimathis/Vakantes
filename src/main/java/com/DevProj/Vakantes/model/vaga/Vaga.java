@@ -5,7 +5,9 @@ import com.DevProj.Vakantes.model.empresa.Cliente;
 import com.DevProj.Vakantes.model.util.Status;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -17,6 +19,7 @@ import java.util.List;
 @Table(name = "vaga", schema = "vaga")
 public class Vaga implements Serializable {
 
+	@Serial
 	private static final long serialVersionUID = 1L;
 	
 	@Id
@@ -32,7 +35,8 @@ public class Vaga implements Serializable {
 	
 	@NotEmpty
 	private String data;
-	
+
+	@NotNull
 	private BigDecimal salario;
 
 	@ManyToMany
@@ -47,6 +51,7 @@ public class Vaga implements Serializable {
 	private Cliente cliente;
 
 	@Column(nullable = false)
+	@Enumerated(EnumType.STRING)
 	private Status status;
 
 	@Temporal(TemporalType.TIMESTAMP)

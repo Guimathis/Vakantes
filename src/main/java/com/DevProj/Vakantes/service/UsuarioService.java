@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.util.List;
 import java.util.Optional;
 import java.util.regex.Matcher;
@@ -33,14 +32,14 @@ public class UsuarioService {
 
     @Transactional
     public void salvar(Usuario usuario) throws DataBindingViolationException {
-        if (isEmailValido(usuario.getEmail())) {
-            throw new DataBindingViolationException("O e-mail informado não é válido.");
+        if (!isEmailValido(usuario.getEmail())) {
+            throw new DataBindingViolationException("O e-mail de acesso informado não é válido.");
         }
-        if (isEmailValido(usuario.getContato().getEmail())) {
+        if (!isEmailValido(usuario.getContato().getEmail())) {
             throw new DataBindingViolationException("O e-mail de contato informado não é válido.");
         }
         if (usuarioRepository.existsByEmail(usuario.getEmail())) {
-            throw new DataBindingViolationException("Este e-mail já está em uso.");
+            throw new DataBindingViolationException("Este e-mail de acesso informado já está em uso.");
         }
         usuario.setSenha(passwordEncoder.encode(usuario.getSenha()));
         usuarioRepository.save(usuario);

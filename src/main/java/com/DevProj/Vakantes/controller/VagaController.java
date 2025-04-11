@@ -2,8 +2,6 @@ package com.DevProj.Vakantes.controller;
 
 import com.DevProj.Vakantes.model.candidato.Candidato;
 import com.DevProj.Vakantes.model.empresa.Cliente;
-import com.DevProj.Vakantes.model.util.Contato;
-import com.DevProj.Vakantes.model.util.Endereco;
 import com.DevProj.Vakantes.model.util.Status;
 import com.DevProj.Vakantes.model.vaga.Vaga;
 import com.DevProj.Vakantes.model.vaga.VagaDTO;
@@ -52,7 +50,7 @@ public class VagaController {
 	@GetMapping(value = "/cadastro")
 	public String form(Model model) {
 		model.addAttribute("clientes", clienteService.buscarTodos());
-		model.addAttribute("vaga" , new VagaDTO());
+		model.addAttribute("vaga" , model.getAttribute("vaga") == null ? new VagaDTO() : model.getAttribute("vaga"));
 		return "entities/vaga/cadastro";
 	}
 
@@ -78,13 +76,14 @@ public class VagaController {
 		if (result.hasErrors()) {
 			model.addAttribute("vaga", vagaDTO);
 			model.addAttribute("clientes", clienteService.buscarTodos());
-			attributes.addFlashAttribute("mensagem_erro", "Verifique os campos...");
-			return "entities/vaga/cadastro";
+			attributes.addFlashAttribute("mensagem_erro", result.getAllErrors().get(0).getDefaultMessage());
+			attributes.addFlashAttribute("vaga", vagaDTO);
+			return "redirect:/vaga/cadastro";
 		}
 
 		Long id = vagaService.cadastrarVaga(vagaDTO);
 
-		if(vagaDTO.getCodigo() != 0){
+        if(vagaDTO.getCodigo() != 0){
 			attributes.addFlashAttribute("mensagem", "Vaga editada com sucesso!");
 		} else {
 			attributes.addFlashAttribute("mensagem", "Vaga cadastrada com sucesso!");
@@ -130,7 +129,7 @@ public class VagaController {
 		Vaga vaga = vr.findByCodigoAndStatus(codigo, Status.ATIVO).orElseThrow(() -> new ObjectNotFoundException("Vaga não encontrada"));;
 		VagaDTO vagaDTO = new VagaDTO(vaga);
 		model.addAttribute("vaga", vagaDTO);
-		model.addAttribute("candidato", new Candidato("0000000", "0000000", "Guilherme Mathias", "", new Contato("(67) 99999-99999", "gmail@gmail.com"),  new Endereco("Rua B", "456", "Bairro X", "Rio de Janeiro", "RJ", "20000-000")));
+		model.addAttribute("candidato", new Candidato());
 		model.addAttribute("candidatosCadastrados", vaga.getCandidatos());
 		model.addAttribute("candidatosSistema", candidatoRepository.findAll());
 		return "entities/vaga/detalhes";
