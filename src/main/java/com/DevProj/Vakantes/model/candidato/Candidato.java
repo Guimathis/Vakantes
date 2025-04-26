@@ -1,6 +1,6 @@
 package com.DevProj.Vakantes.model.candidato;
 
-import com.DevProj.Vakantes.model.enums.SituacaoCandidato;
+import com.DevProj.Vakantes.model.util.enums.SituacaoCandidato;
 import com.DevProj.Vakantes.model.util.Contato;
 import com.DevProj.Vakantes.model.util.Endereco;
 import com.DevProj.Vakantes.model.util.Status;

@@ -1,8 +1,8 @@
-package com.DevProj.Vakantes.model.enums;
+package com.DevProj.Vakantes.model.util.enums;
 
 public enum TipoPessoa {
-    FISICA("Pessoa Física"),
-    JURIDICA("Pessoa Jurídica");
+    JURIDICA("Pessoa Jurídica"),
+    FISICA("Pessoa Física");
 
     private final String descricao;
 

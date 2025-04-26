@@ -1,4 +1,4 @@
-package com.DevProj.Vakantes.model.enums;
+package com.DevProj.Vakantes.model.util.enums;
 
 public enum SituacaoCandidato {
     APROVADO,

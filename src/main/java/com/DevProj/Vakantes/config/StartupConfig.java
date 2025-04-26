@@ -1,7 +1,7 @@
 package com.DevProj.Vakantes.config;
 
 import com.DevProj.Vakantes.model.usuario.Usuario;
-import com.DevProj.Vakantes.model.enums.UserRole;
+import com.DevProj.Vakantes.model.util.enums.UserRole;
 import com.DevProj.Vakantes.model.util.Status;
 import com.DevProj.Vakantes.repository.UsuarioRepository;
 import org.springframework.boot.CommandLineRunner;

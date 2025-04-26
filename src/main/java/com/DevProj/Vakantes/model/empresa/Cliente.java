@@ -1,6 +1,6 @@
 package com.DevProj.Vakantes.model.empresa;
 
-import com.DevProj.Vakantes.model.enums.TipoPessoa;
+import com.DevProj.Vakantes.model.util.enums.TipoPessoa;
 import com.DevProj.Vakantes.model.usuario.Usuario;
 import com.DevProj.Vakantes.model.util.Contato;
 import com.DevProj.Vakantes.model.util.Endereco;
