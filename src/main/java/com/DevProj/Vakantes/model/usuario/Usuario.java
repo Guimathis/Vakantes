@@ -6,10 +6,11 @@ import com.DevProj.Vakantes.model.util.Status;
 import jakarta.persistence.*;
 
 import java.util.Date;
+import java.util.Objects;
 
 @Entity
 @Table(name = "usuario", schema = "usuario")
-public class Usuario{
+public class Usuario {
 
     @Id
     @SequenceGenerator(name = "usuario_id", sequenceName = "usuario.usuario_id_seq", allocationSize = 1, initialValue = 1)
@@ -36,7 +37,14 @@ public class Usuario{
     @Column(nullable = false)
     private Status status;
 
+    @Column(name = "foto_perfil", length = 100)
     private String fotoPerfil;
+
+    @Column(name = "reset_token")
+    private String resetToken;
+
+    @Column(name = "reset_token_expiry")
+    private Date resetTokenExpiry;
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "criado_em", updatable = false)
@@ -70,6 +78,33 @@ public class Usuario{
     }
 
 
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        Usuario usuario = (Usuario) o;
+        return Objects.equals(id, usuario.id) && Objects.equals(senha, usuario.senha);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, senha);
+    }
+
+    public Date getResetTokenExpiry() {
+        return resetTokenExpiry;
+    }
+
+    public void setResetTokenExpiry(Date resetTokenExpiry) {
+        this.resetTokenExpiry = resetTokenExpiry;
+    }
+
+    public String getResetToken() {
+        return resetToken;
+    }
+
+    public void setResetToken(String resetToken) {
+        this.resetToken = resetToken;
+    }
 
     public Status getStatus() {
         return status;
