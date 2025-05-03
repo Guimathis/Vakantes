@@ -15,6 +15,8 @@ public class InterceptorConfig implements WebMvcConfigurer {
             "/auth/login",
             "/auth/logar",
             "/auth/logout",
+            "/auth/recuperar-senha",
+            "/auth/recuperar-senha/**",
             "/images/**",
             "/css/**",
             "/js/**",
