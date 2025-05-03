@@ -4,11 +4,20 @@ import com.DevProj.Vakantes.repository.UsuarioRepository;
 import com.DevProj.Vakantes.model.usuario.Usuario;
 import com.DevProj.Vakantes.service.exceptions.DataBindingViolationException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -92,5 +101,39 @@ public class UsuarioService {
 
     public Usuario buscarPorEmail(String email) {
         return usuarioRepository.findByEmail(email);
+    }
+
+    @Value("${upload.dir}")
+    private String uploadDir;
+
+    public String salvarFoto(MultipartFile file) throws IOException {
+        if (file.isEmpty()) return null;
+
+        // Tipo de arquivo
+        String contentType = file.getContentType();
+        if (contentType == null || !contentType.startsWith("image/")) {
+            throw new IllegalArgumentException("Apenas arquivos de imagem são permitidos.");
+        }
+
+        // Tamanho máximo de 2MB
+        long maxSize = 2 * 1024 * 1024;
+        if (file.getSize() > maxSize) {
+            throw new IllegalArgumentException("O tamanho máximo permitido é 2MB.");
+        }
+
+        // Nome do arquivo
+        String fileName = UUID.randomUUID() + "_" + file.getOriginalFilename();
+
+        // Cria diretório se necessário
+        Path dirPath = Paths.get(uploadDir);
+        if (!Files.exists(dirPath)) {
+            Files.createDirectories(dirPath);
+        }
+
+        // Salva a imagem
+        Path filePath = dirPath.resolve(fileName);
+        Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+
+        return fileName;
     }
 }

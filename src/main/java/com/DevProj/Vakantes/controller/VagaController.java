@@ -93,9 +93,7 @@ public class VagaController {
 
 	// LISTA VAGAS
 	@GetMapping("/buscar")
-	public String listaVaga(Model model, HttpServletRequest request) throws UnsupportedEncodingException {
-		String idUsuario = CookieService.getCookie(request, "usuarioId");
-		model.addAttribute("idUsuario",idUsuario);
+	public String listaVaga(Model model) {
 		model.addAttribute("vagas", vagaService.buscarTodas());
 		return "entities/vaga/buscar";
 	}

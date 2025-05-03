@@ -22,7 +22,7 @@
             <div class="card-header text-center">
                 <h3>Lista de Clientes</h3>
             </div>
-            <div th:insert="~{fragments/mensagemValidacao :: validation}"></div>
+            <div class="md-9" th:insert="~{fragments/mensagemValidacao :: validation}"></div>
             <div class="card-body">
 
                 <div th:if="${clientes.empty}">

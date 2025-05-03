@@ -18,13 +18,13 @@
                     <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="userDropdown"
                        role="button"
                        data-bs-toggle="dropdown" aria-expanded="false">
-                        <img th:src="${'/images/perfil-vazio.png'}"
+                        <img th:src="${usuarioFoto != null && !usuarioFoto.isBlank()} ? @{'/usuario/' + ${usuario.id} + '/foto'} : ${'/images/perfil-vazio.png'}"
                              class="rounded-circle" width="35" height="35" alt="Foto do Usuário"
                              style="margin-right: 10px;">
-                        <span th:text="${session.nomeUsuario}"></span>
+                        <span th:text="${usuarioNome}"></span>
                     </a>
                     <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
-                        <li><a class="dropdown-item" th:href="@{|/usuario/${idUsuario}|}">Perfil</a></li>
+                        <li><a class="dropdown-item" th:href="@{/usuario/perfil}">Perfil</a></li>
                         <li>
                             <hr class="dropdown-divider">
                         </li>

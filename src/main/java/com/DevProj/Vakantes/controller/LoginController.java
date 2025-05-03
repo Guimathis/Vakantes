@@ -21,9 +21,6 @@ import java.io.UnsupportedEncodingException;
 public class LoginController {
 
     @Autowired
-    private UsuarioRepository ur;
-
-    @Autowired
     private UsuarioService usuarioService;
 
     @GetMapping("/login")
@@ -32,12 +29,11 @@ public class LoginController {
     }
 
     @PostMapping("/logar")
-    public String logar(UsuarioDTO usuarioDTO, HttpServletResponse response, HttpServletRequest request, RedirectAttributes redirectAttributes) throws UnsupportedEncodingException {
+    public String logar(UsuarioDTO usuarioDTO, HttpServletResponse response, RedirectAttributes redirectAttributes) throws UnsupportedEncodingException {
         Usuario usuarioLogado = usuarioService.autenticarUsuario(usuarioDTO.getUsername(), usuarioDTO.getPassword());
 
         if (usuarioLogado != null) {
             CookieService.setCookie(response, "usuarioId", String.valueOf(usuarioLogado.getId()), 10000);
-            request.getSession().setAttribute("nomeUsuario", usuarioLogado.getPrimeiroNome());
             return "redirect:/home/index";
         }
         redirectAttributes.addFlashAttribute("erro", "Email ou senha incorretos.");
@@ -47,7 +43,6 @@ public class LoginController {
     @GetMapping("/logout")
     public String logout(HttpServletResponse response) throws UnsupportedEncodingException {
         CookieService.removeCookie(response, "usuarioId");
-        CookieService.removeCookie(response, "nomeUsuario");
         return "redirect:/auth/login";
     }
 

@@ -9,6 +9,8 @@ if(telefoneInput != null) {
 }
 
 
+const labelFoto = document.getElementById('labelFoto');
+const inputFoto = document.getElementById('inputFoto');
 const inputNomeCompleto = document.getElementById('inputNomeCompleto');
 const inputEmail = document.getElementById('inputEmail');
 const inputTelefone = document.getElementById('inputTelefone');
@@ -25,6 +27,8 @@ inputEmailContato.disabled = true;
 inputuserRole.disabled = true;
 
 editarBtn.addEventListener('click', () => {
+    labelFoto.hidden = false;
+    inputFoto.hidden = false;
     inputNomeCompleto.disabled = false;
     inputEmail.disabled = false;
     inputTelefone.disabled = false;

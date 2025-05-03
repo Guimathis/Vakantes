@@ -1,6 +1,6 @@
 package com.DevProj.Vakantes.model.usuario;
 
-import com.DevProj.Vakantes.model.enums.UserRole;
+import com.DevProj.Vakantes.model.util.enums.UserRole;
 import com.DevProj.Vakantes.model.util.Contato;
 import com.DevProj.Vakantes.model.util.Status;
 import jakarta.persistence.*;
@@ -35,6 +35,8 @@ public class Usuario{
 
     @Column(nullable = false)
     private Status status;
+
+    private String fotoPerfil;
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "criado_em", updatable = false)
@@ -135,5 +137,13 @@ public class Usuario{
 
     public Date getAtualizadoEm() {
         return atualizadoEm;
+    }
+
+    public String getFotoPerfil() {
+        return fotoPerfil;
+    }
+
+    public void setFotoPerfil(String fotoPerfil) {
+        this.fotoPerfil = fotoPerfil;
     }
 }
