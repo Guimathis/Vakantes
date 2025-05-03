@@ -25,9 +25,9 @@ public class ClienteService {
     @Autowired
     private ClienteRepository clienteRepository;
 
-    public Cliente salvarCliente(Cliente cliente) throws DataBindingViolationException {
+    public void salvarCliente(Cliente cliente) throws DataBindingViolationException {
         validarCliente(cliente);
-        return clienteRepository.save(cliente);
+        clienteRepository.save(cliente);
     }
 
     private void validarCliente(Cliente cliente) throws DataBindingViolationException {

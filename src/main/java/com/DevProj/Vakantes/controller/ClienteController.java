@@ -1,19 +1,16 @@
 package com.DevProj.Vakantes.controller;
 
 import com.DevProj.Vakantes.model.empresa.Cliente;
+import com.DevProj.Vakantes.model.usuario.Usuario;
 import com.DevProj.Vakantes.model.util.enums.TipoPessoa;
 import com.DevProj.Vakantes.model.util.Status;
 import com.DevProj.Vakantes.service.ClienteService;
-import com.DevProj.Vakantes.service.CookieService;
-import com.DevProj.Vakantes.service.UsuarioService;
-import jakarta.servlet.http.HttpServletRequest;
+import com.DevProj.Vakantes.service.exceptions.DataBindingViolationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
-import java.io.UnsupportedEncodingException;
 
 @Controller
 @RequestMapping("/cliente")
@@ -21,39 +18,46 @@ public class ClienteController {
 
     @Autowired
     private ClienteService clienteService;
-    @Autowired
-    private UsuarioService usuarioService;
-
 
     @GetMapping("/cadastro")
-    public String exibirFormularioCadastro(Model model, HttpServletRequest request) throws UnsupportedEncodingException {
-        model.addAttribute("idUsuario", CookieService.getCookie(request, "usuarioId"));
+    public String exibirFormularioCadastro(Model model) {
         model.addAttribute("tiposPessoa", TipoPessoa.values());
         model.addAttribute("cliente", new Cliente());
         return "entities/cliente/cadastro";
     }
 
     @GetMapping("/cadastro/{id}")
-    public String buscarCliente(@PathVariable Long id, Model model, HttpServletRequest request) throws UnsupportedEncodingException {
-        model.addAttribute("idUsuario", CookieService.getCookie(request, "usuarioId"));
+    public String buscarCliente(@PathVariable Long id, Model model) {
         model.addAttribute("tiposPessoa", TipoPessoa.values());
         model.addAttribute("cliente", clienteService.buscarClientePorIdAndStatus(id, Status.ATIVO));
         return "entities/cliente/cadastro";
     }
 
     @PostMapping("/salvar")
-    public String salvarCliente(@ModelAttribute Cliente cliente, HttpServletRequest request) throws UnsupportedEncodingException {
-        Long idUser = Long.valueOf(CookieService.getCookie(request, "usuarioId"));
-        cliente.setUsuarioResponsavel(usuarioService.buscarPorId(idUser).get());
-        clienteService.salvarCliente(cliente);
-        return "redirect:/cliente/buscar";
+    public String salvarCliente(@ModelAttribute Cliente cliente, @ModelAttribute("currentUser") Usuario currentUser, RedirectAttributes attributes, Model model) {
+        try {
+            Long usuarioId = (Long) model.getAttribute("usuarioId");
+            currentUser.setId(usuarioId);
+            cliente.setUsuarioResponsavel(currentUser);
+            clienteService.salvarCliente(cliente);
+            attributes.addFlashAttribute("mensagem", "Cliente salvo com sucesso!");
+            return "redirect:/cliente/buscar";
+        } catch (DataBindingViolationException e) {
+            model.addAttribute("mensagem_erro", e.getMessage());
+            model.addAttribute("tiposPessoa", TipoPessoa.values());
+            model.addAttribute("cliente", cliente);
+            return "entities/cliente/cadastro";
+        } catch (Exception e) {
+            model.addAttribute("mensagem_erro", "Ocorreu um erro ao salvar o cliente: " + e.getMessage());
+            model.addAttribute("tiposPessoa", TipoPessoa.values());
+            model.addAttribute("cliente", cliente);
+            return "entities/cliente/cadastro";
+        }
     }
 
     @GetMapping("/buscar")
-    public String listarClientes(Model model, HttpServletRequest request) throws UnsupportedEncodingException {
-        String idUsuario = CookieService.getCookie(request, "usuarioId");
-        model.addAttribute("idUsuario",idUsuario);
-        model.addAttribute("clientes", clienteService.buscarClientePorResponsavel(usuarioService.buscarPorId(Long.valueOf(idUsuario)).get()));
+    public String listarClientes(Model model, @ModelAttribute("currentUser") Usuario currentUser) {
+        model.addAttribute("clientes", clienteService.buscarClientePorResponsavel(currentUser));
         return "entities/cliente/buscar";
     }
 

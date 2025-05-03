@@ -151,10 +151,10 @@
     const documentoInput = document.getElementById('documento');
 
     // Inicializa a máscara do documento com IMask
-    let documentoMask = IMask(documentoInput, {
-        mask: '000.000.000-00', // padrão CPF
-        lazy: false
-    });
+let documentoMask = IMask(documentoInput, {
+    mask: tipoPessoaSelect.value === 'FISICA' ? '000.000.000-00' : '00.000.000/0000-00', // CPF ou CNPJ
+    lazy: false
+});
 
     IMask(
         document.getElementById('telefone'),
