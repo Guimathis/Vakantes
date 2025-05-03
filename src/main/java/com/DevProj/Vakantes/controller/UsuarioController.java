@@ -81,7 +81,7 @@ public class UsuarioController {
             usuarioRepository.save(usuarioSave);
             redirectAttributes.addFlashAttribute("mensagem", "Perfil atualizado com sucesso!");
         } catch (IllegalArgumentException | IOException e) {
-            redirectAttributes.addFlashAttribute("erro", "Erro ao enviar foto: " + e.getMessage());
+            redirectAttributes.addFlashAttribute("mensagem_erro", "Erro ao enviar foto: " + e.getMessage());
         }
 
         return "redirect:/usuario/" + id;

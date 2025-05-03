@@ -20,24 +20,13 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableWebSecurity
 public class SecurityConfig {
 
-    AuthenticationManager authenticationManager;
-
-    @Autowired
-    UserDetailsService userDetailsService;
-
-    @Autowired
-    PasswordService bCryptPasswordEncoder;
-
-    @Autowired
-    AuthenticationSucessHandler authenticationSucessHandler;
-
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http, CookieAuthFilter cookieAuthFilter) throws Exception {
 
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth/**", "/images/**", "/css/**", "/js/**", "/helloworld").permitAll()
+                        .requestMatchers("/auth/**", "/auth/recuperar-senha/**", "/images/**", "/css/**", "/js/**", "/helloworld").permitAll()
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
