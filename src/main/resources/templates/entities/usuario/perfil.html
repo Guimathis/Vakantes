@@ -22,9 +22,7 @@
             <form th:action="@{'/usuario/salvar/' + ${usuario.id}}" method="post" enctype="multipart/form-data">
                 <div class="card-header text-center d-flex flex-column align-items-center gap-2">
 
-                    <!-- Mensagens de feedback -->
-                    <div th:if="${mensagem}" class="alert alert-success w-100 text-center" th:text="${mensagem}"></div>
-                    <div th:if="${erro}" class="alert alert-danger w-100 text-center" th:text="${erro}"></div>
+                    <div th:insert="~{fragments/mensagemValidacao :: validation}"></div>
 
                     <!-- Imagem do perfil -->
                     <img th:src="${usuario.fotoPerfil != null && !usuario.fotoPerfil.isBlank()} ? @{'/usuario/' + ${usuario.id} + '/foto'} : ${'/images/perfil-vazio.png'}"

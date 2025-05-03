@@ -36,7 +36,7 @@ public class LoginController {
             CookieService.setCookie(response, "usuarioId", String.valueOf(usuarioLogado.getId()), 10000);
             return "redirect:/home/index";
         }
-        redirectAttributes.addFlashAttribute("erro", "Email ou senha incorretos.");
+        redirectAttributes.addFlashAttribute("mensagem_erro", "Email ou senha incorretos.");
         return "redirect:/auth/login";
     }
 
