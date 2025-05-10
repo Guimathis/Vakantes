@@ -35,8 +35,8 @@
             </div>
             <div class="col-md-4 mb-4">
               <label class="form-label">Nome do candidato:</label>
-              <input type="text" th:field="*{nomeCandidato}" class="form-control"
-                     placeholder="Nome Completo" th:disabled="${editar == false}" required>
+              <input type="text"  th:field="*{nomeCandidato}" class="form-control"
+                     th:disabled="${editar == false}" required>
             </div>
             <div class="col-md-4 mb-4">
               <label class="form-label">CPF:</label>
@@ -53,7 +53,7 @@
           <div class="row">
             <div class="col-md-4 mb-4">
               <label class="form-label">E-mail:</label>
-              <input type="email" th:field="*{contato.email}" class="form-control" placeholder="email@email.com"
+              <input type="email" th:field="*{contato.email}" class="form-control"
                      th:disabled="${editar == false}" required>
             </div>
             <div class="col-md-4 mb-4">
@@ -288,6 +288,11 @@
                      th:disabled="${editar == false}" required>
             </div>
             <div class="col-md-4 mb-4">
+              <label for="bairro" class="form-label">Bairro:</label>
+              <input type="text" id="bairro" class="form-control" th:field="*{endereco.bairro}"
+                     th:disabled="${editar == false}" required>
+            </div>
+            <div class="col-md-4 mb-4">
               <label for="cidade" class="form-label">Cidade:</label>
               <input type="text" id="cidade" class="form-control" th:field="*{endereco.cidade}"
                      th:disabled="${editar == false}" required>
@@ -352,7 +357,7 @@
   IMask(
           document.getElementById('rg'),
           {
-            mask: '000.000.000-00',
+            mask: '00.000.000-0',
             lazy: false
           }
   )
