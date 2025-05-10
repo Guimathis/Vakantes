@@ -14,8 +14,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 @Service
 public class CandidatoService {
@@ -24,6 +22,9 @@ public class CandidatoService {
 
     @Autowired
     private VagaRepository vagaRepository;
+
+    @Autowired
+    private ValidationService validationService;
 
     public void cadastrar(Candidato candidato) throws DataBindingViolationException {
         validarCandidato(candidato);
@@ -45,7 +46,7 @@ public class CandidatoService {
             throw new DataBindingViolationException("O CPF é obrigatório.");
         }
 
-        if (!validarCPF(candidato.getCpf())) {
+        if (!validationService.isCPFValido(candidato.getCpf())) {
             throw new DataBindingViolationException("CPF inválido.");
         }
 
@@ -59,7 +60,7 @@ public class CandidatoService {
             throw new DataBindingViolationException("O e-mail de contato é obrigatório.");
         }
 
-        if (!validarEmail(candidato.getContato().getEmail())) {
+        if (!validationService.isEmailValido(candidato.getContato().getEmail())) {
             throw new DataBindingViolationException("O e-mail de contato informado não é válido.");
         }
 
@@ -108,58 +109,6 @@ public class CandidatoService {
         }
     }
 
-    private boolean validarEmail(String email) {
-        String regex = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$";
-        Pattern pattern = Pattern.compile(regex);
-        Matcher matcher = pattern.matcher(email);
-        return matcher.matches();
-    }
-
-    private boolean validarCPF(String cpf) {
-        // Remove caracteres não numéricos
-        cpf = cpf.replaceAll("[^0-9]", "");
-
-        // Verifica se tem 11 dígitos
-        if (cpf.length() != 11) {
-            return false;
-        }
-
-        // Verifica se todos os dígitos são iguais
-        boolean todosDigitosIguais = true;
-        for (int i = 1; i < cpf.length(); i++) {
-            if (cpf.charAt(i) != cpf.charAt(0)) {
-                todosDigitosIguais = false;
-                break;
-            }
-        }
-        if (todosDigitosIguais) {
-            return false;
-        }
-
-        // Calcula o primeiro dígito verificador
-        int soma = 0;
-        for (int i = 0; i < 9; i++) {
-            soma += (cpf.charAt(i) - '0') * (10 - i);
-        }
-        int resto = soma % 11;
-        int dv1 = (resto < 2) ? 0 : 11 - resto;
-
-        // Verifica o primeiro dígito verificador
-        if (dv1 != (cpf.charAt(9) - '0')) {
-            return false;
-        }
-
-        // Calcula o segundo dígito verificador
-        soma = 0;
-        for (int i = 0; i < 10; i++) {
-            soma += (cpf.charAt(i) - '0') * (11 - i);
-        }
-        resto = soma % 11;
-        int dv2 = (resto < 2) ? 0 : 11 - resto;
-
-        // Verifica o segundo dígito verificador
-        return dv2 == (cpf.charAt(10) - '0');
-    }
 
     public Object buscarClientePorId(Long id) {
         return candidatoRepository.findByIdAndStatus(id, Status.ATIVO)
