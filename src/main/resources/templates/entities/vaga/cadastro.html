@@ -69,11 +69,104 @@
                                 ponto.</i></small>
                         </div>
                     </div>
+
+                    <div class="row">
+                        <div class="col-md-3 mb-3">
+                            <label for="nivelExperiencia" class="form-label"><b>Nível de Experiência:</b></label>
+                            <select id="nivelExperiencia" class="form-select" th:field="*{nivelExperiencia}" th:disabled="${editar == false}">
+                                <option value="">Selecione</option>
+                                <option value="Júnior">Júnior</option>
+                                <option value="Pleno">Pleno</option>
+                                <option value="Sênior">Sênior</option>
+                            </select>
+                            <small class="form-text text-muted"><i>* Nível de experiência desejado.</i></small>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <label for="tipoContrato" class="form-label"><b>Tipo de Contrato:</b></label>
+                            <select id="tipoContrato" class="form-select" th:field="*{tipoContrato}" th:disabled="${editar == false}">
+                                <option value="">Selecione</option>
+                                <option value="CLT">CLT</option>
+                                <option value="PJ">PJ</option>
+                                <option value="Estágio">Estágio</option>
+                                <option value="Temporário">Temporário</option>
+                            </select>
+                            <small class="form-text text-muted"><i>* Tipo de contratação.</i></small>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <label for="modalidadeTrabalho" class="form-label"><b>Modalidade de Trabalho:</b></label>
+                            <select id="modalidadeTrabalho" class="form-select" th:field="*{modalidadeTrabalho}" th:disabled="${editar == false}">
+                                <option value="">Selecione</option>
+                                <option value="Presencial">Presencial</option>
+                                <option value="Remoto">Remoto</option>
+                                <option value="Híbrido">Híbrido</option>
+                            </select>
+                            <small class="form-text text-muted"><i>* Modalidade de trabalho.</i></small>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <label for="localizacao" class="form-label"><b>Localização:</b></label>
+                            <input type="text" id="localizacao" class="form-control" th:field="*{localizacao}" 
+                                   th:disabled="${editar == false}" placeholder="Cidade/Estado">
+                            <small class="form-text text-muted"><i>* Localização da vaga.</i></small>
+                        </div>
+                    </div>
                     <div class="mb-3">
                         <label for="descricao" class="form-label"><b>Descrição da vaga:</b></label>
-                        <textarea id="descricao" class="form-control" th:field="*{descricao} " rows="3" maxlength="254" th:disabled="${editar == false}"
+                        <textarea id="descricao" class="form-control" th:field="*{descricao}" rows="3" maxlength="254" th:disabled="${editar == false}"
                                   required></textarea>
                         <small class="form-text text-muted"><i>* Breve resumo da vaga oferecida.</i></small>
+                    </div>
+
+                    <div class="mb-3" th:if="${editar != false}">
+                        <label class="form-label"><b>Requisitos da vaga:</b></label>
+                        <div id="requisitos-container">
+                            <div class="requisito-item mb-2" th:each="requisito, status : ${vaga.requisitos}">
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <input type="text" class="form-control" th:field="*{requisitos[__${status.index}__].nome}" 
+                                               placeholder="Nome do requisito" required>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <select class="form-select" th:field="*{requisitos[__${status.index}__].nivelMinimo}">
+                                            <option value="1">Nível 1</option>
+                                            <option value="2">Nível 2</option>
+                                            <option value="3">Nível 3</option>
+                                            <option value="4">Nível 4</option>
+                                            <option value="5">Nível 5</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" th:field="*{requisitos[__${status.index}__].obrigatorio}">
+                                            <label class="form-check-label">Obrigatório</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <button type="button" class="btn btn-danger btn-sm remover-requisito">Remover</button>
+                                    </div>
+                                </div>
+                                <input type="text" class="form-control mt-1" th:field="*{requisitos[__${status.index}__].descricao}" 
+                                       placeholder="Descrição do requisito">
+                            </div>
+                        </div>
+                        <button type="button" id="adicionar-requisito" class="btn btn-secondary mt-2">Adicionar Requisito</button>
+                        <small class="form-text text-muted d-block"><i>* Adicione os requisitos necessários para a vaga.</i></small>
+                    </div>
+
+                    <div class="mb-3" th:if="${editar == false && !#lists.isEmpty(vaga.requisitos)}">
+                        <label class="form-label"><b>Requisitos da vaga:</b></label>
+                        <ul class="list-group">
+                            <li class="list-group-item" th:each="requisito : ${vaga.requisitos}">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <span th:text="${requisito.nome}"></span>
+                                        <span class="badge bg-primary" th:text="'Nível ' + ${requisito.nivelMinimo}"></span>
+                                        <span class="badge bg-danger" th:if="${requisito.obrigatorio}">Obrigatório</span>
+                                        <span class="badge bg-secondary" th:unless="${requisito.obrigatorio}">Opcional</span>
+                                    </div>
+                                </div>
+                                <p class="mb-0 text-muted" th:if="${requisito.descricao}" th:text="${requisito.descricao}"></p>
+                            </li>
+                        </ul>
                     </div>
                 </form>
                 <div class="md-3 d-flex" style="gap: 10px;">
@@ -101,6 +194,78 @@
         document.getElementById('formSalvar').submit();
     });
 
+    // Gerenciamento de requisitos
+    document.addEventListener('DOMContentLoaded', function() {
+        const container = document.getElementById('requisitos-container');
+        const addButton = document.getElementById('adicionar-requisito');
+
+        if (addButton) {
+            addButton.addEventListener('click', function() {
+                const index = container.querySelectorAll('.requisito-item').length;
+                const template = `
+                    <div class="requisito-item mb-2">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <input type="text" class="form-control" name="requisitos[${index}].nome" 
+                                       placeholder="Nome do requisito" required>
+                            </div>
+                            <div class="col-md-2">
+                                <select class="form-select" name="requisitos[${index}].nivelMinimo">
+                                    <option value="1">Nível 1</option>
+                                    <option value="2">Nível 2</option>
+                                    <option value="3">Nível 3</option>
+                                    <option value="4">Nível 4</option>
+                                    <option value="5">Nível 5</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="requisitos[${index}].obrigatorio" value="true">
+                                    <input type="hidden" name="requisitos[${index}].obrigatorio" value="false">
+                                    <label class="form-check-label">Obrigatório</label>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <button type="button" class="btn btn-danger btn-sm remover-requisito">Remover</button>
+                            </div>
+                        </div>
+                        <input type="text" class="form-control mt-1" name="requisitos[${index}].descricao" 
+                               placeholder="Descrição do requisito">
+                    </div>
+                `;
+
+                const tempDiv = document.createElement('div');
+                tempDiv.innerHTML = template;
+                container.appendChild(tempDiv.firstElementChild);
+
+                // Adicionar evento para o novo botão de remover
+                const newRemoveButton = container.querySelector('.requisito-item:last-child .remover-requisito');
+                newRemoveButton.addEventListener('click', removeRequisito);
+            });
+
+            // Adicionar eventos para botões de remover existentes
+            const removeButtons = document.querySelectorAll('.remover-requisito');
+            removeButtons.forEach(button => {
+                button.addEventListener('click', removeRequisito);
+            });
+
+            function removeRequisito() {
+                this.closest('.requisito-item').remove();
+                // Reindexar os campos para manter a sequência correta
+                const items = container.querySelectorAll('.requisito-item');
+                items.forEach((item, index) => {
+                    const inputs = item.querySelectorAll('input, select');
+                    inputs.forEach(input => {
+                        const name = input.getAttribute('name');
+                        if (name) {
+                            const newName = name.replace(/requisitos\[\d+\]/, `requisitos[${index}]`);
+                            input.setAttribute('name', newName);
+                        }
+                    });
+                });
+            }
+        }
+    });
 </script>
 </body>
 </html>

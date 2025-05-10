@@ -9,6 +9,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -37,6 +38,15 @@ public class Candidato {
 	@ManyToMany(mappedBy = "candidatos")
 	private List<Vaga> vagas = new ArrayList<>();
 
+	@OneToMany(mappedBy = "candidato", cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<Habilidade> habilidades = new ArrayList<>();
+
+	@OneToMany(mappedBy = "candidato", cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<Experiencia> experiencias = new ArrayList<>();
+
+	@OneToMany(mappedBy = "candidato", cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<Formacao> formacoes = new ArrayList<>();
+
 	@Column(nullable = false)
 	@NotNull(message = "A data de nascimento é obrigatória")
 	private String dataNascimento;
@@ -48,6 +58,12 @@ public class Candidato {
 	@OneToOne(cascade = CascadeType.ALL)
 	@JoinColumn(name = "endereco_id", referencedColumnName = "id")
 	private Endereco endereco;
+
+	private BigDecimal pretensaoSalarial;
+
+	private String disponibilidade; // Imediata, 30 dias, etc.
+
+	private String modalidadePreferida; // Presencial, Remoto, Híbrido
 
 	@Enumerated(EnumType.STRING)
 	@Column(nullable = false)
@@ -178,5 +194,53 @@ public class Candidato {
 
 	public void setStatus(Status status) {
 		this.status = status;
+	}
+
+	public List<Habilidade> getHabilidades() {
+		return habilidades;
+	}
+
+	public void setHabilidades(List<Habilidade> habilidades) {
+		this.habilidades = habilidades;
+	}
+
+	public List<Experiencia> getExperiencias() {
+		return experiencias;
+	}
+
+	public void setExperiencias(List<Experiencia> experiencias) {
+		this.experiencias = experiencias;
+	}
+
+	public List<Formacao> getFormacoes() {
+		return formacoes;
+	}
+
+	public void setFormacoes(List<Formacao> formacoes) {
+		this.formacoes = formacoes;
+	}
+
+	public BigDecimal getPretensaoSalarial() {
+		return pretensaoSalarial;
+	}
+
+	public void setPretensaoSalarial(BigDecimal pretensaoSalarial) {
+		this.pretensaoSalarial = pretensaoSalarial;
+	}
+
+	public String getDisponibilidade() {
+		return disponibilidade;
+	}
+
+	public void setDisponibilidade(String disponibilidade) {
+		this.disponibilidade = disponibilidade;
+	}
+
+	public String getModalidadePreferida() {
+		return modalidadePreferida;
+	}
+
+	public void setModalidadePreferida(String modalidadePreferida) {
+		this.modalidadePreferida = modalidadePreferida;
 	}
 }

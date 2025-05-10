@@ -21,18 +21,18 @@ public class Vaga implements Serializable {
 
 	@Serial
 	private static final long serialVersionUID = 1L;
-	
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "vaga_seq")
 	@SequenceGenerator(name = "vaga_seq", sequenceName = "vaga.vaga_seq", allocationSize = 1)
 	private long codigo;
-	
+
 	@NotEmpty
 	private String nome;
-	
+
 	@NotEmpty
 	private String descricao;
-	
+
 	@NotEmpty
 	private String data;
 
@@ -46,6 +46,17 @@ public class Vaga implements Serializable {
 			inverseJoinColumns = @JoinColumn(name = "candidato_id")
 	)
 	private List<Candidato> candidatos = new ArrayList<>();
+
+	@OneToMany(mappedBy = "vaga", cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<Requisito> requisitos = new ArrayList<>();
+
+	private String nivelExperiencia; // Júnior, Pleno, Sênior
+
+	private String tipoContrato; // CLT, PJ, Estágio
+
+	private String modalidadeTrabalho; // Presencial, Remoto, Híbrido
+
+	private String localizacao; // Cidade/Estado
 
 	@ManyToOne
 	private Cliente cliente;
@@ -73,8 +84,8 @@ public class Vaga implements Serializable {
 	}
 
 	public Vaga() {
-
 		this.cliente = new Cliente();
+		this.status = Status.ATIVO;
 	}
 
 	public Vaga(long codigo, String nome, String descricao, String data, BigDecimal salario, List<Candidato> candidatos,
@@ -94,6 +105,10 @@ public class Vaga implements Serializable {
 		this.descricao = vagaDTO.getDescricao();
 		this.data = vagaDTO.getData();
 		this.salario = vagaDTO.getSalario();
+		this.nivelExperiencia = vagaDTO.getNivelExperiencia();
+		this.tipoContrato = vagaDTO.getTipoContrato();
+		this.modalidadeTrabalho = vagaDTO.getModalidadeTrabalho();
+		this.localizacao = vagaDTO.getLocalizacao();
 		this.cliente = cliente;
 		this.status = Status.ATIVO;
 	}
@@ -168,5 +183,45 @@ public class Vaga implements Serializable {
 
 	public void setCliente(Cliente cliente) {
 		this.cliente = cliente;
+	}
+
+	public List<Requisito> getRequisitos() {
+		return requisitos;
+	}
+
+	public void setRequisitos(List<Requisito> requisitos) {
+		this.requisitos = requisitos;
+	}
+
+	public String getNivelExperiencia() {
+		return nivelExperiencia;
+	}
+
+	public void setNivelExperiencia(String nivelExperiencia) {
+		this.nivelExperiencia = nivelExperiencia;
+	}
+
+	public String getTipoContrato() {
+		return tipoContrato;
+	}
+
+	public void setTipoContrato(String tipoContrato) {
+		this.tipoContrato = tipoContrato;
+	}
+
+	public String getModalidadeTrabalho() {
+		return modalidadeTrabalho;
+	}
+
+	public void setModalidadeTrabalho(String modalidadeTrabalho) {
+		this.modalidadeTrabalho = modalidadeTrabalho;
+	}
+
+	public String getLocalizacao() {
+		return localizacao;
+	}
+
+	public void setLocalizacao(String localizacao) {
+		this.localizacao = localizacao;
 	}
 }

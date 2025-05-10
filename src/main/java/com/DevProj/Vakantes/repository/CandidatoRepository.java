@@ -21,4 +21,6 @@ public interface CandidatoRepository extends CrudRepository<Candidato, String> {
 	List<Candidato> findAllByCpfIn(Collection<String> cpfs);
 
 	List<Candidato> findByNomeCandidato(String nomeCandidato);
+
+	Iterable<Candidato> findAllByStatus(Status status);
 }

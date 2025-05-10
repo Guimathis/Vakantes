@@ -2,6 +2,7 @@ package com.DevProj.Vakantes.service;
 
 import com.DevProj.Vakantes.model.candidato.Candidato;
 import com.DevProj.Vakantes.model.util.Status;
+import com.DevProj.Vakantes.model.vaga.Requisito;
 import com.DevProj.Vakantes.model.vaga.Vaga;
 import com.DevProj.Vakantes.model.vaga.VagaDTO;
 import com.DevProj.Vakantes.repository.CandidatoRepository;
@@ -70,6 +71,26 @@ public class VagaService {
 
     public Long cadastrarVaga(VagaDTO vagaDTO) {
         Vaga vaga = new Vaga(vagaDTO, clienteRepository.findById(vagaDTO.getIdCliente()).get());
+
+        // Limpar a lista de requisitos existente
+        vaga.getRequisitos().clear();
+
+        // Copiar os requisitos do DTO para a entidade
+        if (vagaDTO.getRequisitos() != null && !vagaDTO.getRequisitos().isEmpty()) {
+            for (Requisito requisito : vagaDTO.getRequisitos()) {
+                // Criar um novo requisito e copiar os dados
+                Requisito novoRequisito = new Requisito();
+                novoRequisito.setNome(requisito.getNome());
+                novoRequisito.setDescricao(requisito.getDescricao());
+                novoRequisito.setNivelMinimo(requisito.getNivelMinimo());
+                novoRequisito.setObrigatorio(requisito.getObrigatorio());
+                novoRequisito.setVaga(vaga);
+
+                // Adicionar o novo requisito à lista da vaga
+                vaga.getRequisitos().add(novoRequisito);
+            }
+        }
+
         vagaRepository.save(vaga);
         return vaga.getCodigo();
     }

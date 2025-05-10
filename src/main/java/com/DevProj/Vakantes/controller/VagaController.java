@@ -11,6 +11,7 @@ import com.DevProj.Vakantes.repository.VagaRepository;
 import com.DevProj.Vakantes.service.CandidatoService;
 import com.DevProj.Vakantes.service.ClienteService;
 import com.DevProj.Vakantes.service.CookieService;
+import com.DevProj.Vakantes.service.MatchingService;
 import com.DevProj.Vakantes.service.VagaService;
 import com.DevProj.Vakantes.service.exceptions.ObjectNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -45,6 +46,9 @@ public class VagaController {
 
     @Autowired
     private CandidatoRepository candidatoRepository;
+
+    @Autowired
+    private MatchingService matchingService;
 
 	// CADASTRA VAGA
 	@GetMapping(value = "/cadastro")
@@ -132,6 +136,24 @@ public class VagaController {
 		model.addAttribute("candidatosSistema", candidatoRepository.findAll());
 		return "entities/vaga/detalhes";
 	}
+
+	@GetMapping("/candidatos-recomendados/{codigo}")
+    public String candidatosRecomendados(@PathVariable("codigo") Long codigo, Model model) {
+        try {
+            Vaga vaga = vr.findByCodigoAndStatus(codigo, Status.ATIVO)
+                .orElseThrow(() -> new ObjectNotFoundException("Vaga não encontrada"));
+
+            List<MatchingService.CandidatoMatch> candidatosRecomendados = matchingService.encontrarCandidatosParaVaga(codigo);
+
+            model.addAttribute("vaga", new VagaDTO(vaga));
+            model.addAttribute("candidatosRecomendados", candidatosRecomendados);
+
+            return "entities/vaga/candidatos-recomendados";
+        } catch (Exception e) {
+            model.addAttribute("mensagem_erro", e.getMessage());
+            return "redirect:/vaga/buscar";
+        }
+    }
 
 
 

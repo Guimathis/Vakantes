@@ -29,10 +29,10 @@
             </div>
             <div class="card-body">
             <div th:insert="~{fragments/mensagemValidacao :: validation}"></div>
-                <div th:if="${vagas.empty}">
+                <div th:if="${#lists.isEmpty(vagas)}">
                     <p>Nenhuma vaga cadastrada.</p>
                 </div>
-                <div th:unless="${vagas.empty}">
+                <div th:unless="${#lists.isEmpty(vagas)}">
                     <div class="table-responsive">
                         <table class="table table-striped">
                             <thead>
@@ -41,7 +41,7 @@
                                 <th>Descrição:</th>
                                 <th>Salário:</th>
                                 <th>Expira:</th>
-                                <th style="width: 290px;">Ações:</th>
+                                <th style="width: 450px;">Ações:</th>
                             </tr>
                             </thead>
                             <tbody>
@@ -56,6 +56,8 @@
                                         Editar</a>
                                     <a th:href="@{/vaga/detalhes/{codigo}(codigo=${vaga.codigo})}"
                                        class="btn btn-success bi bi-plus-lg"> Candidato</a>
+                                    <a th:href="@{/vaga/candidatos-recomendados/{codigo}(codigo=${vaga.codigo})}"
+                                       class="btn btn-warning bi bi-people"> Candidatos Recomendados</a>
                                 </td>
                             </tr>
                             </tbody>
