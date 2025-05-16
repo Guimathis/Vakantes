@@ -9,67 +9,73 @@
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/css/style.css">
 </head>
-<body class="d-flex flex-column min-vh-100">
+<body class="d-flex flex-column min-vh-100 padding-navbar">
 
 <header>
     <div th:insert="~{fragments/navbar :: navbar}"></div>
 </header>
 
-<div class="container d-flex justify-content-center align-items-center flex-grow-1"
-     style="padding-top: 15px; padding-bottom: 15px;">
-    <div class="col-md-12">
-        <div class="card shadow-lg">
-            <div class="card-header text-center">
-                <h3>Lista de Candidatos</h3>
+<div class="container-fluid flex-grow-1" style="padding-top: 15px; padding-bottom: 15px;">
+    <div class="row">
+        <!-- Left panel with buttons -->
+        <div class="col-md-3 mb-3">
+            <div class="card shadow-lg">
+                <div class="card-header text-center">
+                    <h5>Ações</h5>
+                </div>
+                <div class="card-body d-flex flex-column gap-2">
+                    <a href="/candidato/cadastro" class="btn btn-primary bi bi-plus-lg"> Novo Candidato</a>
+                    <a href="/home/index" class="btn btn-secondary">Voltar</a>
+                </div>
             </div>
+        </div>
+
+        <!-- Right panel with entity list -->
+        <div class="col-md-9">
+            <div class="card shadow-lg">
+                <div class="card-header text-center">
+                    <h3>Lista de Candidatos</h3>
+                </div>
                 <div class="md-9" th:insert="~{fragments/mensagemValidacao :: validation}"></div>
-            <div class="card-body">
-                <div th:if="${candidatos.empty}">
-                    <p>Nenhum candidato cadastrado.</p>
-                </div>
-                <div th:unless="${candidatos.empty}">
-                    <div class="table-responsive">
-                        <table class="table table-striped">
-                            <thead>
-                            <tr>
-                                <th>Nome</th>
-                                <th>CPF</th>
-                                <th>RG</th>
-                                <th>Data de Nascimento</th>
-                                <th>Rua</th>
-                                <th>Número</th>
-                                <th>Cidade</th>
-                                <th>Estado</th>
-                                <th>CEP</th>
-                                <th>Telefone</th>
-                                <th>Ações</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            <tr th:each="candidato : ${candidatos}">
-                                <td th:text="${candidato.nomeCandidato}"></td>
-                                <td th:text="${candidato.cpf}"></td>
-                                <td th:text="${candidato.rg}"></td>
-                                <td th:text="${candidato.dataNascimento}"></td>
-                                <td th:text="${candidato.endereco.rua}"></td>
-                                <td th:text="${candidato.endereco.numero}"></td>
-                                <td th:text="${candidato.endereco.cidade}"></td>
-                                <td th:text="${candidato.endereco.estado}"></td>
-                                <td th:text="${candidato.endereco.cep}"></td>
-                                <td th:text="${candidato.contato.telefone}"></td>
-                                <td>
-                                    <a th:href="@{/candidato/buscar/{id}(id=${candidato.id})}"
-                                       class="btn btn-primary bi bi-pencil"> Editar</a>
-                                </td>
-                            </tr>
-                            </tbody>
-                        </table>
+                <div class="card-body">
+                    <div th:if="${#lists.isEmpty(candidatos)}">
+                        <p>Nenhum candidato cadastrado.</p>
                     </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-12">
-                        <a href="/candidato/cadastro" class="btn btn-primary bi bi-plus-lg"> Novo Candidato</a>
-                        <a href="/home/index" class="btn btn-secondary">Voltar</a>
+                    <div th:unless="${#lists.isEmpty(candidatos)}">
+                        <div class="row row-cols-1 row-cols-md-3 g-4">
+                            <div class="col" th:each="candidato : ${candidatos}">
+                                <div class="card h-100 shadow-sm">
+                                    <div class="card-header bg-primary text-white">
+                                        <h5 class="card-title mb-0" th:text="${candidato.nomeCandidato}"></h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="mb-2">
+                                            <strong>CPF:</strong> <span th:text="${candidato.cpf}"></span>
+                                        </div>
+                                        <div class="mb-2">
+                                            <strong>RG:</strong> <span th:text="${candidato.rg}"></span>
+                                        </div>
+                                        <div class="mb-2">
+                                            <strong>Data de Nascimento:</strong> <span th:text="${candidato.dataNascimento}"></span>
+                                        </div>
+                                        <div class="mb-2">
+                                            <strong>Endereço:</strong> 
+                                            <span th:text="${candidato.endereco.rua + ', ' + candidato.endereco.numero + ' - ' + candidato.endereco.cidade + '/' + candidato.endereco.estado}"></span>
+                                        </div>
+                                        <div class="mb-2">
+                                            <strong>CEP:</strong> <span th:text="${candidato.endereco.cep}"></span>
+                                        </div>
+                                        <div class="mb-2">
+                                            <strong>Telefone:</strong> <span th:text="${candidato.contato.telefone}"></span>
+                                        </div>
+                                    </div>
+                                    <div class="card-footer bg-white border-top-0 d-flex justify-content-center">
+                                        <a th:href="@{/candidato/buscar/{id}(id=${candidato.id})}"
+                                           class="btn btn-primary bi bi-pencil"> Editar</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

@@ -9,68 +9,72 @@
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/css/style.css">
 </head>
-<body class="d-flex flex-column min-vh-100">
+<body class="d-flex flex-column min-vh-100 padding-navbar">
 
 <header>
     <div th:insert="~{fragments/navbar :: navbar}"></div>
 </header>
 
-<div class="container d-flex justify-content-center align-items-center flex-grow-1"
-     style="padding-top: 15px; padding-bottom: 15px;">
-    <div class="col-md-12">
-        <div class="card shadow-lg">
-            <div class="card-header text-center">
-                <h3>Lista de Clientes</h3>
+<div class="container-fluid flex-grow-1" style="padding-top: 15px; padding-bottom: 15px;">
+    <div class="row">
+        <!-- Left panel with buttons -->
+        <div class="col-md-3 mb-3">
+            <div class="card shadow-lg">
+                <div class="card-header text-center">
+                    <h5>Ações</h5>
+                </div>
+                <div class="card-body d-flex flex-column gap-2">
+                    <a href="/cliente/cadastro" class="btn btn-primary bi bi-plus-lg">Novo Cliente</a>
+                    <a href="/home/index" class="btn btn-secondary">Voltar</a>
+                </div>
             </div>
-            <div class="md-9" th:insert="~{fragments/mensagemValidacao :: validation}"></div>
-            <div class="card-body">
+        </div>
 
-                <div th:if="${clientes.empty}">
-                    <p>Nenhum cliente cadastrado.</p>
+        <!-- Right panel with entity list -->
+        <div class="col-md-9">
+            <div class="card shadow-lg">
+                <div class="card-header text-center">
+                    <h3>Lista de Clientes</h3>
                 </div>
-                <div th:unless="${clientes.empty}">
-                    <div class="table-responsive">
-                        <table class="table table-striped">
-                            <thead>
-                            <tr>
-                                <th>Nome</th>
-                                <th>Tipo Pessoa</th>
-                                <th>Documento</th>
-                                <th>Rua</th>
-                                <th>Número</th>
-                                <th>Cidade</th>
-                                <th>Estado</th>
-                                <th>CEP</th>
-                                <th>Telefone</th>
-                                <th>Ações</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            <tr th:each="cliente : ${clientes}">
-                                <td th:text="${cliente.nome}"></td>
-                                <td th:text="${cliente.tipoPessoa}"></td>
-                                <td th:text="${cliente.documento}"></td>
-                                <td th:text="${cliente.endereco.rua}"></td>
-                                <td th:text="${cliente.endereco.numero}"></td>
-                                <td th:text="${cliente.endereco.cidade}"></td>
-                                <td th:text="${cliente.endereco.estado}"></td>
-                                <td th:text="${cliente.endereco.cep}"></td>
-                                <td th:text="${cliente.contato.telefone}"></td>
-                                <td>
-                                    <a th:href="@{/cliente/buscar/{id}(id=${cliente.id})}"
-                                       class="btn btn-primary bi bi-pencil"> Editar</a>
-                                    <a th:href="@{/vaga/cadastro/{id}(id=${cliente.id})}"
-                                       class="btn btn-success bi bi-plus-lg bi bi-plus-lg"> Vaga</a>
-                                </td>
-                            </tr>
-                            </tbody>
-                        </table>
+                <div class="md-9" th:insert="~{fragments/mensagemValidacao :: validation}"></div>
+                <div class="card-body">
+                    <div th:if="${#lists.isEmpty(clientes)}">
+                        <p>Nenhum cliente cadastrado.</p>
                     </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-12">
-                        <a href="/cliente/cadastro" class="btn btn-primary bi bi-plus-lg">Novo Cliente</a>
-                        <a href="/home/index" class="btn btn-secondary">Voltar</a>
+                    <div th:unless="${#lists.isEmpty(clientes)}">
+                        <div class="row row-cols-1 row-cols-md-3 g-4">
+                            <div class="col" th:each="cliente : ${clientes}">
+                                <div class="card h-100 shadow-sm">
+                                    <div class="card-header bg-primary text-white">
+                                        <h5 class="card-title mb-0" th:text="${cliente.nome}"></h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="mb-2">
+                                            <strong>Tipo:</strong> <span th:text="${cliente.tipoPessoa}"></span>
+                                        </div>
+                                        <div class="mb-2">
+                                            <strong>Documento:</strong> <span th:text="${cliente.documento}"></span>
+                                        </div>
+                                        <div class="mb-2">
+                                            <strong>Endereço:</strong>
+                                            <span th:text="${cliente.endereco.rua + ', ' + cliente.endereco.numero + ' - ' + cliente.endereco.cidade + '/' + cliente.endereco.estado}"></span>
+                                        </div>
+                                        <div class="mb-2">
+                                            <strong>CEP:</strong> <span th:text="${cliente.endereco.cep}"></span>
+                                        </div>
+                                        <div class="mb-2">
+                                            <strong>Telefone:</strong> <span th:text="${cliente.contato.telefone}"></span>
+                                        </div>
+                                    </div>
+                                    <div class="card-footer bg-white border-top-0 d-flex justify-content-center">
+                                        <a th:href="@{/cliente/buscar/{id}(id=${cliente.id})}"
+                                           class="btn btn-primary bi bi-pencil me-2"> Editar</a>
+                                        <a th:href="@{/vaga/cadastro/{id}(id=${cliente.id})}"
+                                           class="btn btn-success bi bi-plus-lg"> Vaga</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
