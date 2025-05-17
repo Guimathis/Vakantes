@@ -63,7 +63,7 @@
             </div>
             <div class="col-md-4 mb-4">
               <label for="dataNascimento" class="form-label">Data de nascimento:</label>
-              <input type="date" id="dataNascimento" name="dataNascimento"
+              <input type="date" id="dataNascimento"
                      class="form-control"
                      th:field="*{dataNascimento}"
                      th:disabled="${editar == false}" required />
@@ -107,6 +107,7 @@
               <div class="habilidade-item mb-2" th:each="habilidade, status : ${candidato.habilidades}">
                 <div class="row">
                   <div class="col-md-6">
+                    <input type="hidden" th:field="*{habilidades[__${status.index}__].id}">
                     <input type="text" class="form-control" th:field="*{habilidades[__${status.index}__].nome}" 
                            placeholder="Nome da habilidade" required>
                   </div>
@@ -145,14 +146,15 @@
           <label class="form-label"><b>Experiência Profissional:</b></label>
           <div class="mb-3" th:if="${editar != false}">
             <div id="experiencias-container">
-              <div class="experiencia-item mb-3" th:each="experiencia, status : ${candidato.experiencias}">
+              <div class="experiencia-item mb-3" th:each="experiencias, status : ${candidato.experiencias}">
                 <div class="row mb-2">
                   <div class="col-md-5">
-                    <input type="text" class="form-control" th:field="*{experiencias[__${status.index}__].empresa}" 
+                    <input type="hidden" th:field="*{experiencias[__${status.index}__].id}">
+                    <input type="text" class="form-control" th:field="*{experiencias[__${status.index}__].empresa}"
                            placeholder="Nome da empresa" required>
                   </div>
                   <div class="col-md-4">
-                    <input type="text" class="form-control" th:field="*{experiencias[__${status.index}__].cargo}" 
+                    <input type="text" class="form-control" th:field="*{experiencias[__${status.index}__].cargo}"
                            placeholder="Cargo" required>
                   </div>
                   <div class="col-md-3">
@@ -171,8 +173,8 @@
                   </div>
                   <div class="col-md-4">
                     <div class="form-check mt-4">
-                      <input class="form-check-input atual-checkbox" type="checkbox" 
-                             th:field="*{experiencias[__${status.index}__].atual}" 
+                      <input class="form-check-input atual-checkbox" type="checkbox"
+                             th:field="*{experiencias[__${status.index}__].atual}"
                              th:attr="data-index=${status.index}">
                       <label class="form-check-label">Emprego Atual</label>
                     </div>
@@ -180,7 +182,7 @@
                 </div>
                 <div class="row">
                   <div class="col-md-12">
-                    <textarea class="form-control" th:field="*{experiencias[__${status.index}__].descricao}" 
+                    <textarea class="form-control" th:field="*{experiencias[__${status.index}__].descricao}"
                               placeholder="Descrição das atividades" rows="2"></textarea>
                   </div>
                 </div>
@@ -211,6 +213,7 @@
               <div class="formacao-item mb-3" th:each="formacao, status : ${candidato.formacoes}">
                 <div class="row mb-2">
                   <div class="col-md-5">
+                    <input type="hidden" th:field="*{formacoes[__${status.index}__].id}">
                     <input type="text" class="form-control" th:field="*{formacoes[__${status.index}__].instituicao}" 
                            placeholder="Nome da instituição" required>
                   </div>
@@ -383,6 +386,7 @@
               <div class="col-md-6">
                 <input type="text" class="form-control" name="habilidades[${index}].nome" 
                        placeholder="Nome da habilidade" required>
+                <input type="hidden" name="habilidades[${index}].candidato.id" value="${document.getElementById('formSalvar').elements['id'].value}">
               </div>
               <div class="col-md-3">
                 <select class="form-select" name="habilidades[${index}].nivel">
@@ -424,8 +428,11 @@
           inputs.forEach(input => {
             const name = input.getAttribute('name');
             if (name) {
-              const newName = name.replace(/habilidades\[\d+\]/, `habilidades[${index}]`);
-              input.setAttribute('name', newName);
+              // Não reindexar campos de ID para preservar a referência
+              if (!name.includes('.id')) {
+                const newName = name.replace(/habilidades\[\d+\]/, `habilidades[${index}]`);
+                input.setAttribute('name', newName);
+              }
             }
           });
         });
@@ -445,6 +452,7 @@
               <div class="col-md-5">
                 <input type="text" class="form-control" name="experiencias[${index}].empresa" 
                        placeholder="Nome da empresa" required>
+                <input type="hidden" name="experiencias[${index}].candidato.id" value="${document.getElementById('formSalvar').elements['id'].value}">
               </div>
               <div class="col-md-4">
                 <input type="text" class="form-control" name="experiencias[${index}].cargo" 
@@ -516,8 +524,11 @@
           inputs.forEach(input => {
             const name = input.getAttribute('name');
             if (name) {
-              const newName = name.replace(/experiencias\[\d+\]/, `experiencias[${index}]`);
-              input.setAttribute('name', newName);
+              // Não reindexar campos de ID para preservar a referência
+              if (!name.includes('.id')) {
+                const newName = name.replace(/experiencias\[\d+\]/, `experiencias[${index}]`);
+                input.setAttribute('name', newName);
+              }
             }
 
             const dataIndex = input.getAttribute('data-index');
@@ -548,6 +559,7 @@
               <div class="col-md-5">
                 <input type="text" class="form-control" name="formacoes[${index}].instituicao" 
                        placeholder="Nome da instituição" required>
+                <input type="hidden" name="formacoes[${index}].candidato.id" value="${document.getElementById('formSalvar').elements['id'].value}">
               </div>
               <div class="col-md-4">
                 <input type="text" class="form-control" name="formacoes[${index}].curso" 
@@ -626,8 +638,11 @@
           inputs.forEach(input => {
             const name = input.getAttribute('name');
             if (name) {
-              const newName = name.replace(/formacoes\[\d+\]/, `formacoes[${index}]`);
-              input.setAttribute('name', newName);
+              // Não reindexar campos de ID para preservar a referência
+              if (!name.includes('.id')) {
+                const newName = name.replace(/formacoes\[\d+\]/, `formacoes[${index}]`);
+                input.setAttribute('name', newName);
+              }
             }
 
             const dataIndex = input.getAttribute('data-index');

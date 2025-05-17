@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.stream.IntStream;
 
 @Service
 public class CandidatoService {
@@ -28,13 +29,28 @@ public class CandidatoService {
 
     public void cadastrar(Candidato candidato) throws DataBindingViolationException {
         validarCandidato(candidato);
+        updateHabForExp(candidato);
         candidatoRepository.save(candidato);
     }
 
     public void editar(Candidato candidato) throws DataBindingViolationException {
         validarCandidato(candidato);
+        updateHabForExp(candidato);
         candidatoRepository.save(candidato);
     }
+
+    private void updateHabForExp(Candidato candidato) {
+        if(candidato.getHabilidades() != null) {
+            IntStream.range(0, candidato.getHabilidades().size()).forEach(i -> candidato.getHabilidades().get(i).setCandidato(candidato));
+        }
+        if(candidato.getExperiencias() != null) {
+            IntStream.range(0, candidato.getExperiencias().size()).forEach(i -> candidato.getExperiencias().get(i).setCandidato(candidato));
+        }
+        if(candidato.getFormacoes() != null) {
+            IntStream.range(0, candidato.getFormacoes().size()).forEach(i -> candidato.getFormacoes().get(i).setCandidato(candidato));
+        }
+    }
+
     private void validarCandidato(Candidato candidato) throws DataBindingViolationException {
         // Validar nome do candidato
         if (candidato.getNomeCandidato() == null || candidato.getNomeCandidato().trim().isEmpty()) {

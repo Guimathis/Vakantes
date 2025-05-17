@@ -120,12 +120,12 @@
                         <label class="form-label"><b>Requisitos da vaga:</b></label>
                         <div id="requisitos-container">
                             <div class="requisito-item mb-2" th:each="requisito, status : ${vaga.requisitos}">
-                                <div class="row">
-                                    <div class="col-md-4">
+                                <div class="row align-items-center">
+                                    <div class="col-md-5">
                                         <input type="text" class="form-control" th:field="*{requisitos[__${status.index}__].nome}" 
                                                placeholder="Nome do requisito" required>
                                     </div>
-                                    <div class="col-md-2">
+                                    <div class="col-md-3">
                                         <select class="form-select" th:field="*{requisitos[__${status.index}__].nivelMinimo}">
                                             <option value="1">Nível 1</option>
                                             <option value="2">Nível 2</option>
@@ -134,18 +134,16 @@
                                             <option value="5">Nível 5</option>
                                         </select>
                                     </div>
-                                    <div class="col-md-3">
+                                    <div class="col-md-2">
                                         <div class="form-check">
                                             <input class="form-check-input" type="checkbox" th:field="*{requisitos[__${status.index}__].obrigatorio}">
                                             <label class="form-check-label">Obrigatório</label>
                                         </div>
                                     </div>
-                                    <div class="col-md-3">
+                                    <div class="col-md-2 text-end">
                                         <button type="button" class="btn btn-danger btn-sm remover-requisito">Remover</button>
                                     </div>
                                 </div>
-                                <input type="text" class="form-control mt-1" th:field="*{requisitos[__${status.index}__].descricao}" 
-                                       placeholder="Descrição do requisito">
                             </div>
                         </div>
                         <button type="button" id="adicionar-requisito" class="btn btn-secondary mt-2">Adicionar Requisito</button>
@@ -164,7 +162,6 @@
                                         <span class="badge bg-secondary" th:unless="${requisito.obrigatorio}">Opcional</span>
                                     </div>
                                 </div>
-                                <p class="mb-0 text-muted" th:if="${requisito.descricao}" th:text="${requisito.descricao}"></p>
                             </li>
                         </ul>
                     </div>
@@ -204,12 +201,12 @@
                 const index = container.querySelectorAll('.requisito-item').length;
                 const template = `
                     <div class="requisito-item mb-2">
-                        <div class="row">
-                            <div class="col-md-4">
+                        <div class="row align-items-center">
+                            <div class="col-md-5">
                                 <input type="text" class="form-control" name="requisitos[${index}].nome" 
                                        placeholder="Nome do requisito" required>
                             </div>
-                            <div class="col-md-2">
+                            <div class="col-md-3">
                                 <select class="form-select" name="requisitos[${index}].nivelMinimo">
                                     <option value="1">Nível 1</option>
                                     <option value="2">Nível 2</option>
@@ -218,19 +215,17 @@
                                     <option value="5">Nível 5</option>
                                 </select>
                             </div>
-                            <div class="col-md-3">
+                            <div class="col-md-2">
                                 <div class="form-check">
                                     <input class="form-check-input" type="checkbox" name="requisitos[${index}].obrigatorio" value="true">
                                     <input type="hidden" name="requisitos[${index}].obrigatorio" value="false">
                                     <label class="form-check-label">Obrigatório</label>
                                 </div>
                             </div>
-                            <div class="col-md-3">
+                            <div class="col-md-2 text-end">
                                 <button type="button" class="btn btn-danger btn-sm remover-requisito">Remover</button>
                             </div>
                         </div>
-                        <input type="text" class="form-control mt-1" name="requisitos[${index}].descricao" 
-                               placeholder="Descrição do requisito">
                     </div>
                 `;
 

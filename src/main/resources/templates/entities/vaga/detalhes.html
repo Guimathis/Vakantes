@@ -33,6 +33,39 @@
                 <p><b>Expira em:</b> <span th:text="*{data}"></span></p>
                 <p><b>Salário:</b> R$ <span th:text="*{salario}"></span></p>
 
+                <!-- Informações adicionais da vaga -->
+                <div class="row mt-3">
+                    <div class="col-md-3">
+                        <p><b>Nível de Experiência:</b> <span th:text="*{nivelExperiencia}"></span></p>
+                    </div>
+                    <div class="col-md-3">
+                        <p><b>Tipo de Contrato:</b> <span th:text="*{tipoContrato}"></span></p>
+                    </div>
+                    <div class="col-md-3">
+                        <p><b>Modalidade:</b> <span th:text="*{modalidadeTrabalho}"></span></p>
+                    </div>
+                    <div class="col-md-3">
+                        <p><b>Localização:</b> <span th:text="*{localizacao}"></span></p>
+                    </div>
+                </div>
+
+                <!-- Requisitos da vaga -->
+                <div class="mb-3 mt-3" th:if="${!#lists.isEmpty(vaga.requisitos)}">
+                    <h5>Requisitos da vaga:</h5>
+                    <ul class="list-group">
+                        <li class="list-group-item" th:each="requisito : ${vaga.requisitos}">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <span th:text="${requisito.nome}"></span>
+                                    <span class="badge bg-primary" th:text="'Nível ' + ${requisito.nivelMinimo}"></span>
+                                    <span class="badge bg-danger" th:if="${requisito.obrigatorio}">Obrigatório</span>
+                                    <span class="badge bg-secondary" th:unless="${requisito.obrigatorio}">Opcional</span>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
                 <div th:insert="~{fragments/mensagemValidacao :: validation}"></div>
 
                 <hr>

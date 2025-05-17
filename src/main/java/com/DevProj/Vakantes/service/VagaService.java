@@ -32,6 +32,9 @@ public class VagaService {
     }
 
     public void inscreverCandidatos(Long vagaId, List<String> cpfs) {
+        if (cpfs.get(0).equals("cpfs")) {
+            throw new DataBindingViolationException("Nenhum Candidato selecionado");
+        }
         Vaga vaga = vagaRepository.findByCodigoAndStatus(vagaId, Status.ATIVO)
                 .orElseThrow(() -> new ObjectNotFoundException("Vaga não encontrada"));
 
@@ -81,7 +84,6 @@ public class VagaService {
                 // Criar um novo requisito e copiar os dados
                 Requisito novoRequisito = new Requisito();
                 novoRequisito.setNome(requisito.getNome());
-                novoRequisito.setDescricao(requisito.getDescricao());
                 novoRequisito.setNivelMinimo(requisito.getNivelMinimo());
                 novoRequisito.setObrigatorio(requisito.getObrigatorio());
                 novoRequisito.setVaga(vaga);

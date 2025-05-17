@@ -13,31 +13,29 @@ import java.util.Date;
 public class Requisito implements Serializable {
 
     private static final long serialVersionUID = 1L;
-    
+
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "requisito_seq")
     @SequenceGenerator(name = "requisito_seq", sequenceName = "vaga.requisito_seq", allocationSize = 1)
     private Long id;
-    
+
     @NotEmpty
     private String nome;
-    
-    private String descricao;
-    
+
     @NotNull
     private Integer nivelMinimo; // 1-5 para indicar nível de proficiência
-    
+
     @NotNull
     private Boolean obrigatorio;
-    
+
     @ManyToOne
     @JoinColumn(name = "vaga_id")
     private Vaga vaga;
-    
+
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private Status status;
-    
+
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "criado_em", updatable = false)
     private Date criadoEm;
@@ -56,14 +54,13 @@ public class Requisito implements Serializable {
     protected void onUpdate() {
         atualizadoEm = new Date();
     }
-    
+
     public Requisito() {
         this.status = Status.ATIVO;
     }
-    
-    public Requisito(String nome, String descricao, Integer nivelMinimo, Boolean obrigatorio, Vaga vaga) {
+
+    public Requisito(String nome, Integer nivelMinimo, Boolean obrigatorio, Vaga vaga) {
         this.nome = nome;
-        this.descricao = descricao;
         this.nivelMinimo = nivelMinimo;
         this.obrigatorio = obrigatorio;
         this.vaga = vaga;
@@ -86,13 +83,6 @@ public class Requisito implements Serializable {
         this.nome = nome;
     }
 
-    public String getDescricao() {
-        return descricao;
-    }
-
-    public void setDescricao(String descricao) {
-        this.descricao = descricao;
-    }
 
     public Integer getNivelMinimo() {
         return nivelMinimo;

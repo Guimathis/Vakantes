@@ -68,7 +68,9 @@
                                         <a th:href="@{/vaga/buscar/{codigo}(codigo=${vaga.codigo})}"
                                            class="btn btn-primary me-2">Editar</a>
                                         <a th:href="@{/vaga/detalhes/{codigo}(codigo=${vaga.codigo})}"
-                                           class="btn btn-success bi bi-plus-lg"> Candidato</a>
+                                           class="btn btn-success bi bi-plus-lg me-2"> Candidato</a>
+                                        <a th:href="@{/vaga/candidatos-recomendados/{codigo}(codigo=${vaga.codigo})}"
+                                           class="btn btn-success me-2" style="background-color:darkcyan ">Seleção</a>
                                     </div>
                                 </div>
                             </div>
