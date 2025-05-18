@@ -23,3 +23,13 @@
 .msgValidacao{
     margin-top: 16px;
 }
+
+/* canditados-recomendados */
+.card h6 {
+    font-weight: 600;
+    margin-top: 1rem;
+}
+
+.card-body ul {
+    padding-left: 1.2rem;
+}

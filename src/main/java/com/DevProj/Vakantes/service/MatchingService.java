@@ -17,7 +17,6 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @Service
 public class MatchingService {
@@ -29,24 +28,25 @@ public class MatchingService {
     private CandidatoRepository candidatoRepository;
 
     /**
-     * Encontra candidatos adequados para uma vaga específica
+     * 
+     * Retorna candidatos já cadastrados na vaga com sua pontuação
      */
-    public List<CandidatoMatch> encontrarCandidatosParaVaga(Long vagaId) {
+    public List<CandidatoMatch> avaliarCandidatosVaga(Long vagaId) {
         Vaga vaga = vagaRepository.findByCodigoAndStatus(vagaId, Status.ATIVO)
             .orElseThrow(() -> new ObjectNotFoundException("Vaga não encontrada"));
 
-        Iterable<Candidato> candidatosIterable = candidatoRepository.findAllByStatus(Status.ATIVO);
         List<CandidatoMatch> matches = new ArrayList<>();
 
-        // Convert Iterable to List
-        List<Candidato> candidatos = new ArrayList<>();
-        candidatosIterable.forEach(candidatos::add);
+        // Usar apenas os candidatos já cadastrados na vaga
+        List<Candidato> candidatosJaCadastrados = vaga.getCandidatos();
 
-        for (Candidato candidato : candidatos) {
-            int pontuacao = calcularPontuacao(vaga, candidato);
-            Map<String, String> detalhes = calcularDetalhesCompatibilidade(vaga, candidato);
+        for (Candidato candidato : candidatosJaCadastrados) {
+            // Verificar se o candidato está ativo
+            if (candidato.getStatus() == Status.ATIVO) {
+                int pontuacao = calcularPontuacao(vaga, candidato);
+                Map<String, String> detalhes = calcularDetalhesCompatibilidade(vaga, candidato);
 
-            if (pontuacao > 0) {
+                // Adicionar o candidato à lista de matches independentemente da pontuação
                 matches.add(new CandidatoMatch(candidato, pontuacao, detalhes));
             }
         }
@@ -91,32 +91,48 @@ public class MatchingService {
      */
     private int calcularPontuacao(Vaga vaga, Candidato candidato) {
         int pontuacao = 0;
-        boolean atendeTodosObrigatorios = true;
+        int requisitosObrigatoriosTotal = 0;
+        int requisitosObrigatoriosAtendidos = 0;
 
         // Verificar requisitos
         for (Requisito requisito : vaga.getRequisitos()) {
             boolean atende = false;
 
+            // Contar requisitos obrigatórios
+            if (requisito.getObrigatorio()) {
+                requisitosObrigatoriosTotal++;
+            }
+
             // Verificar se o candidato possui a habilidade requerida
             for (Habilidade habilidade : candidato.getHabilidades()) {
                 if (habilidade.getNome().equalsIgnoreCase(requisito.getNome())) {
+                    // Pontuação parcial mesmo se não atinge o nível mínimo
                     if (habilidade.getNivel() >= requisito.getNivelMinimo()) {
                         atende = true;
+                        // Pontuação completa para habilidade que atende o nível
                         pontuacao += 10 + (habilidade.getNivel() - requisito.getNivelMinimo()) * 2;
+                    } else {
+                        // Pontuação parcial para habilidade abaixo do nível requerido
+                        // Quanto mais próximo do nível requerido, mais pontos
+                        int diferenca = requisito.getNivelMinimo() - habilidade.getNivel();
+                        pontuacao += Math.max(0, 5 - diferenca); // 5 pontos para diferença de 0, 4 para 1, etc.
                     }
                     break;
                 }
             }
 
-            // Se não atende a um requisito obrigatório, marca a flag
-            if (!atende && requisito.getObrigatorio()) {
-                atendeTodosObrigatorios = false;
+            // Contabilizar requisitos obrigatórios atendidos
+            if (atende && requisito.getObrigatorio()) {
+                requisitosObrigatoriosAtendidos++;
             }
         }
 
-        // Se não atende a todos os requisitos obrigatórios, retorna 0
-        if (!atendeTodosObrigatorios) {
-            return 0;
+        // Bônus para requisitos obrigatórios atendidos
+        if (requisitosObrigatoriosTotal > 0) {
+            // Percentual de requisitos obrigatórios atendidos (0 a 100)
+            int percentualAtendido = (requisitosObrigatoriosAtendidos * 100) / requisitosObrigatoriosTotal;
+            // Bônus de até 20 pontos baseado no percentual de requisitos obrigatórios atendidos
+            pontuacao += (percentualAtendido * 20) / 100;
         }
 
         // Verificar compatibilidade de modalidade de trabalho
@@ -155,10 +171,12 @@ public class MatchingService {
 
         // Verificar requisitos
         List<String> requisitosAtendidos = new ArrayList<>();
+        List<String> requisitosAtendidosParcialmente = new ArrayList<>();
         List<String> requisitosNaoAtendidos = new ArrayList<>();
 
         for (Requisito requisito : vaga.getRequisitos()) {
             boolean atende = false;
+            boolean atendeParcialmente = false;
 
             // Verificar se o candidato possui a habilidade requerida
             for (Habilidade habilidade : candidato.getHabilidades()) {
@@ -167,19 +185,23 @@ public class MatchingService {
                         atende = true;
                         requisitosAtendidos.add(requisito.getNome() + " (Nível " + habilidade.getNivel() + ")");
                     } else {
-                        requisitosNaoAtendidos.add(requisito.getNome() + " (Nível requerido: " + requisito.getNivelMinimo() + 
-                                                  ", Nível do candidato: " + habilidade.getNivel() + ")");
+                        atendeParcialmente = true;
+                        int diferenca = requisito.getNivelMinimo() - habilidade.getNivel();
+                        requisitosAtendidosParcialmente.add(requisito.getNome() + " (Nível requerido: " + requisito.getNivelMinimo() + 
+                                                  ", Nível do candidato: " + habilidade.getNivel() + 
+                                                  ", Pontuação parcial)");
                     }
                     break;
                 }
             }
 
-            if (!atende && !requisitosNaoAtendidos.contains(requisito.getNome())) {
+            if (!atende && !atendeParcialmente) {
                 requisitosNaoAtendidos.add(requisito.getNome() + " (Não possui)");
             }
         }
 
         detalhes.put("requisitosAtendidos", String.join(", ", requisitosAtendidos));
+        detalhes.put("requisitosAtendidosParcialmente", String.join(", ", requisitosAtendidosParcialmente));
         detalhes.put("requisitosNaoAtendidos", String.join(", ", requisitosNaoAtendidos));
 
         // Verificar compatibilidade de modalidade de trabalho

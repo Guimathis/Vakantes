@@ -10,7 +10,6 @@ import com.DevProj.Vakantes.repository.ClienteRepository;
 import com.DevProj.Vakantes.repository.VagaRepository;
 import com.DevProj.Vakantes.service.CandidatoService;
 import com.DevProj.Vakantes.service.ClienteService;
-import com.DevProj.Vakantes.service.CookieService;
 import com.DevProj.Vakantes.service.MatchingService;
 import com.DevProj.Vakantes.service.VagaService;
 import com.DevProj.Vakantes.service.exceptions.DataBindingViolationException;
@@ -24,7 +23,6 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.io.UnsupportedEncodingException;
 import java.util.List;
 
 @Controller("VC")
@@ -147,7 +145,7 @@ public class VagaController {
             Vaga vaga = vr.findByCodigoAndStatus(codigo, Status.ATIVO)
                     .orElseThrow(() -> new ObjectNotFoundException("Vaga não encontrada"));
 
-            List<MatchingService.CandidatoMatch> candidatosRecomendados = matchingService.encontrarCandidatosParaVaga(codigo);
+            List<MatchingService.CandidatoMatch> candidatosRecomendados = matchingService.avaliarCandidatosVaga(codigo);
 
             model.addAttribute("vaga", new VagaDTO(vaga));
             model.addAttribute("candidatosRecomendados", candidatosRecomendados);
