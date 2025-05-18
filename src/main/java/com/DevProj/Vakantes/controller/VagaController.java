@@ -139,7 +139,7 @@ public class VagaController {
         return "entities/vaga/detalhes";
     }
 
-    @GetMapping("/candidatos-recomendados/{codigo}")
+    @GetMapping("/selecao/{codigo}")
     public String candidatosRecomendados(@PathVariable("codigo") Long codigo, Model model) {
         try {
             Vaga vaga = vr.findByCodigoAndStatus(codigo, Status.ATIVO)
@@ -150,7 +150,7 @@ public class VagaController {
             model.addAttribute("vaga", new VagaDTO(vaga));
             model.addAttribute("candidatosRecomendados", candidatosRecomendados);
 
-            return "entities/vaga/candidatos-recomendados";
+            return "entities/vaga/selecao";
         } catch (Exception e) {
             model.addAttribute("mensagem_erro", e.getMessage());
             return "redirect:/vaga/buscar";
@@ -205,7 +205,7 @@ public class VagaController {
             redirectAttributes.addFlashAttribute("mensagem", "Candidato inscrito com sucesso!");
         } catch (DataBindingViolationException | ObjectNotFoundException e) {
             redirectAttributes.addFlashAttribute("mensagem_erro", e.getMessage());
-            return "redirect:/vaga/candidatos-recomendados/" + vagaId;
+            return "redirect:/vaga/selecao/" + vagaId;
         }
         return "redirect:/vaga/detalhes/" + vagaId;
     }
