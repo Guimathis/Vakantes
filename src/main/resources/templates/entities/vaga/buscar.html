@@ -22,7 +22,6 @@
 
 <div class="container-fluid flex-grow-1" style="padding-top: 15px; padding-bottom: 15px;">
     <div class="row">
-        <!-- Left panel with buttons -->
         <div class="col-md-3 mb-3">
             <div class="card shadow-lg">
                 <div class="card-header text-center">
@@ -35,7 +34,6 @@
             </div>
         </div>
 
-        <!-- Right panel with entity list -->
         <div class="col-md-9">
             <div class="card shadow-lg">
                 <div class="card-header text-center">
@@ -50,8 +48,12 @@
                         <div class="row row-cols-1 row-cols-md-3 g-4">
                             <div class="col" th:each="vaga : ${vagas}">
                                 <div class="card h-100 shadow-sm">
-                                    <div class="card-header bg-primary text-white">
-                                        <h5 class="card-title mb-0" th:text="${vaga.nome}"></h5>
+                                    <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                                        <div class="d-flex align-items-center">
+                                            <h5 class="card-title mb-0" th:text="${vaga.nome}"></h5>
+                                        </div>
+                                        <span th:text="${vaga.statusProcesso.descricao}"
+                                              th:class="badge" th:classappend="${vaga.statusProcesso.badgeClass}"></span>
                                     </div>
                                     <div class="card-body">
                                         <div class="mb-2">
@@ -64,13 +66,13 @@
                                             <strong>Expira em:</strong> <span th:text="${vaga.data}"></span>
                                         </div>
                                     </div>
-                                    <div class="card-footer bg-white border-top-0 d-flex justify-content-center">
+                                    <div class="card-footer bg-white border-top-0 d-flex flex-wrap justify-content-center gap-2">
                                         <a th:href="@{/vaga/buscar/{codigo}(codigo=${vaga.codigo})}"
-                                           class="btn btn-primary me-2">Editar</a>
+                                           class="btn btn-primary btn-sm mb-1 bi bi-pencil flex-fill "> Editar</a>
                                         <a th:href="@{/vaga/detalhes/{codigo}(codigo=${vaga.codigo})}"
-                                           class="btn btn-success bi bi-plus-lg me-2"> Candidato</a>
+                                           class="btn btn-success btn-sm mb-1 bi bi-plus-lg flex-fill "> Candidato</a>
                                         <a th:href="@{/vaga/selecao/{codigo}(codigo=${vaga.codigo})}"
-                                           class="btn btn-success me-2" style="background-color:darkcyan ">Seleção</a>
+                                           class="btn btn-info btn-sm mb-1 text-white bi bi-check-all flex-fill "> Seleção</a>
                                     </div>
                                 </div>
                             </div>

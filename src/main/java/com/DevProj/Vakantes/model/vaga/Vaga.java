@@ -19,209 +19,225 @@ import java.util.List;
 @Table(name = "vaga", schema = "vaga")
 public class Vaga implements Serializable {
 
-	@Serial
-	private static final long serialVersionUID = 1L;
+    @Serial
+    private static final long serialVersionUID = 1L;
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "vaga_seq")
-	@SequenceGenerator(name = "vaga_seq", sequenceName = "vaga.vaga_seq", allocationSize = 1)
-	private long codigo;
+    @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "vaga_seq")
+    @SequenceGenerator(name = "vaga_seq", sequenceName = "vaga.vaga_seq", allocationSize = 1)
+    private long codigo;
 
-	@NotEmpty
-	private String nome;
+    @NotEmpty
+    private String nome;
 
-	@NotEmpty
-	private String descricao;
+    @NotEmpty
+    private String descricao;
 
-	@NotEmpty
-	private String data;
+    @NotEmpty
+    private String data;
 
-	@NotNull
-	private BigDecimal salario;
+    @NotNull
+    private BigDecimal salario;
 
-	@ManyToMany
-	@JoinTable(
-			name = "vaga_candidato", schema = "vaga",
-			joinColumns = @JoinColumn(name = "vaga_id"),
-			inverseJoinColumns = @JoinColumn(name = "candidato_id")
-	)
-	private List<Candidato> candidatos = new ArrayList<>();
+    @ManyToMany
+    @JoinTable(
+            name = "vaga_candidato", schema = "vaga",
+            joinColumns = @JoinColumn(name = "vaga_id"),
+            inverseJoinColumns = @JoinColumn(name = "candidato_id")
+    )
+    private List<Candidato> candidatos = new ArrayList<>();
 
-	@OneToMany(mappedBy = "vaga", cascade = CascadeType.ALL, orphanRemoval = true)
-	private List<Requisito> requisitos = new ArrayList<>();
+    @OneToMany(mappedBy = "vaga", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Requisito> requisitos = new ArrayList<>();
 
-	private String nivelExperiencia; // Júnior, Pleno, Sênior
+    private String nivelExperiencia; // Júnior, Pleno, Sênior
 
-	private String tipoContrato; // CLT, PJ, Estágio
+    private String tipoContrato; // CLT, PJ, Estágio
 
-	private String modalidadeTrabalho; // Presencial, Remoto, Híbrido
+    private String modalidadeTrabalho; // Presencial, Remoto, Híbrido
 
-	private String localizacao; // Cidade/Estado
+    private String localizacao; // Cidade/Estado
 
-	@ManyToOne
-	private Cliente cliente;
+    @ManyToOne
+    private Cliente cliente;
 
-	@Column(nullable = false)
-	@Enumerated(EnumType.STRING)
-	private Status status;
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    private Status status;
 
-	@Temporal(TemporalType.TIMESTAMP)
-	@Column(name = "criado_em", updatable = false)
-	private Date criadoEm;
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    private StatusProcesso statusProcesso;
 
-	@Temporal(TemporalType.TIMESTAMP)
-	@Column(name = "atualizado_em", nullable = true)
-	private Date atualizadoEm;
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "criado_em", updatable = false)
+    private Date criadoEm;
 
-	@PrePersist
-	protected void onCreate() {
-		criadoEm = new Date();
-	}
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "atualizado_em", nullable = true)
+    private Date atualizadoEm;
 
-	@PreUpdate
-	protected void onUpdate() {
-		atualizadoEm = new Date();
-	}
+    @PrePersist
+    protected void onCreate() {
+        criadoEm = new Date();
+    }
 
-	public Vaga() {
-		this.cliente = new Cliente();
-		this.status = Status.ATIVO;
-	}
+    @PreUpdate
+    protected void onUpdate() {
+        atualizadoEm = new Date();
+    }
 
-	public Vaga(long codigo, String nome, String descricao, String data, BigDecimal salario, List<Candidato> candidatos,
-			Cliente cliente) {
-		this.codigo = codigo;
-		this.nome = nome;
-		this.descricao = descricao;
-		this.data = data;
-		this.salario = salario;
-		this.cliente = cliente;
-		this.status = Status.ATIVO;
-	}
+    public Vaga() {
+        this.cliente = new Cliente();
+        this.status = Status.ATIVO;
+        this.statusProcesso = StatusProcesso.ABERTA;
+    }
 
-	public Vaga(VagaDTO vagaDTO, Cliente cliente) {
-		this.codigo = vagaDTO.getCodigo();
-		this.nome = vagaDTO.getNome();
-		this.descricao = vagaDTO.getDescricao();
-		this.data = vagaDTO.getData();
-		this.salario = vagaDTO.getSalario();
-		this.nivelExperiencia = vagaDTO.getNivelExperiencia();
-		this.tipoContrato = vagaDTO.getTipoContrato();
-		this.modalidadeTrabalho = vagaDTO.getModalidadeTrabalho();
-		this.localizacao = vagaDTO.getLocalizacao();
-		this.cliente = cliente;
-		this.status = Status.ATIVO;
-	}
+    public Vaga(long codigo, String nome, String descricao, String data, BigDecimal salario, List<Candidato> candidatos,
+                Cliente cliente) {
+        this.codigo = codigo;
+        this.nome = nome;
+        this.descricao = descricao;
+        this.data = data;
+        this.salario = salario;
+        this.cliente = cliente;
+        this.status = Status.ATIVO;
+        this.statusProcesso = StatusProcesso.ABERTA;
+    }
 
-	public Date getCriadoEm() {
-		return criadoEm;
-	}
 
-	public Date getAtualizadoEm() {
-		return atualizadoEm;
-	}
+    public Vaga(VagaDTO vagaDTO, Cliente cliente) {
+        this.codigo = vagaDTO.getCodigo();
+        this.nome = vagaDTO.getNome();
+        this.descricao = vagaDTO.getDescricao();
+        this.data = vagaDTO.getData();
+        this.salario = vagaDTO.getSalario();
+        this.nivelExperiencia = vagaDTO.getNivelExperiencia();
+        this.tipoContrato = vagaDTO.getTipoContrato();
+        this.modalidadeTrabalho = vagaDTO.getModalidadeTrabalho();
+        this.localizacao = vagaDTO.getLocalizacao();
+        this.cliente = cliente;
+        this.status = Status.ATIVO;
+        this.statusProcesso = vagaDTO.getStatusProcesso() == null ? StatusProcesso.ABERTA : vagaDTO.getStatusProcesso();
+    }
 
-	public Status getStatus() {
-		return status;
-	}
+    public Date getCriadoEm() {
+        return criadoEm;
+    }
 
-	public void setStatus(Status status) {
-		this.status = status;
-	}
+    public Date getAtualizadoEm() {
+        return atualizadoEm;
+    }
 
-	public long getCodigo() {
-		return codigo;
-	}
+    public Status getStatus() {
+        return status;
+    }
 
-	public void setCodigo(long codigo) {
-		this.codigo = codigo;
-	}
+    public void setStatus(Status status) {
+        this.status = status;
+    }
 
-	public String getNome() {
-		return nome;
-	}
+    public StatusProcesso getStatusProcesso() {
+        return statusProcesso;
+    }
 
-	public void setNome(String nome) {
-		this.nome = nome;
-	}
+    public void setStatusProcesso(StatusProcesso statusProcesso) {
+        this.statusProcesso = statusProcesso;
+    }
 
-	public String getDescricao() {
-		return descricao;
-	}
+    public long getCodigo() {
+        return codigo;
+    }
 
-	public void setDescricao(String descricao) {
-		this.descricao = descricao;
-	}
+    public void setCodigo(long codigo) {
+        this.codigo = codigo;
+    }
 
-	public String getData() {
-		return data;
-	}
+    public String getNome() {
+        return nome;
+    }
 
-	public void setData(String data) {
-		this.data = data;
-	}
+    public void setNome(String nome) {
+        this.nome = nome;
+    }
 
-	public BigDecimal getSalario() {
-		return salario;
-	}
+    public String getDescricao() {
+        return descricao;
+    }
 
-	public void setSalario(BigDecimal salario) {
-		this.salario = salario;
-	}
+    public void setDescricao(String descricao) {
+        this.descricao = descricao;
+    }
 
-	public List<Candidato> getCandidatos() {
-		return candidatos;
-	}
+    public String getData() {
+        return data;
+    }
 
-	public void setCandidatos(List<Candidato> candidatos) {
-		this.candidatos = candidatos;
-	}
+    public void setData(String data) {
+        this.data = data;
+    }
 
-	public Cliente getCliente() {
-		return cliente;
-	}
+    public BigDecimal getSalario() {
+        return salario;
+    }
 
-	public void setCliente(Cliente cliente) {
-		this.cliente = cliente;
-	}
+    public void setSalario(BigDecimal salario) {
+        this.salario = salario;
+    }
 
-	public List<Requisito> getRequisitos() {
-		return requisitos;
-	}
+    public List<Candidato> getCandidatos() {
+        return candidatos;
+    }
 
-	public void setRequisitos(List<Requisito> requisitos) {
-		this.requisitos = requisitos;
-	}
+    public void setCandidatos(List<Candidato> candidatos) {
+        this.candidatos = candidatos;
+    }
 
-	public String getNivelExperiencia() {
-		return nivelExperiencia;
-	}
+    public Cliente getCliente() {
+        return cliente;
+    }
 
-	public void setNivelExperiencia(String nivelExperiencia) {
-		this.nivelExperiencia = nivelExperiencia;
-	}
+    public void setCliente(Cliente cliente) {
+        this.cliente = cliente;
+    }
 
-	public String getTipoContrato() {
-		return tipoContrato;
-	}
+    public List<Requisito> getRequisitos() {
+        return requisitos;
+    }
 
-	public void setTipoContrato(String tipoContrato) {
-		this.tipoContrato = tipoContrato;
-	}
+    public void setRequisitos(List<Requisito> requisitos) {
+        this.requisitos = requisitos;
+    }
 
-	public String getModalidadeTrabalho() {
-		return modalidadeTrabalho;
-	}
+    public String getNivelExperiencia() {
+        return nivelExperiencia;
+    }
 
-	public void setModalidadeTrabalho(String modalidadeTrabalho) {
-		this.modalidadeTrabalho = modalidadeTrabalho;
-	}
+    public void setNivelExperiencia(String nivelExperiencia) {
+        this.nivelExperiencia = nivelExperiencia;
+    }
 
-	public String getLocalizacao() {
-		return localizacao;
-	}
+    public String getTipoContrato() {
+        return tipoContrato;
+    }
 
-	public void setLocalizacao(String localizacao) {
-		this.localizacao = localizacao;
-	}
+    public void setTipoContrato(String tipoContrato) {
+        this.tipoContrato = tipoContrato;
+    }
+
+    public String getModalidadeTrabalho() {
+        return modalidadeTrabalho;
+    }
+
+    public void setModalidadeTrabalho(String modalidadeTrabalho) {
+        this.modalidadeTrabalho = modalidadeTrabalho;
+    }
+
+    public String getLocalizacao() {
+        return localizacao;
+    }
+
+    public void setLocalizacao(String localizacao) {
+        this.localizacao = localizacao;
+    }
 }

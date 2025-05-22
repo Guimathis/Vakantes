@@ -33,3 +33,25 @@
 .card-body ul {
     padding-left: 1.2rem;
 }
+
+/* badges estágio da vaga*/
+
+.aberta {
+    background-color: #28a745;
+}
+
+.em-selecao {
+    background-color: #ffc107;
+}
+
+.entrevistas {
+    background-color: #17a2b8;
+}
+
+.finalizada {
+    background-color: #6c757d;
+}
+
+.cancelada {
+    background-color: #dc3545;
+}

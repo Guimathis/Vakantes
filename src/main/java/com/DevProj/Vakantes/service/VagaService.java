@@ -2,6 +2,7 @@ package com.DevProj.Vakantes.service;
 
 import com.DevProj.Vakantes.model.candidato.Candidato;
 import com.DevProj.Vakantes.model.util.Status;
+import com.DevProj.Vakantes.model.vaga.StatusProcesso;
 import com.DevProj.Vakantes.model.vaga.Requisito;
 import com.DevProj.Vakantes.model.vaga.Vaga;
 import com.DevProj.Vakantes.model.vaga.VagaDTO;
@@ -53,7 +54,9 @@ public class VagaService {
         if (!mensagemErro.isEmpty()) {
             throw new DataBindingViolationException(mensagemErro.toString());
         }
-
+        if(vaga.getStatusProcesso() == StatusProcesso.ABERTA){
+            vaga.setStatusProcesso(StatusProcesso.SELECAO);
+        }
         candidatoRepository.saveAll(candidatos);
         vagaRepository.save(vaga);
     }
@@ -65,7 +68,9 @@ public class VagaService {
         if (vaga.getCandidatos().stream().anyMatch(c -> c.getCpf().equals(candidato.getCpf()) || c.getRg().equals(candidato.getRg()))) {
             throw new DataBindingViolationException("Candidato já cadastrado na vaga.");
         }
-
+        if(vaga.getStatusProcesso() == StatusProcesso.ABERTA){
+            vaga.setStatusProcesso(StatusProcesso.SELECAO);
+        }
         candidato.getVagas().add(vaga);
         vaga.getCandidatos().add(candidato);
         candidatoRepository.save(candidato);

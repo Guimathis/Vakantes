@@ -1,7 +1,5 @@
 package com.DevProj.Vakantes.model.vaga;
 
-import com.DevProj.Vakantes.model.empresa.Cliente;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 
@@ -37,6 +35,8 @@ public class VagaDTO {
 
     private List<Requisito> requisitos = new ArrayList<>();
 
+    private StatusProcesso statusProcesso;
+
     public VagaDTO() {
     }
 
@@ -60,6 +60,15 @@ public class VagaDTO {
         this.localizacao = vaga.getLocalizacao();
         this.idCliente = vaga.getCliente().getId();
         this.requisitos = vaga.getRequisitos();
+        this.statusProcesso = vaga.getStatusProcesso();
+    }
+
+    public StatusProcesso getStatusProcesso() {
+        return statusProcesso;
+    }
+
+    public void setStatusProcesso(StatusProcesso statusProcesso) {
+        this.statusProcesso = statusProcesso;
     }
 
     public long getCodigo() {

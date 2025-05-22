@@ -102,7 +102,6 @@ public class VagaController {
         return "entities/vaga/buscar";
     }
 
-    //
     @GetMapping("/buscar/{codigo}")
     public String detalhesVaga(@PathVariable("codigo") long codigo, Model model) {
         Vaga vaga = vr.findByCodigoAndStatus(codigo, Status.ATIVO).orElseThrow(() -> new ObjectNotFoundException("Vaga não encontrada"));
@@ -130,7 +129,6 @@ public class VagaController {
     @GetMapping(value = "/detalhes/{codigo}")
     public String detalhesVaga(Model model, @PathVariable long codigo) {
         Vaga vaga = vr.findByCodigoAndStatus(codigo, Status.ATIVO).orElseThrow(() -> new ObjectNotFoundException("Vaga não encontrada"));
-        ;
         VagaDTO vagaDTO = new VagaDTO(vaga);
         model.addAttribute("vaga", vagaDTO);
         model.addAttribute("candidato", new Candidato());
@@ -140,15 +138,15 @@ public class VagaController {
     }
 
     @GetMapping("/selecao/{codigo}")
-    public String candidatosRecomendados(@PathVariable("codigo") Long codigo, Model model) {
+    public String candidatosInscritosComPontuacao(@PathVariable("codigo") Long codigo, Model model) {
         try {
             Vaga vaga = vr.findByCodigoAndStatus(codigo, Status.ATIVO)
                     .orElseThrow(() -> new ObjectNotFoundException("Vaga não encontrada"));
 
-            List<MatchingService.CandidatoMatch> candidatosRecomendados = matchingService.avaliarCandidatosVaga(codigo);
+            List<MatchingService.CandidatoMatch> candidatosInscritosComPontuacao = matchingService.avaliarCandidatosVaga(codigo);
 
             model.addAttribute("vaga", new VagaDTO(vaga));
-            model.addAttribute("candidatosRecomendados", candidatosRecomendados);
+            model.addAttribute("candidatosInscritos", candidatosInscritosComPontuacao);
 
             return "entities/vaga/selecao";
         } catch (Exception e) {
@@ -205,7 +203,6 @@ public class VagaController {
             redirectAttributes.addFlashAttribute("mensagem", "Candidato inscrito com sucesso!");
         } catch (DataBindingViolationException | ObjectNotFoundException e) {
             redirectAttributes.addFlashAttribute("mensagem_erro", e.getMessage());
-            return "redirect:/vaga/selecao/" + vagaId;
         }
         return "redirect:/vaga/detalhes/" + vagaId;
     }

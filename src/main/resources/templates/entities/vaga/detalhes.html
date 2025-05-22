@@ -20,190 +20,102 @@
     <div th:insert="~{fragments/navbar :: navbar}"></div>
 </header>
 
-<div class="container d-flex justify-content-center align-items-center flex-grow-1"
-     style="padding-top: 15px; padding-bottom: 15px;">
-    <div class="col-md-12">
-        <div class="card shadow-lg">
-            <div class="card-header text-center">
-                <h3>Detalhes da vaga</h3>
+<div class="container py-4">
+    <div class="card shadow-lg">
+        <div class="card-header text-center">
+            <h3>Detalhes da Vaga</h3>
+        </div>
+
+        <div class="card-body" th:object="${vaga}">
+
+            <div class="row mb-4">
+                <div class="col-md-4 mb-3">
+                    <p><strong>Vaga:</strong> <span th:text="*{nome}"></span></p>
+                    <p><strong>Salário:</strong> R$ <span th:text="*{salario}"></span></p>
+                    <p>
+                        <strong>Status:</strong>
+                        <span th:text="${vaga.statusProcesso.descricao}" class="badge"
+                              th:classappend="${vaga.statusProcesso.badgeClass}"></span>
+                    </p>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <p><strong>Descrição do cargo:</strong> <span th:text="*{descricao}"></span></p>
+                    <p><strong>Expira em:</strong> <span th:text="*{data}"></span></p>
+                    <p><strong>Nível de Experiência:</strong> <span th:text="*{nivelExperiencia}"></span></p>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <p><strong>Tipo de Contrato:</strong> <span th:text="*{tipoContrato}"></span></p>
+                    <p><strong>Modalidade:</strong> <span th:text="*{modalidadeTrabalho}"></span></p>
+                    <p><strong>Localização:</strong> <span th:text="*{localizacao}"></span></p>
+                </div>
             </div>
-            <div class="card-body" th:object="${vaga}">
-                <p><b>Vaga:</b> <span th:text="*{nome}"></span></p>
-                <p><b>Descrição do cargo:</b> <span th:text="*{descricao}"></span></p>
-                <p><b>Expira em:</b> <span th:text="*{data}"></span></p>
-                <p><b>Salário:</b> R$ <span th:text="*{salario}"></span></p>
 
-                <!-- Informações adicionais da vaga -->
-                <div class="row mt-3">
-                    <div class="col-md-3">
-                        <p><b>Nível de Experiência:</b> <span th:text="*{nivelExperiencia}"></span></p>
-                    </div>
-                    <div class="col-md-3">
-                        <p><b>Tipo de Contrato:</b> <span th:text="*{tipoContrato}"></span></p>
-                    </div>
-                    <div class="col-md-3">
-                        <p><b>Modalidade:</b> <span th:text="*{modalidadeTrabalho}"></span></p>
-                    </div>
-                    <div class="col-md-3">
-                        <p><b>Localização:</b> <span th:text="*{localizacao}"></span></p>
-                    </div>
-                </div>
+            <!-- Requisitos da vaga -->
+            <div class="mb-4" th:if="${!#lists.isEmpty(vaga.requisitos)}">
+                <h5>Requisitos da Vaga</h5>
+                <ul class="list-group">
+                    <li class="list-group-item" th:each="requisito : ${vaga.requisitos}">
+                        <span th:text="${requisito.nome}"></span>
+                        <span class="badge bg-primary" th:text="'Nível ' + ${requisito.nivelMinimo}"></span>
+                        <span class="badge bg-danger" th:if="${requisito.obrigatorio}">Obrigatório</span>
+                        <span class="badge bg-secondary" th:unless="${requisito.obrigatorio}">Opcional</span>
+                    </li>
+                </ul>
+            </div>
 
-                <!-- Requisitos da vaga -->
-                <div class="mb-3 mt-3" th:if="${!#lists.isEmpty(vaga.requisitos)}">
-                    <h5>Requisitos da vaga:</h5>
-                    <ul class="list-group">
-                        <li class="list-group-item" th:each="requisito : ${vaga.requisitos}">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <div>
-                                    <span th:text="${requisito.nome}"></span>
-                                    <span class="badge bg-primary" th:text="'Nível ' + ${requisito.nivelMinimo}"></span>
-                                    <span class="badge bg-danger" th:if="${requisito.obrigatorio}">Obrigatório</span>
-                                    <span class="badge bg-secondary" th:unless="${requisito.obrigatorio}">Opcional</span>
-                                </div>
-                            </div>
-                        </li>
-                    </ul>
-                </div>
+            <!-- Validação -->
+            <div th:insert="~{fragments/mensagemValidacao :: validation}"></div>
 
-                <div th:insert="~{fragments/mensagemValidacao :: validation}"></div>
-
-                <hr>
-
-                <div class="mb-3">
-                    <button type="button" class="btn btn-primary btn-sm me-2" data-bs-toggle="modal"
-                            data-bs-target="#modalCandidato">
+            <!-- Botões de ação -->
+            <div class="mb-4">
+                <h5 class="mb-3">Ações</h5>
+                <div class="d-flex flex-wrap gap-2">
+                    <a class="btn btn-primary btn-sm" href="/candidato/cadastro">
                         Cadastrar Candidato
-                    </button>
-
-                    <button type="button" class="btn btn-secondary btn-sm me-2" data-bs-toggle="modal"
-                            data-bs-target="#modalSelecionarCandidato">
+                    </a>
+                    <button type="button" class="btn btn-secondary btn-sm" data-bs-toggle="modal" data-bs-target="#modalSelecionarCandidato">
                         Selecionar Candidato
                     </button>
-                    <a href="/vaga/buscar" class="btn btn-secondary btn-sm me-2">Voltar</a>
+                    <a href="/vaga/buscar" class="btn btn-secondary btn-sm">Voltar</a>
                 </div>
-
-                <hr>
-
-                <div class="row">
-                    <h3>Inscritos</h3>
-                </div>
-                <table class="table table-striped table-hover table-responsive">
-                    <thead>
-                    <tr>
-                        <th>Nome</th>
-                        <th>CPF</th>
-                        <th>E-mail</th>
-                        <th>Contato</th>
-                        <th>Data de nascimento</th>
-                        <th>Ações</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr th:each="candidato : ${candidatosCadastrados}">
-                        <td><span th:text="${candidato.nomeCandidato}"></span></td>
-                        <td><span th:text="${candidato.cpf}"></span></td>
-                        <td><span th:text="${candidato.contato.email}"></span></td>
-                        <td><span th:text="${candidato.contato.telefone}"></span></td>
-                        <td><span th:text="${candidato.dataNascimento}"></span></td>
-                        <td>
-                            <form th:action="@{/vaga/candidato/deletar/{cpf}(cpf=${candidato.cpf})}" method="post">
-                                <input type="hidden" name="_method" value="delete">
-                                <button type="submit" class="btn btn-danger bi bi-trash "></button>
-                            </form>
-                        </td>
-                    </tr>
-                    </tbody>
-                </table>
             </div>
-        </div>
-    </div>
-</div>
 
-<!-- Modal para cadastro de candidato -->
-<div class="modal fade" id="modalCandidato" tabindex="-1" aria-labelledby="modalCandidatoLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <form th:action="@{/vaga/candidato/novo/{id}(id=${vaga.codigo})}" method="post" th:object="${candidato}">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="modalCandidatoLabel">Cadastrar Candidato</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+            <hr>
+
+            <!-- Lista de candidatos -->
+            <div>
+                <h4 class="mb-3">Candidatos Inscritos</h4>
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover">
+                        <thead class="table-light">
+                        <tr>
+                            <th>Nome</th>
+                            <th>CPF</th>
+                            <th>E-mail</th>
+                            <th>Contato</th>
+                            <th>Data de nascimento</th>
+                            <th>Ações</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="candidato : ${candidatosCadastrados}">
+                            <td th:text="${candidato.nomeCandidato}"></td>
+                            <td th:text="${candidato.cpf}"></td>
+                            <td th:text="${candidato.contato.email}"></td>
+                            <td th:text="${candidato.contato.telefone}"></td>
+                            <td th:text="${candidato.dataNascimento}"></td>
+                            <td>
+                                <form th:action="@{/vaga/candidato/deletar/{cpf}(cpf=${candidato.cpf})}" method="post">
+                                    <input type="hidden" name="_method" value="delete">
+                                    <button type="submit" class="btn btn-danger btn-sm bi bi-trash"></button>
+                                </form>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
                 </div>
-                <div class="modal-body">
-                    <div class="row">
-                        <div class="col-md-4 mb-4">
-                            <label class="form-label"><b>Nome do candidato:</b></label>
-                            <input type="text" th:field="*{nomeCandidato}" class="form-control"
-                                   placeholder="Nome Completo" required>
-                        </div>
-                        <div class="col-md-4 mb-4">
-                            <label class="form-label"><b>CPF:</b></label>
-                            <input id="cpf" type="text" th:field="*{cpf}" class="form-control"
-                                   placeholder="Somente números" required>
-                        </div>
-                        <div class="col-md-4 mb-4">
-                            <label class="form-label"><b>RG</b></label>
-                            <input id="rg" type="text" th:field="*{rg}" class="form-control"
-                                   placeholder="Somente números" required>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-4 mb-4">
-                            <label class="form-label"><b>E-mail:</b></label>
-                            <input type="email" th:field="*{contato.email}" class="form-control"
-                                   placeholder="email@email.com" required>
-                        </div>
-                        <div class="col-md-4 mb-4">
-                            <label for="telefone" class="form-label"><b>Telefone:</b></label>
-                            <input id="telefone" type="text" th:field="*{contato.telefone}" class="form-control"
-                                   placeholder="(00) 90000-0000" required>
-                        </div>
-                        <div class="col-md-4 mb-4">
-                            <label for="dataNascimento" class="form-label"><b>Data de nascimento:</b></label>
-                            <input type="date" id="dataNascimento" class="form-control"
-                                   th:field="*{dataNascimento}" required/>
-                        </div>
-                    </div>
-                    <hr/>
-                    <label class="form-label">Endereço:</label>
-                    <div class="row">
-                        <div class="col-md-4 mb-4">
-                            <label for="rua" class="form-label">Rua:</label>
-                            <input type="text" id="rua" class="form-control"
-                                   th:field="*{endereco.rua}"
-                                   required>
-                        </div>
-                        <div class="col-md-4 mb-4">
-                            <label for="numero" class="form-label">Número:</label>
-                            <input type="text" id="numero" class="form-control"
-                                   th:field="*{endereco.numero}"
-                                   required>
-                        </div>
-                        <div class="col-md-4 mb-4">
-                            <label for="cidade" class="form-label">Cidade:</label>
-                            <input type="text" id="cidade" class="form-control"
-                                   th:field="*{endereco.cidade}"
-                                   required>
-                        </div>
-                        <div class="col-md-4 mb-3">
-                            <label for="estado" class="form-label">Estado:</label>
-                            <input type="text" id="estado" class="form-control"
-                                   th:field="*{endereco.estado}"
-                                   required>
-                        </div>
-                        <div class="col-md-4 mb-3">
-                            <label for="cep" class="form-label">CEP:</label>
-                            <input type="text" id="cep" class="form-control"
-                                   th:field="*{endereco.cep}"
-                                   required>
-                        </div>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="submit" class="btn btn-success">Salvar Candidato</button>
-                </div>
-            </form>
+            </div>
+
         </div>
     </div>
 </div>
@@ -244,35 +156,5 @@
         crossorigin="anonymous"></script>
 <script src="https://unpkg.com/imask"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-<script>
-    IMask(
-        document.getElementById('telefone'),
-        {
-            mask: '(00) 00000-0000',
-            lazy: false
-        }
-    )
-    IMask(
-        document.getElementById('cpf'),
-        {
-            mask: '000.000.000-00',
-            lazy: false
-        }
-    )
-    IMask(
-        document.getElementById('rg'),
-        {
-            mask: '000.000.000-00',
-            lazy: false
-        }
-    )
-    IMask(
-        document.getElementById('cep'),
-        {
-            mask: '00000-000',
-            lazy: false
-        }
-    )
-</script>
 </body>
 </html>
