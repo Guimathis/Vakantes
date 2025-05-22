@@ -172,7 +172,7 @@
                     </form>
                     <button id="btnSalvar" class="btn btn-primary" type="submit" th:hidden="${editar == false}">Salvar</button>
                     <a th:href="@{/vaga/deletar/{codigo}(codigo=${vaga.codigo})}" class="btn btn-danger" th:hidden="${vaga.codigo == 0}" > Excluir</a>
-                    <a href="/vaga/buscar" class="btn btn-secondary">Voltar</a>
+                    <a onclick="history.back()" class="btn btn-secondary">Voltar</a>
                 </div>
             </div>
         </div>
