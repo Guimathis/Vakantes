@@ -1,6 +1,6 @@
 package com.DevProj.Vakantes.repository;
 
-import com.DevProj.Vakantes.model.util.Status;
+import com.DevProj.Vakantes.model.util.enums.Status;
 import com.DevProj.Vakantes.model.vaga.Requisito;
 import com.DevProj.Vakantes.model.vaga.Vaga;
 import org.springframework.data.jpa.repository.JpaRepository;

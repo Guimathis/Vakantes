@@ -1,4 +1,4 @@
-package com.DevProj.Vakantes.model.util;
+package com.DevProj.Vakantes.model.util.enums;
 
 public enum Status {
     ATIVO(1, "ATIVO"),

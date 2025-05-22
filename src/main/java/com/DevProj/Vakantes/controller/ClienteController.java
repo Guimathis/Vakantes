@@ -2,9 +2,9 @@ package com.DevProj.Vakantes.controller;
 
 import com.DevProj.Vakantes.model.empresa.Cliente;
 import com.DevProj.Vakantes.model.usuario.Usuario;
-import com.DevProj.Vakantes.model.util.enums.TipoPessoa;
-import com.DevProj.Vakantes.model.util.Status;
-import com.DevProj.Vakantes.model.util.enums.UserRole;
+import com.DevProj.Vakantes.model.empresa.enums.TipoPessoa;
+import com.DevProj.Vakantes.model.util.enums.Status;
+import com.DevProj.Vakantes.model.usuario.enums.UserRole;
 import com.DevProj.Vakantes.service.ClienteService;
 import com.DevProj.Vakantes.service.exceptions.DataBindingViolationException;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,4 +1,4 @@
-package com.DevProj.Vakantes.model.vaga;
+package com.DevProj.Vakantes.model.vaga.enums;
 
 public enum StatusProcesso {
     ABERTA("Aberta"),

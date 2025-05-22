@@ -1,9 +1,10 @@
 package com.DevProj.Vakantes.model.candidato;
 
-import com.DevProj.Vakantes.model.util.enums.SituacaoCandidato;
+import com.DevProj.Vakantes.model.candidato.enums.SituacaoCandidato;
 import com.DevProj.Vakantes.model.util.Contato;
 import com.DevProj.Vakantes.model.util.Endereco;
-import com.DevProj.Vakantes.model.util.Status;
+import com.DevProj.Vakantes.model.util.enums.Status;
+import com.DevProj.Vakantes.model.vaga.Candidatura;
 import com.DevProj.Vakantes.model.vaga.Vaga;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;

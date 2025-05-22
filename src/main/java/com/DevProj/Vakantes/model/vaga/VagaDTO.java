@@ -1,5 +1,6 @@
 package com.DevProj.Vakantes.model.vaga;
 
+import com.DevProj.Vakantes.model.vaga.enums.StatusProcesso;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 

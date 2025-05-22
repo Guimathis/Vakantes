@@ -1,8 +1,8 @@
 package com.DevProj.Vakantes.service;
 
 import com.DevProj.Vakantes.model.candidato.Candidato;
-import com.DevProj.Vakantes.model.util.Status;
-import com.DevProj.Vakantes.model.vaga.StatusProcesso;
+import com.DevProj.Vakantes.model.util.enums.Status;
+import com.DevProj.Vakantes.model.vaga.enums.StatusProcesso;
 import com.DevProj.Vakantes.model.vaga.Requisito;
 import com.DevProj.Vakantes.model.vaga.Vaga;
 import com.DevProj.Vakantes.model.vaga.VagaDTO;

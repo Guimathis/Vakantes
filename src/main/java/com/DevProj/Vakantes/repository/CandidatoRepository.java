@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Optional;
 
 import com.DevProj.Vakantes.model.candidato.Candidato;
-import com.DevProj.Vakantes.model.util.Status;
+import com.DevProj.Vakantes.model.util.enums.Status;
 import org.springframework.data.repository.CrudRepository;
 
 public interface CandidatoRepository extends CrudRepository<Candidato, String> {
