@@ -21,7 +21,7 @@
                     </div>
                 </div>
 
-                <div th:insert="~{fragments/mensagemValidacao :: validation}"></div>
+                <div th:replace="~{fragments/mensagemValidacao :: validation}"></div>
 
                 <div th:if="${#lists.isEmpty(candidatosInscritos)}" class="alert alert-info">
                     Esta vaga ainda não possui candidaturas.

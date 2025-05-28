@@ -34,7 +34,7 @@
         <button type="submit" class="btn btn-primary w-100 py-2">Redefinir Senha</button>
 
         <div class="mt-3">
-            <div th:insert="~{fragments/mensagemValidacao :: validation}"></div>
+            <div th:replace="~{fragments/mensagemValidacao :: validation}"></div>
         </div>
     </form>
 </div>
