@@ -3,7 +3,6 @@ package com.DevProj.Vakantes.controller;
 import com.DevProj.Vakantes.model.empresa.Cliente;
 import com.DevProj.Vakantes.model.usuario.Usuario;
 import com.DevProj.Vakantes.model.empresa.enums.TipoPessoa;
-import com.DevProj.Vakantes.model.util.enums.Status;
 import com.DevProj.Vakantes.model.usuario.enums.UserRole;
 import com.DevProj.Vakantes.service.ClienteService;
 import com.DevProj.Vakantes.service.exceptions.DataBindingViolationException;
@@ -30,7 +29,7 @@ public class ClienteController {
     @GetMapping("/cadastro/{id}")
     public String buscarCliente(@PathVariable Long id, Model model) {
         model.addAttribute("tiposPessoa", TipoPessoa.values());
-        model.addAttribute("cliente", clienteService.buscarClientePorIdAndStatus(id, Status.ATIVO));
+        model.addAttribute("cliente", clienteService.buscarClientePorId(id));
         return "entities/cliente/cadastro";
     }
 
@@ -68,7 +67,7 @@ public String listarClientes(Model model, @ModelAttribute("currentUser") Usuario
 
     @GetMapping("/buscar/{id}")
     public String listarCliente(@PathVariable Long id, Model model) {
-        model.addAttribute("cliente", clienteService.buscarClientePorIdAndStatus(id, Status.ATIVO));
+        model.addAttribute("cliente", clienteService.buscarClientePorId(id));
         model.addAttribute("tiposPessoa", TipoPessoa.values());
         model.addAttribute("editar", false);
         return "entities/cliente/cadastro";
@@ -76,7 +75,7 @@ public String listarClientes(Model model, @ModelAttribute("currentUser") Usuario
 
     @GetMapping(value = "/editar/{id}")
     public String editarCliente(Model model, @PathVariable long id) {
-        model.addAttribute("cliente", clienteService.buscarClientePorIdAndStatus(id, Status.ATIVO));
+        model.addAttribute("cliente", clienteService.buscarClientePorId(id));
         model.addAttribute("tiposPessoa", TipoPessoa.values());
         model.addAttribute("editar", true);
         return "entities/cliente/cadastro";

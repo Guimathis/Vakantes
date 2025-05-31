@@ -99,14 +99,14 @@
                         </tr>
                         </thead>
                         <tbody>
-                        <tr th:each="candidato : ${candidatosCadastrados}">
+                        <tr th:each="candidato : ${vaga.candidatos}">
                             <td th:text="${candidato.nomeCandidato}"></td>
                             <td th:text="${candidato.cpf}"></td>
                             <td th:text="${candidato.contato.email}"></td>
                             <td th:text="${candidato.contato.telefone}"></td>
                             <td th:text="${candidato.dataNascimento}"></td>
                             <td>
-                                <form th:action="@{/vaga/candidato/deletar/{cpf}(cpf=${candidato.cpf})}" method="post">
+                                <form th:action="@{'/vaga/' + ${vaga.codigo} + '/remover/' + ${candidato.id}}   " method="post">
                                     <input type="hidden" name="_method" value="delete">
                                     <button type="submit" class="btn btn-danger btn-sm bi bi-trash"></button>
                                 </form>

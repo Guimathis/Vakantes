@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.IntStream;
 
 @Service
@@ -26,6 +27,9 @@ public class CandidatoService {
     @Autowired
     private ValidationService validationService;
 
+    @Autowired
+    CandidaturaService candidaturaService;
+
     public void cadastrar(Candidato candidato) throws DataBindingViolationException {
         validarCandidato(candidato);
         updateHabForExp(candidato);
@@ -36,6 +40,10 @@ public class CandidatoService {
         validarCandidato(candidato);
         updateHabForExp(candidato);
         candidatoRepository.save(candidato);
+    }
+
+    public List<Candidato> buscarTodosPorCpfs(List<String> cpfs) {
+        return candidatoRepository.findAllByCpfIn(cpfs);
     }
 
     private void updateHabForExp(Candidato candidato) {
@@ -142,10 +150,10 @@ public class CandidatoService {
     }
 
     @Transactional
-    public void deletarCandidato(String cpf) {
-        Candidato candidato = candidatoRepository.findByCpf(cpf)
+    public void deletarCandidato(String id) {
+        Candidato candidato = candidatoRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Candidato não encontrado"));
-        for (Vaga vaga : candidato.getVagas()) {
+        for (Vaga vaga : candidaturaService.buscarVagasPorCandidato(candidato.getCpf())) {
             vaga.getCandidatos().remove(candidato);
             vagaRepository.save(vaga);
         }
@@ -154,11 +162,15 @@ public class CandidatoService {
     public void deletar(Long id) {
         Candidato candidato = candidatoRepository.findByIdAndStatus(id, Status.ATIVO)
                 .orElseThrow(() -> new ObjectNotFoundException("Ocorreu um problema ao deletar o candidato"));
-        for (Vaga vaga : candidato.getVagas()) {
+        for (Vaga vaga : candidaturaService.buscarVagasPorCandidato(candidato.getCpf())) {
             vaga.getCandidatos().remove(candidato);
             vagaRepository.save(vaga);
         }
         candidato.setStatus(Status.INATIVO);
         candidatoRepository.save(candidato);
+    }
+
+    public void saveAll(List<Candidato> candidatos) {
+        candidatoRepository.saveAll(candidatos);
     }
 }

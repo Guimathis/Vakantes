@@ -36,8 +36,8 @@ public class Candidato {
 	@NotBlank(message = "O nome do candidato é obrigatório")
 	private String nomeCandidato;
 
-	@ManyToMany(mappedBy = "candidatos")
-	private List<Vaga> vagas = new ArrayList<>();
+	@OneToMany(mappedBy = "candidato", cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<Candidatura> candidaturas = new ArrayList<>();
 
 	@OneToMany(mappedBy = "candidato", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<Habilidade> habilidades = new ArrayList<>();
@@ -98,7 +98,6 @@ public class Candidato {
 		this.status = Status.ATIVO;
 	}
 
-
 	@PrePersist
 	protected void onCreate() {
 		criadoEm = new Date();
@@ -109,28 +108,12 @@ public class Candidato {
 		atualizadoEm = new Date();
 	}
 
-	public List<Vaga> getVagas() {
-		return vagas;
-	}
-
-	public void setVagas(List<Vaga> vagas) {
-		this.vagas = vagas;
-	}
-
 	public Long getId() {
 		return id;
 	}
 
 	public void setId(Long id) {
 		this.id = id;
-	}
-
-	public Date getCriadoEm() {
-		return criadoEm;
-	}
-
-	public Date getAtualizadoEm() {
-		return atualizadoEm;
 	}
 
 	public String getRg() {
@@ -157,44 +140,18 @@ public class Candidato {
 		this.nomeCandidato = nomeCandidato;
 	}
 
-	public String getDataNascimento() {
-		return dataNascimento;
+	public List<Candidatura> getCandidaturas() {
+		return candidaturas;
 	}
 
-	public void setDataNascimento(String dataNascimento) {
-		this.dataNascimento = dataNascimento;
+	public void setCandidaturas(List<Candidatura> candidaturas) {
+		this.candidaturas = candidaturas;
 	}
 
-	public Contato getContato() {
-		return contato;
-	}
-
-	public void setContato(Contato contato) {
-		this.contato = contato;
-	}
-
-	public Endereco getEndereco() {
-		return endereco;
-	}
-
-	public void setEndereco(Endereco endereco) {
-		this.endereco = endereco;
-	}
-
-	public SituacaoCandidato getSituacao() {
-		return situacao;
-	}
-
-	public void setSituacao(SituacaoCandidato situacao) {
-		this.situacao = situacao;
-	}
-
-	public Status getStatus() {
-		return status;
-	}
-
-	public void setStatus(Status status) {
-		this.status = status;
+	public List<Vaga> getVagas() {
+		return candidaturas.stream()
+				.map(Candidatura::getVaga)
+				.toList();
 	}
 
 	public List<Habilidade> getHabilidades() {
@@ -221,6 +178,30 @@ public class Candidato {
 		this.formacoes = formacoes;
 	}
 
+	public String getDataNascimento() {
+		return dataNascimento;
+	}
+
+	public void setDataNascimento(String dataNascimento) {
+		this.dataNascimento = dataNascimento;
+	}
+
+	public Contato getContato() {
+		return contato;
+	}
+
+	public void setContato(Contato contato) {
+		this.contato = contato;
+	}
+
+	public Endereco getEndereco() {
+		return endereco;
+	}
+
+	public void setEndereco(Endereco endereco) {
+		this.endereco = endereco;
+	}
+
 	public BigDecimal getPretensaoSalarial() {
 		return pretensaoSalarial;
 	}
@@ -243,5 +224,33 @@ public class Candidato {
 
 	public void setModalidadePreferida(String modalidadePreferida) {
 		this.modalidadePreferida = modalidadePreferida;
+	}
+
+	public SituacaoCandidato getSituacao() {
+		return situacao;
+	}
+
+	public void setSituacao(SituacaoCandidato situacao) {
+		this.situacao = situacao;
+	}
+
+	public Status getStatus() {
+		return status;
+	}
+
+	public void setStatus(Status status) {
+		this.status = status;
+	}
+
+	public Date getCriadoEm() {
+		return criadoEm;
+	}
+
+	public Date getAtualizadoEm() {
+		return atualizadoEm;
+	}
+
+	public void adicionarCandidatura(Candidatura candidatura) {
+		this.candidaturas.add(candidatura);
 	}
 }

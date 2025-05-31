@@ -110,7 +110,7 @@ public class ClienteService {
         return clienteRepository.findAllByStatus(Status.ATIVO);
     }
 
-    public Cliente buscarClientePorIdAndStatus(Long id, Status status) {
+    public Cliente buscarClientePorId(Long id) {
         return clienteRepository.findById(id).orElse(null);
     }
 

@@ -10,6 +10,8 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.util.List;
+
 
 @Controller
 @RequestMapping("/candidato")
@@ -20,16 +22,16 @@ public class CandidatoController {
 
     @GetMapping(value = "/cadastro")
     public String form(Model model) {
-        if(model.getAttribute("candidato") == null) {
+        if (model.getAttribute("candidato") == null) {
             model.addAttribute("candidato", new Candidato());
         }
         return "entities/candidato/cadastro";
     }
 
     @PostMapping("/salvar")
-    public String salvar(Candidato candidato, RedirectAttributes attributes){
+    public String salvar(Candidato candidato, RedirectAttributes attributes) {
         try {
-            if(candidato.getId() == null){
+            if (candidato.getId() == null) {
                 candidatoService.cadastrar(candidato);
                 attributes.addFlashAttribute("mensagem", "Candidato cadastrado com sucesso!");
                 return "redirect:/candidato/buscar";
@@ -46,7 +48,7 @@ public class CandidatoController {
     }
 
     @GetMapping("/buscar")
-    public String listaCandidatos(Model model)  {
+    public String listaCandidatos(Model model) {
         model.addAttribute("candidatos", candidatoService.buscarTodos());
         return "entities/candidato/buscar";
     }

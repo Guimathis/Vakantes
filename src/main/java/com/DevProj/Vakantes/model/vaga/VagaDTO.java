@@ -1,5 +1,6 @@
 package com.DevProj.Vakantes.model.vaga;
 
+import com.DevProj.Vakantes.model.candidato.Candidato;
 import com.DevProj.Vakantes.model.vaga.enums.StatusProcesso;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
@@ -36,17 +37,11 @@ public class VagaDTO {
 
     private List<Requisito> requisitos = new ArrayList<>();
 
+    private List<Candidato> candidatos = new ArrayList<>();
+
     private StatusProcesso statusProcesso;
 
     public VagaDTO() {
-    }
-
-    public VagaDTO(String nome, String descricao, String data, BigDecimal salario, Long idCliente) {
-        this.nome = nome;
-        this.descricao = descricao;
-        this.data = data;
-        this.salario = salario;
-        this.idCliente = idCliente;
     }
 
     public VagaDTO(Vaga vaga) {
@@ -62,6 +57,15 @@ public class VagaDTO {
         this.idCliente = vaga.getCliente().getId();
         this.requisitos = vaga.getRequisitos();
         this.statusProcesso = vaga.getStatusProcesso();
+        this.candidatos = vaga.getCandidatos();
+    }
+
+    public List<Candidato> getCandidatos() {
+        return candidatos;
+    }
+
+    public void setCandidatos(List<Candidato> candidatos) {
+        this.candidatos = candidatos;
     }
 
     public StatusProcesso getStatusProcesso() {

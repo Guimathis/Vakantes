@@ -23,4 +23,5 @@ public interface CandidatoRepository extends CrudRepository<Candidato, String> {
 	List<Candidato> findByNomeCandidato(String nomeCandidato);
 
 	Iterable<Candidato> findAllByStatus(Status status);
+
 }

@@ -40,13 +40,8 @@ public class Vaga implements Serializable {
     @NotNull
     private BigDecimal salario;
 
-    @ManyToMany
-    @JoinTable(
-            name = "vaga_candidato", schema = "vaga",
-            joinColumns = @JoinColumn(name = "vaga_id"),
-            inverseJoinColumns = @JoinColumn(name = "candidato_id")
-    )
-    private List<Candidato> candidatos = new ArrayList<>();
+    @OneToMany(mappedBy = "vaga", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Candidatura> candidaturas = new ArrayList<>();
 
     @OneToMany(mappedBy = "vaga", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Requisito> requisitos = new ArrayList<>();
@@ -106,7 +101,6 @@ public class Vaga implements Serializable {
         this.statusProcesso = StatusProcesso.ABERTA;
     }
 
-
     public Vaga(VagaDTO vagaDTO, Cliente cliente) {
         this.codigo = vagaDTO.getCodigo();
         this.nome = vagaDTO.getNome();
@@ -120,6 +114,20 @@ public class Vaga implements Serializable {
         this.cliente = cliente;
         this.status = Status.ATIVO;
         this.statusProcesso = vagaDTO.getStatusProcesso() == null ? StatusProcesso.ABERTA : vagaDTO.getStatusProcesso();
+    }
+
+    public List<Candidatura> getCandidaturas() {
+        return candidaturas;
+    }
+
+    public List<Candidato> getCandidatos() {
+        return candidaturas.stream()
+                .map(Candidatura::getCandidato)
+                .toList();
+    }
+
+    public void setCandidaturas(List<Candidatura> candidaturas) {
+        this.candidaturas = candidaturas;
     }
 
     public Date getCriadoEm() {
@@ -186,14 +194,6 @@ public class Vaga implements Serializable {
         this.salario = salario;
     }
 
-    public List<Candidato> getCandidatos() {
-        return candidatos;
-    }
-
-    public void setCandidatos(List<Candidato> candidatos) {
-        this.candidatos = candidatos;
-    }
-
     public Cliente getCliente() {
         return cliente;
     }
@@ -240,5 +240,9 @@ public class Vaga implements Serializable {
 
     public void setLocalizacao(String localizacao) {
         this.localizacao = localizacao;
+    }
+
+    public void adicionarCandidatura(Candidatura candidatura) {
+        this.candidaturas.add(candidatura);
     }
 }

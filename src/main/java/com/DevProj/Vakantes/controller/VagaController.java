@@ -1,6 +1,5 @@
 package com.DevProj.Vakantes.controller;
 
-import com.DevProj.Vakantes.model.candidato.Candidato;
 import com.DevProj.Vakantes.model.empresa.Cliente;
 import com.DevProj.Vakantes.model.util.enums.Status;
 import com.DevProj.Vakantes.model.vaga.Vaga;
@@ -8,10 +7,7 @@ import com.DevProj.Vakantes.model.vaga.VagaDTO;
 import com.DevProj.Vakantes.repository.CandidatoRepository;
 import com.DevProj.Vakantes.repository.ClienteRepository;
 import com.DevProj.Vakantes.repository.VagaRepository;
-import com.DevProj.Vakantes.service.CandidatoService;
-import com.DevProj.Vakantes.service.ClienteService;
-import com.DevProj.Vakantes.service.MatchingService;
-import com.DevProj.Vakantes.service.VagaService;
+import com.DevProj.Vakantes.service.*;
 import com.DevProj.Vakantes.service.exceptions.DataBindingViolationException;
 import com.DevProj.Vakantes.service.exceptions.ObjectNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -34,9 +30,6 @@ public class VagaController {
 
     @Autowired
     private ClienteRepository clienteRepository;
-
-    @Autowired
-    CandidatoService candidatoService;
 
     @Autowired
     ClienteService clienteService;
@@ -103,7 +96,7 @@ public class VagaController {
     }
 
     @GetMapping("/buscar/{codigo}")
-    public String detalhesVaga(@PathVariable("codigo") long codigo, Model model) {
+    public String detalhesVaga(@PathVariable("codigo") Long codigo, Model model) {
         Vaga vaga = vr.findByCodigoAndStatus(codigo, Status.ATIVO).orElseThrow(() -> new ObjectNotFoundException("Vaga não encontrada"));
         VagaDTO vagaDTO = new VagaDTO(vaga);
         model.addAttribute("vaga", vagaDTO);
@@ -115,9 +108,8 @@ public class VagaController {
     // Métodos que atualizam vaga
     // formulário edição de vaga
     @GetMapping(value = "/editar/{codigo}")
-    public String editarVaga(Model model, @PathVariable long codigo) {
+    public String editarVaga(Model model, @PathVariable Long codigo) {
         Vaga vaga = vr.findByCodigoAndStatus(codigo, Status.ATIVO).orElseThrow(() -> new ObjectNotFoundException("Vaga não encontrada"));
-        ;
         VagaDTO vagaDTO = new VagaDTO(vaga);
         model.addAttribute("vaga", vagaDTO);
         model.addAttribute("clientes", clienteService.buscarTodos());
@@ -127,14 +119,24 @@ public class VagaController {
 
 
     @GetMapping(value = "/detalhes/{codigo}")
-    public String detalhesVaga(Model model, @PathVariable long codigo) {
+    public String detalhesVaga(Model model, @PathVariable Long codigo) {
         Vaga vaga = vr.findByCodigoAndStatus(codigo, Status.ATIVO).orElseThrow(() -> new ObjectNotFoundException("Vaga não encontrada"));
         VagaDTO vagaDTO = new VagaDTO(vaga);
         model.addAttribute("vaga", vagaDTO);
-        model.addAttribute("candidato", new Candidato());
-        model.addAttribute("candidatosCadastrados", vaga.getCandidatos());
         model.addAttribute("candidatosSistema", candidatoRepository.findAll());
         return "entities/vaga/detalhes";
+    }
+
+    @PostMapping("/candidato/existente/{id}")
+    public String associarCandidatoExistente(@PathVariable("id") Long vagaId, @RequestParam(required = false) List<String> cpfs,
+                                             RedirectAttributes redirectAttributes) {
+        try {
+            vagaService.inscreverCandidatos(vagaId, cpfs);
+            redirectAttributes.addFlashAttribute("mensagem", "Candidato(s) inscrito(s) com sucesso!");
+        } catch (DataBindingViolationException | ObjectNotFoundException e) {
+            redirectAttributes.addFlashAttribute("mensagem_erro", e.getMessage());
+        }
+        return "redirect:/vaga/detalhes/" + vagaId;
     }
 
     @GetMapping("/selecao/{codigo}")
@@ -168,45 +170,21 @@ public class VagaController {
         return "redirect:/vaga/buscar";
     }
 
-    // ADICIONAR CANDIDATO
-    @PostMapping("/candidato/novo/{codigo}")
-    public String detalhesVagaPost(@PathVariable("codigo") long codigo, @Valid Candidato candidato,
-                                   BindingResult result, RedirectAttributes attributes) {
-
-        if (result.hasErrors()) {
-            attributes.addFlashAttribute("mensagem", "Verifique os campos");
-            return "redirect:/vaga/detalhes/{codigo}";
+    @PostMapping("/{codigo}/remover/{id}")
+    public String deletarCandidato(@PathVariable Long codigo, @PathVariable Long id, HttpServletRequest request, RedirectAttributes attributes) {
+        if (codigo == null) {
+            attributes.addFlashAttribute("mensagem_erro", "Vaga não encontrada");
+            return "redirect:" + request.getHeader("Referer");
+        }
+        if (id == null) {
+            attributes.addFlashAttribute("mensagem_erro", "Candidato não encontrado");
+            return "redirect:" + request.getHeader("Referer");
         }
 
-        try {
-            vagaService.adicionarCandidatoAVaga(codigo, candidato);
-            attributes.addFlashAttribute("mensagem", "Candidato cadastrado com sucesso!");
-        } catch (Exception e) {
-            attributes.addFlashAttribute("mensagem_erro", e.getMessage());
-        }
-
-        return "redirect:/vaga/detalhes/{codigo}";
-    }
-
-    @PostMapping("/candidato/deletar/{cpf}")
-    public String deletarCandidato(@PathVariable String cpf, HttpServletRequest request, RedirectAttributes attributes) {
-        candidatoService.deletarCandidato(cpf);
+        vagaService.removerCandidatura(codigo, id);
         attributes.addFlashAttribute("mensagem", "Candidato removido com sucesso!");
         return "redirect:" + request.getHeader("Referer");
     }
-
-    @PostMapping("/candidato/existente/{id}")
-    public String associarCandidatoExistente(@PathVariable("id") Long vagaId, @RequestParam(defaultValue = "cpfs", required = false) List<String> cpfs,
-                                             RedirectAttributes redirectAttributes) {
-        try {
-            vagaService.inscreverCandidatos(vagaId, cpfs);
-            redirectAttributes.addFlashAttribute("mensagem", "Candidato inscrito com sucesso!");
-        } catch (DataBindingViolationException | ObjectNotFoundException e) {
-            redirectAttributes.addFlashAttribute("mensagem_erro", e.getMessage());
-        }
-        return "redirect:/vaga/detalhes/" + vagaId;
-    }
-
 
     // UPDATE vaga
     @RequestMapping(value = "/editar-vaga", method = RequestMethod.POST)
@@ -214,7 +192,7 @@ public class VagaController {
         vr.save(vaga);
         attributes.addFlashAttribute("success", "Vaga alterada com sucesso!");
 
-        long codigoLong = vaga.getCodigo();
+        Long codigoLong = vaga.getCodigo();
         String codigo = "" + codigoLong;
         return "redirect:/" + codigo;
     }
