@@ -1,11 +1,11 @@
 package com.DevProj.Vakantes.service;
 
 import com.DevProj.Vakantes.model.candidato.Candidato;
-import com.DevProj.Vakantes.model.util.Status;
+import com.DevProj.Vakantes.model.util.enums.Status;
+import com.DevProj.Vakantes.model.vaga.enums.StatusProcesso;
+import com.DevProj.Vakantes.model.vaga.Requisito;
 import com.DevProj.Vakantes.model.vaga.Vaga;
 import com.DevProj.Vakantes.model.vaga.VagaDTO;
-import com.DevProj.Vakantes.repository.CandidatoRepository;
-import com.DevProj.Vakantes.repository.ClienteRepository;
 import com.DevProj.Vakantes.repository.VagaRepository;
 import com.DevProj.Vakantes.service.exceptions.DataBindingViolationException;
 import com.DevProj.Vakantes.service.exceptions.ObjectNotFoundException;
@@ -21,55 +21,64 @@ public class VagaService {
     private VagaRepository vagaRepository;
 
     @Autowired
-    private CandidatoRepository candidatoRepository;
+    private CandidatoService candidatoService;
 
     @Autowired
-    ClienteRepository clienteRepository;
+    CandidaturaService candidaturaService;
+
+    @Autowired
+    private ClienteService clienteService;
+
 
     public Iterable<Vaga> buscarTodas() {
         return vagaRepository.findAllByStatus(Status.ATIVO);
     }
 
-    public void inscreverCandidatos(Long vagaId, List<String> cpfs) {
-        Vaga vaga = vagaRepository.findByCodigoAndStatus(vagaId, Status.ATIVO)
+    public Vaga buscarVagaPorID(Long id) {
+        return vagaRepository.findByCodigoAndStatus(id, Status.ATIVO)
                 .orElseThrow(() -> new ObjectNotFoundException("Vaga não encontrada"));
+    }
 
-        List<Candidato> candidatos = candidatoRepository.findAllByCpfIn(cpfs);
-        StringBuilder mensagemErro = new StringBuilder();
-
-        for (Candidato candidato : candidatos) {
-            if (vaga.getCandidatos().contains(candidato)) {
-                mensagemErro.append("Candidato ").append(candidato.getNomeCandidato()).append(" já está cadastrado na vaga. ");
-            } else {
-                candidato.getVagas().add(vaga);
-                vaga.getCandidatos().add(candidato);
-            }
-        }
-
-        if (!mensagemErro.isEmpty()) {
-            throw new DataBindingViolationException(mensagemErro.toString());
-        }
-
-        candidatoRepository.saveAll(candidatos);
+    public void salvarVaga(Vaga vaga) {
         vagaRepository.save(vaga);
     }
 
-    public void adicionarCandidatoAVaga(long codigo, Candidato candidato) {
-        Vaga vaga = vagaRepository.findByCodigoAndStatus(codigo, Status.ATIVO).orElseThrow(() -> new ObjectNotFoundException("Vaga não encontrada"));
+    public void inscreverCandidatos(Long vagaId, List<String> cpfs) {
+        Vaga vaga = buscarVagaPorID(vagaId);
+        List<Candidato> candidatos = candidatoService.buscarTodosPorCpfs(cpfs);
+        candidaturaService.criarCandidaturas(vaga, candidatos);
+        atualizarStatusVaga(vaga);
+        candidatoService.saveAll(candidatos);
+        salvarVaga(vaga);
+    }
 
-        // Verifica se o candidato já está cadastrado na vaga
-        if (vaga.getCandidatos().stream().anyMatch(c -> c.getCpf().equals(candidato.getCpf()) || c.getRg().equals(candidato.getRg()))) {
-            throw new DataBindingViolationException("Candidato já cadastrado na vaga.");
+    private void atualizarStatusVaga(Vaga vaga) {
+        if (vaga.getStatusProcesso() == StatusProcesso.ABERTA) {
+            vaga.setStatusProcesso(StatusProcesso.SELECAO);
         }
-
-        candidato.getVagas().add(vaga);
-        vaga.getCandidatos().add(candidato);
-        candidatoRepository.save(candidato);
-        vagaRepository.save(vaga);
     }
 
     public Long cadastrarVaga(VagaDTO vagaDTO) {
-        Vaga vaga = new Vaga(vagaDTO, clienteRepository.findById(vagaDTO.getIdCliente()).get());
+        Vaga vaga = new Vaga(vagaDTO, clienteService.buscarClientePorId(vagaDTO.getIdCliente()));
+
+        // Limpar a lista de requisitos existente
+        vaga.getRequisitos().clear();
+
+        // Copiar os requisitos do DTO para a entidade
+        if (vagaDTO.getRequisitos() != null && !vagaDTO.getRequisitos().isEmpty()) {
+            for (Requisito requisito : vagaDTO.getRequisitos()) {
+                // Criar um novo requisito e copiar os dados
+                Requisito novoRequisito = new Requisito();
+                novoRequisito.setNome(requisito.getNome());
+                novoRequisito.setNivelMinimo(requisito.getNivelMinimo());
+                novoRequisito.setObrigatorio(requisito.getObrigatorio());
+                novoRequisito.setVaga(vaga);
+
+                // Adicionar o novo requisito à lista da vaga
+                vaga.getRequisitos().add(novoRequisito);
+            }
+        }
+
         vagaRepository.save(vaga);
         return vaga.getCodigo();
     }
@@ -81,6 +90,16 @@ public class VagaService {
             vagaRepository.save(vaga);
         } catch (Exception e) {
             throw new DataBindingViolationException("Não foi possível deletar a vaga " + vaga.getNome() + ", pois há candidatos vinculados a ela.");
+        }
+    }
+
+    public void removerCandidatura(long codigo, long id) {
+        Vaga vaga = vagaRepository.findByCodigoAndStatus(codigo, Status.ATIVO)
+                .orElseThrow(() -> new ObjectNotFoundException("Vaga não encontrada"));
+        candidaturaService.deleteCandidatura(codigo, id);
+        if(vaga.getCandidaturas().isEmpty()) {
+            vaga.setStatusProcesso(StatusProcesso.ABERTA);
+            salvarVaga(vaga);
         }
     }
 }

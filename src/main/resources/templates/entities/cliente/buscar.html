@@ -12,7 +12,7 @@
 <body class="d-flex flex-column min-vh-100 padding-navbar">
 
 <header>
-    <div th:insert="~{fragments/navbar :: navbar}"></div>
+    <div th:replace="~{fragments/navbar :: navbar}"></div>
 </header>
 
 <div class="container-fluid flex-grow-1" style="padding-top: 15px; padding-bottom: 15px;">
@@ -36,7 +36,7 @@
                 <div class="card-header text-center">
                     <h3>Lista de Clientes</h3>
                 </div>
-                <div class="md-9" th:insert="~{fragments/mensagemValidacao :: validation}"></div>
+                <div class="md-9" th:replace="~{fragments/mensagemValidacao :: validation}"></div>
                 <div class="card-body">
                     <div th:if="${#lists.isEmpty(clientes)}">
                         <p>Nenhum cliente cadastrado.</p>
@@ -82,7 +82,7 @@
     </div>
 </div>
 
-<div th:insert="~{fragments/footer :: footer}"></div>
+<div th:replace="~{fragments/footer :: footer}"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"

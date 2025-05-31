@@ -1,11 +1,13 @@
 package com.DevProj.Vakantes.model.vaga;
 
-import com.DevProj.Vakantes.model.empresa.Cliente;
-import jakarta.validation.constraints.NotBlank;
+import com.DevProj.Vakantes.model.candidato.Candidato;
+import com.DevProj.Vakantes.model.vaga.enums.StatusProcesso;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 
 public class VagaDTO {
     private long codigo;
@@ -25,15 +27,21 @@ public class VagaDTO {
     @NotNull(message = "Selecione um cliente.")
     private Long idCliente;
 
-    public VagaDTO() {
-    }
+    private String nivelExperiencia; // Júnior, Pleno, Sênior
 
-    public VagaDTO(String nome, String descricao, String data, BigDecimal salario, Long idCliente) {
-        this.nome = nome;
-        this.descricao = descricao;
-        this.data = data;
-        this.salario = salario;
-        this.idCliente = idCliente;
+    private String tipoContrato; // CLT, PJ, Estágio
+
+    private String modalidadeTrabalho; // Presencial, Remoto, Híbrido
+
+    private String localizacao; // Cidade/Estado
+
+    private List<Requisito> requisitos = new ArrayList<>();
+
+    private List<Candidato> candidatos = new ArrayList<>();
+
+    private StatusProcesso statusProcesso;
+
+    public VagaDTO() {
     }
 
     public VagaDTO(Vaga vaga) {
@@ -42,7 +50,30 @@ public class VagaDTO {
         this.descricao = vaga.getDescricao();
         this.data = vaga.getData();
         this.salario = vaga.getSalario();
+        this.nivelExperiencia = vaga.getNivelExperiencia();
+        this.tipoContrato = vaga.getTipoContrato();
+        this.modalidadeTrabalho = vaga.getModalidadeTrabalho();
+        this.localizacao = vaga.getLocalizacao();
         this.idCliente = vaga.getCliente().getId();
+        this.requisitos = vaga.getRequisitos();
+        this.statusProcesso = vaga.getStatusProcesso();
+        this.candidatos = vaga.getCandidatos();
+    }
+
+    public List<Candidato> getCandidatos() {
+        return candidatos;
+    }
+
+    public void setCandidatos(List<Candidato> candidatos) {
+        this.candidatos = candidatos;
+    }
+
+    public StatusProcesso getStatusProcesso() {
+        return statusProcesso;
+    }
+
+    public void setStatusProcesso(StatusProcesso statusProcesso) {
+        this.statusProcesso = statusProcesso;
     }
 
     public long getCodigo() {
@@ -91,5 +122,45 @@ public class VagaDTO {
 
     public void setIdCliente(Long idCliente) {
         this.idCliente = idCliente;
+    }
+
+    public String getNivelExperiencia() {
+        return nivelExperiencia;
+    }
+
+    public void setNivelExperiencia(String nivelExperiencia) {
+        this.nivelExperiencia = nivelExperiencia;
+    }
+
+    public String getTipoContrato() {
+        return tipoContrato;
+    }
+
+    public void setTipoContrato(String tipoContrato) {
+        this.tipoContrato = tipoContrato;
+    }
+
+    public String getModalidadeTrabalho() {
+        return modalidadeTrabalho;
+    }
+
+    public void setModalidadeTrabalho(String modalidadeTrabalho) {
+        this.modalidadeTrabalho = modalidadeTrabalho;
+    }
+
+    public String getLocalizacao() {
+        return localizacao;
+    }
+
+    public void setLocalizacao(String localizacao) {
+        this.localizacao = localizacao;
+    }
+
+    public List<Requisito> getRequisitos() {
+        return requisitos;
+    }
+
+    public void setRequisitos(List<Requisito> requisitos) {
+        this.requisitos = requisitos;
     }
 }

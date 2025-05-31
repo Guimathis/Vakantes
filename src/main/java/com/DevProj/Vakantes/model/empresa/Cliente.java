@@ -1,10 +1,10 @@
 package com.DevProj.Vakantes.model.empresa;
 
-import com.DevProj.Vakantes.model.util.enums.TipoPessoa;
+import com.DevProj.Vakantes.model.empresa.enums.TipoPessoa;
 import com.DevProj.Vakantes.model.usuario.Usuario;
 import com.DevProj.Vakantes.model.util.Contato;
 import com.DevProj.Vakantes.model.util.Endereco;
-import com.DevProj.Vakantes.model.util.Status;
+import com.DevProj.Vakantes.model.util.enums.Status;
 import com.DevProj.Vakantes.model.vaga.Vaga;
 import jakarta.persistence.*;
 

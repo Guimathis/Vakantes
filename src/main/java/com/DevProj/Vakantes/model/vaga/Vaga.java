@@ -2,7 +2,8 @@ package com.DevProj.Vakantes.model.vaga;
 
 import com.DevProj.Vakantes.model.candidato.Candidato;
 import com.DevProj.Vakantes.model.empresa.Cliente;
-import com.DevProj.Vakantes.model.util.Status;
+import com.DevProj.Vakantes.model.util.enums.Status;
+import com.DevProj.Vakantes.model.vaga.enums.StatusProcesso;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
@@ -19,154 +20,229 @@ import java.util.List;
 @Table(name = "vaga", schema = "vaga")
 public class Vaga implements Serializable {
 
-	@Serial
-	private static final long serialVersionUID = 1L;
-	
-	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "vaga_seq")
-	@SequenceGenerator(name = "vaga_seq", sequenceName = "vaga.vaga_seq", allocationSize = 1)
-	private long codigo;
-	
-	@NotEmpty
-	private String nome;
-	
-	@NotEmpty
-	private String descricao;
-	
-	@NotEmpty
-	private String data;
+    @Serial
+    private static final long serialVersionUID = 1L;
 
-	@NotNull
-	private BigDecimal salario;
+    @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "vaga_seq")
+    @SequenceGenerator(name = "vaga_seq", sequenceName = "vaga.vaga_seq", allocationSize = 1)
+    private long codigo;
 
-	@ManyToMany
-	@JoinTable(
-			name = "vaga_candidato", schema = "vaga",
-			joinColumns = @JoinColumn(name = "vaga_id"),
-			inverseJoinColumns = @JoinColumn(name = "candidato_id")
-	)
-	private List<Candidato> candidatos = new ArrayList<>();
+    @NotEmpty
+    private String nome;
 
-	@ManyToOne
-	private Cliente cliente;
+    @NotEmpty
+    private String descricao;
 
-	@Column(nullable = false)
-	@Enumerated(EnumType.STRING)
-	private Status status;
+    @NotEmpty
+    private String data;
 
-	@Temporal(TemporalType.TIMESTAMP)
-	@Column(name = "criado_em", updatable = false)
-	private Date criadoEm;
+    @NotNull
+    private BigDecimal salario;
 
-	@Temporal(TemporalType.TIMESTAMP)
-	@Column(name = "atualizado_em", nullable = true)
-	private Date atualizadoEm;
+    @OneToMany(mappedBy = "vaga", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Candidatura> candidaturas = new ArrayList<>();
 
-	@PrePersist
-	protected void onCreate() {
-		criadoEm = new Date();
-	}
+    @OneToMany(mappedBy = "vaga", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Requisito> requisitos = new ArrayList<>();
 
-	@PreUpdate
-	protected void onUpdate() {
-		atualizadoEm = new Date();
-	}
+    private String nivelExperiencia; // Júnior, Pleno, Sênior
 
-	public Vaga() {
+    private String tipoContrato; // CLT, PJ, Estágio
 
-		this.cliente = new Cliente();
-	}
+    private String modalidadeTrabalho; // Presencial, Remoto, Híbrido
 
-	public Vaga(long codigo, String nome, String descricao, String data, BigDecimal salario, List<Candidato> candidatos,
-			Cliente cliente) {
-		this.codigo = codigo;
-		this.nome = nome;
-		this.descricao = descricao;
-		this.data = data;
-		this.salario = salario;
-		this.cliente = cliente;
-		this.status = Status.ATIVO;
-	}
+    private String localizacao; // Cidade/Estado
 
-	public Vaga(VagaDTO vagaDTO, Cliente cliente) {
-		this.codigo = vagaDTO.getCodigo();
-		this.nome = vagaDTO.getNome();
-		this.descricao = vagaDTO.getDescricao();
-		this.data = vagaDTO.getData();
-		this.salario = vagaDTO.getSalario();
-		this.cliente = cliente;
-		this.status = Status.ATIVO;
-	}
+    @ManyToOne
+    private Cliente cliente;
 
-	public Date getCriadoEm() {
-		return criadoEm;
-	}
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    private Status status;
 
-	public Date getAtualizadoEm() {
-		return atualizadoEm;
-	}
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    private StatusProcesso statusProcesso;
 
-	public Status getStatus() {
-		return status;
-	}
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "criado_em", updatable = false)
+    private Date criadoEm;
 
-	public void setStatus(Status status) {
-		this.status = status;
-	}
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "atualizado_em", nullable = true)
+    private Date atualizadoEm;
 
-	public long getCodigo() {
-		return codigo;
-	}
+    @PrePersist
+    protected void onCreate() {
+        criadoEm = new Date();
+    }
 
-	public void setCodigo(long codigo) {
-		this.codigo = codigo;
-	}
+    @PreUpdate
+    protected void onUpdate() {
+        atualizadoEm = new Date();
+    }
 
-	public String getNome() {
-		return nome;
-	}
+    public Vaga() {
+        this.cliente = new Cliente();
+        this.status = Status.ATIVO;
+        this.statusProcesso = StatusProcesso.ABERTA;
+    }
 
-	public void setNome(String nome) {
-		this.nome = nome;
-	}
+    public Vaga(long codigo, String nome, String descricao, String data, BigDecimal salario, List<Candidato> candidatos,
+                Cliente cliente) {
+        this.codigo = codigo;
+        this.nome = nome;
+        this.descricao = descricao;
+        this.data = data;
+        this.salario = salario;
+        this.cliente = cliente;
+        this.status = Status.ATIVO;
+        this.statusProcesso = StatusProcesso.ABERTA;
+    }
 
-	public String getDescricao() {
-		return descricao;
-	}
+    public Vaga(VagaDTO vagaDTO, Cliente cliente) {
+        this.codigo = vagaDTO.getCodigo();
+        this.nome = vagaDTO.getNome();
+        this.descricao = vagaDTO.getDescricao();
+        this.data = vagaDTO.getData();
+        this.salario = vagaDTO.getSalario();
+        this.nivelExperiencia = vagaDTO.getNivelExperiencia();
+        this.tipoContrato = vagaDTO.getTipoContrato();
+        this.modalidadeTrabalho = vagaDTO.getModalidadeTrabalho();
+        this.localizacao = vagaDTO.getLocalizacao();
+        this.cliente = cliente;
+        this.status = Status.ATIVO;
+        this.statusProcesso = vagaDTO.getStatusProcesso() == null ? StatusProcesso.ABERTA : vagaDTO.getStatusProcesso();
+    }
 
-	public void setDescricao(String descricao) {
-		this.descricao = descricao;
-	}
+    public List<Candidatura> getCandidaturas() {
+        return candidaturas;
+    }
 
-	public String getData() {
-		return data;
-	}
+    public List<Candidato> getCandidatos() {
+        return candidaturas.stream()
+                .map(Candidatura::getCandidato)
+                .toList();
+    }
 
-	public void setData(String data) {
-		this.data = data;
-	}
+    public void setCandidaturas(List<Candidatura> candidaturas) {
+        this.candidaturas = candidaturas;
+    }
 
-	public BigDecimal getSalario() {
-		return salario;
-	}
+    public Date getCriadoEm() {
+        return criadoEm;
+    }
 
-	public void setSalario(BigDecimal salario) {
-		this.salario = salario;
-	}
+    public Date getAtualizadoEm() {
+        return atualizadoEm;
+    }
 
-	public List<Candidato> getCandidatos() {
-		return candidatos;
-	}
+    public Status getStatus() {
+        return status;
+    }
 
-	public void setCandidatos(List<Candidato> candidatos) {
-		this.candidatos = candidatos;
-	}
+    public void setStatus(Status status) {
+        this.status = status;
+    }
 
-	public Cliente getCliente() {
-		return cliente;
-	}
+    public StatusProcesso getStatusProcesso() {
+        return statusProcesso;
+    }
 
-	public void setCliente(Cliente cliente) {
-		this.cliente = cliente;
-	}
+    public void setStatusProcesso(StatusProcesso statusProcesso) {
+        this.statusProcesso = statusProcesso;
+    }
+
+    public long getCodigo() {
+        return codigo;
+    }
+
+    public void setCodigo(long codigo) {
+        this.codigo = codigo;
+    }
+
+    public String getNome() {
+        return nome;
+    }
+
+    public void setNome(String nome) {
+        this.nome = nome;
+    }
+
+    public String getDescricao() {
+        return descricao;
+    }
+
+    public void setDescricao(String descricao) {
+        this.descricao = descricao;
+    }
+
+    public String getData() {
+        return data;
+    }
+
+    public void setData(String data) {
+        this.data = data;
+    }
+
+    public BigDecimal getSalario() {
+        return salario;
+    }
+
+    public void setSalario(BigDecimal salario) {
+        this.salario = salario;
+    }
+
+    public Cliente getCliente() {
+        return cliente;
+    }
+
+    public void setCliente(Cliente cliente) {
+        this.cliente = cliente;
+    }
+
+    public List<Requisito> getRequisitos() {
+        return requisitos;
+    }
+
+    public void setRequisitos(List<Requisito> requisitos) {
+        this.requisitos = requisitos;
+    }
+
+    public String getNivelExperiencia() {
+        return nivelExperiencia;
+    }
+
+    public void setNivelExperiencia(String nivelExperiencia) {
+        this.nivelExperiencia = nivelExperiencia;
+    }
+
+    public String getTipoContrato() {
+        return tipoContrato;
+    }
+
+    public void setTipoContrato(String tipoContrato) {
+        this.tipoContrato = tipoContrato;
+    }
+
+    public String getModalidadeTrabalho() {
+        return modalidadeTrabalho;
+    }
+
+    public void setModalidadeTrabalho(String modalidadeTrabalho) {
+        this.modalidadeTrabalho = modalidadeTrabalho;
+    }
+
+    public String getLocalizacao() {
+        return localizacao;
+    }
+
+    public void setLocalizacao(String localizacao) {
+        this.localizacao = localizacao;
+    }
+
+    public void adicionarCandidatura(Candidatura candidatura) {
+        this.candidaturas.add(candidatura);
+    }
 }

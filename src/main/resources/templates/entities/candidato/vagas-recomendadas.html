@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{fragments/base :: layout(~{::main})}">
+<head>
+    <title>Vagas Recomendadas</title>
+</head>
+<body>
+    <main>
+        <div class="container mt-4">
+            <div class="row">
+                <div class="col-md-12">
+                    <h2>Vagas Recomendadas para o Candidato</h2>
+                    <h3 th:text="${candidato.nomeCandidato}"></h3>
+
+                    <div th:if="${#lists.isEmpty(vagasRecomendadas)}" class="alert alert-info">
+                        Não foram encontradas vagas compatíveis com este candidato.
+                    </div>
+
+                    <div th:unless="${#lists.isEmpty(vagasRecomendadas)}" class="row">
+                        <div th:each="match : ${vagasRecomendadas}" class="col-md-6 mb-4">
+                            <div class="card">
+                                <div class="card-header d-flex justify-content-between align-items-center">
+                                    <h5 class="mb-0" th:text="${match.vaga.nome}"></h5>
+                                    <span class="badge bg-primary" th:text="'Pontuação: ' + ${match.pontuacao}"></span>
+                                </div>
+                                <div class="card-body">
+                                    <p th:text="${match.vaga.descricao}"></p>
+
+                                    <h6>Salário</h6>
+                                    <p th:text="'R$ ' + ${match.vaga.salario}"></p>
+
+                                    <h6>Empresa</h6>
+                                    <p th:text="${match.vaga.cliente.nome}"></p>
+
+                                    <h6>Requisitos Atendidos</h6>
+                                    <p th:text="${match.detalhesCompatibilidade.requisitosAtendidos}"></p>
+
+                                    <h6>Requisitos Atendidos Parcialmente</h6>
+                                    <p th:text="${match.detalhesCompatibilidade.requisitosAtendidosParcialmente}"></p>
+
+                                    <h6>Requisitos Não Atendidos</h6>
+                                    <p th:text="${match.detalhesCompatibilidade.requisitosNaoAtendidos}"></p>
+
+                                    <h6>Modalidade de Trabalho</h6>
+                                    <p th:text="${match.detalhesCompatibilidade.modalidade}"></p>
+
+                                    <h6>Compatibilidade Salarial</h6>
+                                    <p th:text="${match.detalhesCompatibilidade.salario}"></p>
+
+                                    <div class="mt-3">
+                                        <a th:href="@{'/vaga/detalhes/' + ${match.vaga.codigo}}" class="btn btn-primary">Ver Detalhes da Vaga</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-4">
+                        <a th:href="@{'/candidato/buscar/' + ${candidato.id}}" class="btn btn-secondary">Voltar para Perfil do Candidato</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</body>
+</html>

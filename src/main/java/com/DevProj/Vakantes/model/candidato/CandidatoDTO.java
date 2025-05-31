@@ -1,10 +1,13 @@
 package com.DevProj.Vakantes.model.candidato;
 
-import com.DevProj.Vakantes.model.util.enums.SituacaoCandidato;
+import com.DevProj.Vakantes.model.candidato.enums.SituacaoCandidato;
 import com.DevProj.Vakantes.model.util.Contato;
 import com.DevProj.Vakantes.model.util.Endereco;
-import com.DevProj.Vakantes.model.util.Status;
+import com.DevProj.Vakantes.model.util.enums.Status;
+import com.DevProj.Vakantes.model.vaga.Candidatura;
 import com.DevProj.Vakantes.model.vaga.Vaga;
+import com.DevProj.Vakantes.service.CandidaturaService;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,7 +19,7 @@ public class CandidatoDTO {
     private String rg;
     private String cpf;
     private String nomeCandidato;
-    private List<Vaga> vagas = new ArrayList<>();
+    private List<Candidatura> candidaturas = new ArrayList<>();
     private String dataNascimento;
     private Contato contato;
     private Endereco endereco;
@@ -26,12 +29,12 @@ public class CandidatoDTO {
     public CandidatoDTO() {
     }
 
-    public CandidatoDTO(String rg, String cpf, String nomeCandidato, List<Vaga> vagas,
+    public CandidatoDTO(String rg, String cpf, String nomeCandidato, List<Candidatura> candidaturas,
                         String dataNascimento, Contato contato, Endereco endereco) {
         this.rg = rg;
         this.cpf = cpf;
         this.nomeCandidato = nomeCandidato;
-        this.vagas = vagas;
+        this.candidaturas = candidaturas;
         this.dataNascimento = dataNascimento;
         this.contato = contato;
         this.endereco = endereco;
@@ -42,7 +45,7 @@ public class CandidatoDTO {
         this.rg = candidato.getRg();
         this.cpf = candidato.getCpf();
         this.nomeCandidato = candidato.getNomeCandidato();
-        this.vagas = candidato.getVagas();
+        this.candidaturas = candidato.getCandidaturas();
         this.dataNascimento = candidato.getDataNascimento().toString();
         this.contato = candidato.getContato();
         this.endereco = candidato.getEndereco();
@@ -84,12 +87,12 @@ public class CandidatoDTO {
         this.nomeCandidato = nomeCandidato;
     }
 
-    public List<Vaga> getVagas() {
-        return vagas;
+    public List<Candidatura> getCandidaturas() {
+        return candidaturas;
     }
 
-    public void setVagas(List<Vaga> vagas) {
-        this.vagas = vagas;
+    public void setCandidaturas(List<Candidatura> candidaturas) {
+        this.candidaturas = candidaturas;
     }
 
     public String getDataNascimento() {

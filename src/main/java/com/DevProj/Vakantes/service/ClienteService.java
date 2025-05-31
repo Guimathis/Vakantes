@@ -2,8 +2,8 @@ package com.DevProj.Vakantes.service;
 
 import com.DevProj.Vakantes.model.empresa.Cliente;
 import com.DevProj.Vakantes.model.usuario.Usuario;
-import com.DevProj.Vakantes.model.util.Status;
-import com.DevProj.Vakantes.model.util.enums.TipoPessoa;
+import com.DevProj.Vakantes.model.util.enums.Status;
+import com.DevProj.Vakantes.model.empresa.enums.TipoPessoa;
 import com.DevProj.Vakantes.model.vaga.Vaga;
 import com.DevProj.Vakantes.repository.ClienteRepository;
 import com.DevProj.Vakantes.repository.VagaRepository;
@@ -110,7 +110,7 @@ public class ClienteService {
         return clienteRepository.findAllByStatus(Status.ATIVO);
     }
 
-    public Cliente buscarClientePorIdAndStatus(Long id, Status status) {
+    public Cliente buscarClientePorId(Long id) {
         return clienteRepository.findById(id).orElse(null);
     }
 

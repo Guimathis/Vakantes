@@ -1,8 +1,8 @@
 package com.DevProj.Vakantes.model.usuario;
 
-import com.DevProj.Vakantes.model.util.enums.UserRole;
+import com.DevProj.Vakantes.model.usuario.enums.UserRole;
 import com.DevProj.Vakantes.model.util.Contato;
-import com.DevProj.Vakantes.model.util.Status;
+import com.DevProj.Vakantes.model.util.enums.Status;
 import jakarta.persistence.*;
 
 import java.util.Date;

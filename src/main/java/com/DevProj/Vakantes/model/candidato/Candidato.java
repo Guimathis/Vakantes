@@ -1,14 +1,16 @@
 package com.DevProj.Vakantes.model.candidato;
 
-import com.DevProj.Vakantes.model.util.enums.SituacaoCandidato;
+import com.DevProj.Vakantes.model.candidato.enums.SituacaoCandidato;
 import com.DevProj.Vakantes.model.util.Contato;
 import com.DevProj.Vakantes.model.util.Endereco;
-import com.DevProj.Vakantes.model.util.Status;
+import com.DevProj.Vakantes.model.util.enums.Status;
+import com.DevProj.Vakantes.model.vaga.Candidatura;
 import com.DevProj.Vakantes.model.vaga.Vaga;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -34,8 +36,17 @@ public class Candidato {
 	@NotBlank(message = "O nome do candidato é obrigatório")
 	private String nomeCandidato;
 
-	@ManyToMany(mappedBy = "candidatos")
-	private List<Vaga> vagas = new ArrayList<>();
+	@OneToMany(mappedBy = "candidato", cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<Candidatura> candidaturas = new ArrayList<>();
+
+	@OneToMany(mappedBy = "candidato", cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<Habilidade> habilidades = new ArrayList<>();
+
+	@OneToMany(mappedBy = "candidato", cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<Experiencia> experiencias = new ArrayList<>();
+
+	@OneToMany(mappedBy = "candidato", cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<Formacao> formacoes = new ArrayList<>();
 
 	@Column(nullable = false)
 	@NotNull(message = "A data de nascimento é obrigatória")
@@ -48,6 +59,12 @@ public class Candidato {
 	@OneToOne(cascade = CascadeType.ALL)
 	@JoinColumn(name = "endereco_id", referencedColumnName = "id")
 	private Endereco endereco;
+
+	private BigDecimal pretensaoSalarial;
+
+	private String disponibilidade; // Imediata, 30 dias, etc.
+
+	private String modalidadePreferida; // Presencial, Remoto, Híbrido
 
 	@Enumerated(EnumType.STRING)
 	@Column(nullable = false)
@@ -81,7 +98,6 @@ public class Candidato {
 		this.status = Status.ATIVO;
 	}
 
-
 	@PrePersist
 	protected void onCreate() {
 		criadoEm = new Date();
@@ -92,28 +108,12 @@ public class Candidato {
 		atualizadoEm = new Date();
 	}
 
-	public List<Vaga> getVagas() {
-		return vagas;
-	}
-
-	public void setVagas(List<Vaga> vagas) {
-		this.vagas = vagas;
-	}
-
 	public Long getId() {
 		return id;
 	}
 
 	public void setId(Long id) {
 		this.id = id;
-	}
-
-	public Date getCriadoEm() {
-		return criadoEm;
-	}
-
-	public Date getAtualizadoEm() {
-		return atualizadoEm;
 	}
 
 	public String getRg() {
@@ -140,6 +140,44 @@ public class Candidato {
 		this.nomeCandidato = nomeCandidato;
 	}
 
+	public List<Candidatura> getCandidaturas() {
+		return candidaturas;
+	}
+
+	public void setCandidaturas(List<Candidatura> candidaturas) {
+		this.candidaturas = candidaturas;
+	}
+
+	public List<Vaga> getVagas() {
+		return candidaturas.stream()
+				.map(Candidatura::getVaga)
+				.toList();
+	}
+
+	public List<Habilidade> getHabilidades() {
+		return habilidades;
+	}
+
+	public void setHabilidades(List<Habilidade> habilidades) {
+		this.habilidades = habilidades;
+	}
+
+	public List<Experiencia> getExperiencias() {
+		return experiencias;
+	}
+
+	public void setExperiencias(List<Experiencia> experiencias) {
+		this.experiencias = experiencias;
+	}
+
+	public List<Formacao> getFormacoes() {
+		return formacoes;
+	}
+
+	public void setFormacoes(List<Formacao> formacoes) {
+		this.formacoes = formacoes;
+	}
+
 	public String getDataNascimento() {
 		return dataNascimento;
 	}
@@ -164,6 +202,30 @@ public class Candidato {
 		this.endereco = endereco;
 	}
 
+	public BigDecimal getPretensaoSalarial() {
+		return pretensaoSalarial;
+	}
+
+	public void setPretensaoSalarial(BigDecimal pretensaoSalarial) {
+		this.pretensaoSalarial = pretensaoSalarial;
+	}
+
+	public String getDisponibilidade() {
+		return disponibilidade;
+	}
+
+	public void setDisponibilidade(String disponibilidade) {
+		this.disponibilidade = disponibilidade;
+	}
+
+	public String getModalidadePreferida() {
+		return modalidadePreferida;
+	}
+
+	public void setModalidadePreferida(String modalidadePreferida) {
+		this.modalidadePreferida = modalidadePreferida;
+	}
+
 	public SituacaoCandidato getSituacao() {
 		return situacao;
 	}
@@ -178,5 +240,17 @@ public class Candidato {
 
 	public void setStatus(Status status) {
 		this.status = status;
+	}
+
+	public Date getCriadoEm() {
+		return criadoEm;
+	}
+
+	public Date getAtualizadoEm() {
+		return atualizadoEm;
+	}
+
+	public void adicionarCandidatura(Candidatura candidatura) {
+		this.candidaturas.add(candidatura);
 	}
 }

@@ -15,7 +15,7 @@
 <body class="d-flex flex-column min-vh-100 padding-navbar">
 
 <header>
-  <div th:insert="~{fragments/navbar :: navbar}"></div>
+  <div th:replace="~{fragments/navbar :: navbar}"></div>
 </header>
 
 <div class="container d-flex justify-content-center align-items-center flex-grow-1" style="padding-top: 15px; padding-bottom: 15px;">
@@ -25,7 +25,7 @@
         <h3>Cadastro de Candidato</h3>
       </div>
       <div class="card-body">
-        <div th:insert="~{fragments/mensagemValidacao :: validation}"></div>
+        <div th:replace="~{fragments/mensagemValidacao :: validation}"></div>
 
         <form id="formSalvar" th:action="@{/candidato/salvar}" th:object="${candidato}" method="post">
           <div class="row">
@@ -63,15 +63,222 @@
             </div>
             <div class="col-md-4 mb-4">
               <label for="dataNascimento" class="form-label">Data de nascimento:</label>
-              <input type="date" id="dataNascimento" name="dataNascimento"
+              <input type="date" id="dataNascimento"
                      class="form-control"
                      th:field="*{dataNascimento}"
                      th:disabled="${editar == false}" required />
             </div>
           </div>
 
+          <div class="row">
+            <div class="col-md-4 mb-4">
+              <label for="pretensaoSalarial" class="form-label">Pretensão Salarial:</label>
+              <div class="input-group">
+                <span class="input-group-text">R$</span>
+                <input type="number" id="pretensaoSalarial" class="form-control" th:field="*{pretensaoSalarial}"
+                       th:disabled="${editar == false}">
+              </div>
+            </div>
+            <div class="col-md-4 mb-4">
+              <label for="disponibilidade" class="form-label">Disponibilidade:</label>
+              <select id="disponibilidade" class="form-select" th:field="*{disponibilidade}" th:disabled="${editar == false}">
+                <option value="">Selecione</option>
+                <option value="Imediata">Imediata</option>
+                <option value="15 dias">15 dias</option>
+                <option value="30 dias">30 dias</option>
+                <option value="Mais de 30 dias">Mais de 30 dias</option>
+              </select>
+            </div>
+            <div class="col-md-4 mb-4">
+              <label for="modalidadePreferida" class="form-label">Modalidade Preferida:</label>
+              <select id="modalidadePreferida" class="form-select" th:field="*{modalidadePreferida}" th:disabled="${editar == false}">
+                <option value="">Selecione</option>
+                <option value="Presencial">Presencial</option>
+                <option value="Remoto">Remoto</option>
+                <option value="Híbrido">Híbrido</option>
+              </select>
+            </div>
+          </div>
+
           <hr/>
-          <label class="form-label">Endereço:</label>
+          <label class="form-label"><b>Habilidades:</b></label>
+          <div class="mb-3" th:if="${editar != false}">
+            <div id="habilidades-container">
+              <div class="habilidade-item mb-2" th:each="habilidade, status : ${candidato.habilidades}">
+                <div class="row">
+                  <div class="col-md-6">
+                    <input type="hidden" th:field="*{habilidades[__${status.index}__].id}">
+                    <input type="text" class="form-control" th:field="*{habilidades[__${status.index}__].nome}" 
+                           placeholder="Nome da habilidade" required>
+                  </div>
+                  <div class="col-md-3">
+                    <select class="form-select" th:field="*{habilidades[__${status.index}__].nivel}">
+                      <option value="1">Nível 1 - Básico</option>
+                      <option value="2">Nível 2 - Intermediário</option>
+                      <option value="3">Nível 3 - Avançado</option>
+                      <option value="4">Nível 4 - Proficiente</option>
+                      <option value="5">Nível 5 - Especialista</option>
+                    </select>
+                  </div>
+                  <div class="col-md-3">
+                    <button type="button" class="btn btn-danger btn-sm remover-habilidade">Remover</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <button type="button" id="adicionar-habilidade" class="btn btn-secondary mt-2">Adicionar Habilidade</button>
+          </div>
+
+          <div class="mb-3" th:if="${editar == false && !#lists.isEmpty(candidato.habilidades)}">
+            <ul class="list-group">
+              <li class="list-group-item" th:each="habilidade : ${candidato.habilidades}">
+                <div class="d-flex justify-content-between align-items-center">
+                  <div>
+                    <span th:text="${habilidade.nome}"></span>
+                    <span class="badge bg-primary" th:text="'Nível ' + ${habilidade.nivel}"></span>
+                  </div>
+                </div>
+              </li>
+            </ul>
+          </div>
+
+          <hr/>
+          <label class="form-label"><b>Experiência Profissional:</b></label>
+          <div class="mb-3" th:if="${editar != false}">
+            <div id="experiencias-container">
+              <div class="experiencia-item mb-3" th:each="experiencias, status : ${candidato.experiencias}">
+                <div class="row mb-2">
+                  <div class="col-md-5">
+                    <input type="hidden" th:field="*{experiencias[__${status.index}__].id}">
+                    <input type="text" class="form-control" th:field="*{experiencias[__${status.index}__].empresa}"
+                           placeholder="Nome da empresa" required>
+                  </div>
+                  <div class="col-md-4">
+                    <input type="text" class="form-control" th:field="*{experiencias[__${status.index}__].cargo}"
+                           placeholder="Cargo" required>
+                  </div>
+                  <div class="col-md-3">
+                    <button type="button" class="btn btn-danger btn-sm remover-experiencia">Remover</button>
+                  </div>
+                </div>
+                <div class="row mb-2">
+                  <div class="col-md-4">
+                    <label class="form-label">Data de Início:</label>
+                    <input type="date" class="form-control" th:field="*{experiencias[__${status.index}__].dataInicio}" required>
+                  </div>
+                  <div class="col-md-4">
+                    <label class="form-label">Data de Término:</label>
+                    <input type="date" class="form-control" th:field="*{experiencias[__${status.index}__].dataFim}"
+                           th:disabled="*{experiencias[__${status.index}__].atual}">
+                  </div>
+                  <div class="col-md-4">
+                    <div class="form-check mt-4">
+                      <input class="form-check-input atual-checkbox" type="checkbox"
+                             th:field="*{experiencias[__${status.index}__].atual}"
+                             th:attr="data-index=${status.index}">
+                      <label class="form-check-label">Emprego Atual</label>
+                    </div>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-md-12">
+                    <textarea class="form-control" th:field="*{experiencias[__${status.index}__].descricao}"
+                              placeholder="Descrição das atividades" rows="2"></textarea>
+                  </div>
+                </div>
+                <hr>
+              </div>
+            </div>
+            <button type="button" id="adicionar-experiencia" class="btn btn-secondary mt-2">Adicionar Experiência</button>
+          </div>
+
+          <div class="mb-3" th:if="${editar == false && !#lists.isEmpty(candidato.experiencias)}">
+            <div class="list-group">
+              <div class="list-group-item" th:each="experiencia : ${candidato.experiencias}">
+                <div class="d-flex justify-content-between align-items-center">
+                  <h5 class="mb-1" th:text="${experiencia.cargo}"></h5>
+                  <small th:text="${experiencia.empresa}"></small>
+                </div>
+                <p class="mb-1" th:text="${experiencia.descricao}"></p>
+                <small th:text="${#temporals.format(experiencia.dataInicio, 'dd/MM/yyyy')} + ' - ' + 
+                               (${experiencia.atual} ? 'Atual' : ${#temporals.format(experiencia.dataFim, 'dd/MM/yyyy')})"></small>
+              </div>
+            </div>
+          </div>
+
+          <hr/>
+          <label class="form-label"><b>Formação Acadêmica:</b></label>
+          <div class="mb-3" th:if="${editar != false}">
+            <div id="formacoes-container">
+              <div class="formacao-item mb-3" th:each="formacao, status : ${candidato.formacoes}">
+                <div class="row mb-2">
+                  <div class="col-md-5">
+                    <input type="hidden" th:field="*{formacoes[__${status.index}__].id}">
+                    <input type="text" class="form-control" th:field="*{formacoes[__${status.index}__].instituicao}" 
+                           placeholder="Nome da instituição" required>
+                  </div>
+                  <div class="col-md-4">
+                    <input type="text" class="form-control" th:field="*{formacoes[__${status.index}__].curso}" 
+                           placeholder="Nome do curso" required>
+                  </div>
+                  <div class="col-md-3">
+                    <button type="button" class="btn btn-danger btn-sm remover-formacao">Remover</button>
+                  </div>
+                </div>
+                <div class="row mb-2">
+                  <div class="col-md-4">
+                    <label class="form-label">Nível:</label>
+                    <select class="form-select" th:field="*{formacoes[__${status.index}__].nivel}">
+                      <option value="Ensino Médio">Ensino Médio</option>
+                      <option value="Técnico">Técnico</option>
+                      <option value="Graduação">Graduação</option>
+                      <option value="Pós-graduação">Pós-graduação</option>
+                      <option value="Mestrado">Mestrado</option>
+                      <option value="Doutorado">Doutorado</option>
+                    </select>
+                  </div>
+                  <div class="col-md-4">
+                    <label class="form-label">Data de Início:</label>
+                    <input type="date" class="form-control" th:field="*{formacoes[__${status.index}__].dataInicio}" required>
+                  </div>
+                  <div class="col-md-4">
+                    <label class="form-label">Data de Conclusão:</label>
+                    <input type="date" class="form-control" th:field="*{formacoes[__${status.index}__].dataFim}"
+                           th:disabled="*{!formacoes[__${status.index}__].concluido}">
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-md-12">
+                    <div class="form-check">
+                      <input class="form-check-input concluido-checkbox" type="checkbox" 
+                             th:field="*{formacoes[__${status.index}__].concluido}" 
+                             th:attr="data-index=${status.index}">
+                      <label class="form-check-label">Concluído</label>
+                    </div>
+                  </div>
+                </div>
+                <hr>
+              </div>
+            </div>
+            <button type="button" id="adicionar-formacao" class="btn btn-secondary mt-2">Adicionar Formação</button>
+          </div>
+
+          <div class="mb-3" th:if="${editar == false && !#lists.isEmpty(candidato.formacoes)}">
+            <div class="list-group">
+              <div class="list-group-item" th:each="formacao : ${candidato.formacoes}">
+                <div class="d-flex justify-content-between align-items-center">
+                  <h5 class="mb-1" th:text="${formacao.curso}"></h5>
+                  <span class="badge bg-info" th:text="${formacao.nivel}"></span>
+                </div>
+                <p class="mb-1" th:text="${formacao.instituicao}"></p>
+                <small th:text="${#temporals.format(formacao.dataInicio, 'dd/MM/yyyy')} + ' - ' + 
+                               (${!formacao.concluido} ? 'Em andamento' : ${#temporals.format(formacao.dataFim, 'dd/MM/yyyy')})"></small>
+              </div>
+            </div>
+          </div>
+
+          <hr/>
+          <label class="form-label"><b>Endereço:</b></label>
           <div class="row">
             <div class="col-md-4 mb-4">
               <label for="rua" class="form-label">Rua:</label>
@@ -115,54 +322,20 @@
           <button id="btnSalvar" class="btn btn-primary" type="submit" th:hidden="${editar == false}">Salvar
           </button>
           <a th:href="@{/candidato/deletar/{id}(id=${candidato.id})}" class="btn btn-danger" th:hidden="${candidato.id == null}" > Excluir</a>
-          <a href="/candidato/buscar" class="btn btn-secondary">Voltar</a>
+          <a onclick="history.back()" class="btn btn-secondary">Voltar</a>
         </div>
       </div>
     </div>
   </div>
 </div>
 
-<div th:insert="~{fragments/footer :: footer}"></div>
+<div th:replace="~{fragments/footer :: footer}"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
         crossorigin="anonymous"></script>
 <script src="/scripts/registro.js"></script>
 <script src="https://unpkg.com/imask"></script>
-
-<script>
-  document.getElementById('btnSalvar').addEventListener('click', function () {
-    document.getElementById('formSalvar').submit();
-  });
-
-  IMask(
-          document.getElementById('telefone'),
-          {
-            mask: '(00) 00000-0000',
-            lazy: false
-          }
-  )
-  IMask(
-          document.getElementById('cpf'),
-          {
-            mask: '000.000.000-00',
-            lazy: false
-          }
-  )
-  IMask(
-          document.getElementById('rg'),
-          {
-            mask: '00.000.000-0',
-            lazy: false
-          }
-  )
-  IMask(
-          document.getElementById('cep'),
-          {
-            mask: '00000-000',
-            lazy: false
-          }
-  )
-</script>
+<script src="/scripts/candidato-cadastro.js"></script>
 </body>
 </html>

@@ -1,5 +1,5 @@
 const telefoneInput = document.getElementById('telefone');
-if(telefoneInput != null) {
+if (telefoneInput != null) {
     telefoneInput.addEventListener('input', () => {
         let telefone = telefoneInput.value.replace(/\D/g, ''); // Remove caracteres não numéricos
         telefone = telefone.replace(/^(\d{2})(\d)/g, '($1) $2'); // Adiciona parênteses e espaço
@@ -37,3 +37,32 @@ editarBtn.addEventListener('click', () => {
     editarBtn.style.display = 'none';
     salvarBtn.style.display = 'block';
 });
+
+IMask(
+    document.getElementById('telefone'),
+    {
+        mask: '(00) 00000-0000',
+        lazy: false
+    }
+)
+IMask(
+    document.getElementById('cpf'),
+    {
+        mask: '000.000.000-00',
+        lazy: false
+    }
+)
+IMask(
+    document.getElementById('rg'),
+    {
+        mask: '00.000.000-0',
+        lazy: false
+    }
+)
+IMask(
+    document.getElementById('cep'),
+    {
+        mask: '00000-000',
+        lazy: false
+    }
+)

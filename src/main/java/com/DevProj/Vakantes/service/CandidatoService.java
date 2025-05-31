@@ -1,8 +1,7 @@
 package com.DevProj.Vakantes.service;
 
 import com.DevProj.Vakantes.model.candidato.Candidato;
-import com.DevProj.Vakantes.model.empresa.Cliente;
-import com.DevProj.Vakantes.model.util.Status;
+import com.DevProj.Vakantes.model.util.enums.Status;
 import com.DevProj.Vakantes.model.vaga.Vaga;
 import com.DevProj.Vakantes.repository.CandidatoRepository;
 import com.DevProj.Vakantes.repository.VagaRepository;
@@ -14,6 +13,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.IntStream;
 
 @Service
 public class CandidatoService {
@@ -26,15 +27,37 @@ public class CandidatoService {
     @Autowired
     private ValidationService validationService;
 
+    @Autowired
+    CandidaturaService candidaturaService;
+
     public void cadastrar(Candidato candidato) throws DataBindingViolationException {
         validarCandidato(candidato);
+        updateHabForExp(candidato);
         candidatoRepository.save(candidato);
     }
 
     public void editar(Candidato candidato) throws DataBindingViolationException {
         validarCandidato(candidato);
+        updateHabForExp(candidato);
         candidatoRepository.save(candidato);
     }
+
+    public List<Candidato> buscarTodosPorCpfs(List<String> cpfs) {
+        return candidatoRepository.findAllByCpfIn(cpfs);
+    }
+
+    private void updateHabForExp(Candidato candidato) {
+        if(candidato.getHabilidades() != null) {
+            IntStream.range(0, candidato.getHabilidades().size()).forEach(i -> candidato.getHabilidades().get(i).setCandidato(candidato));
+        }
+        if(candidato.getExperiencias() != null) {
+            IntStream.range(0, candidato.getExperiencias().size()).forEach(i -> candidato.getExperiencias().get(i).setCandidato(candidato));
+        }
+        if(candidato.getFormacoes() != null) {
+            IntStream.range(0, candidato.getFormacoes().size()).forEach(i -> candidato.getFormacoes().get(i).setCandidato(candidato));
+        }
+    }
+
     private void validarCandidato(Candidato candidato) throws DataBindingViolationException {
         // Validar nome do candidato
         if (candidato.getNomeCandidato() == null || candidato.getNomeCandidato().trim().isEmpty()) {
@@ -127,10 +150,10 @@ public class CandidatoService {
     }
 
     @Transactional
-    public void deletarCandidato(String cpf) {
-        Candidato candidato = candidatoRepository.findByCpf(cpf)
+    public void deletarCandidato(String id) {
+        Candidato candidato = candidatoRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Candidato não encontrado"));
-        for (Vaga vaga : candidato.getVagas()) {
+        for (Vaga vaga : candidaturaService.buscarVagasPorCandidato(candidato.getCpf())) {
             vaga.getCandidatos().remove(candidato);
             vagaRepository.save(vaga);
         }
@@ -139,11 +162,15 @@ public class CandidatoService {
     public void deletar(Long id) {
         Candidato candidato = candidatoRepository.findByIdAndStatus(id, Status.ATIVO)
                 .orElseThrow(() -> new ObjectNotFoundException("Ocorreu um problema ao deletar o candidato"));
-        for (Vaga vaga : candidato.getVagas()) {
+        for (Vaga vaga : candidaturaService.buscarVagasPorCandidato(candidato.getCpf())) {
             vaga.getCandidatos().remove(candidato);
             vagaRepository.save(vaga);
         }
         candidato.setStatus(Status.INATIVO);
         candidatoRepository.save(candidato);
+    }
+
+    public void saveAll(List<Candidato> candidatos) {
+        candidatoRepository.saveAll(candidatos);
     }
 }
