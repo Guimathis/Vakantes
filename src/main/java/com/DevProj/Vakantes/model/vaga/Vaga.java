@@ -2,6 +2,7 @@ package com.DevProj.Vakantes.model.vaga;
 
 import com.DevProj.Vakantes.model.candidato.Candidato;
 import com.DevProj.Vakantes.model.empresa.Cliente;
+import com.DevProj.Vakantes.model.entrevista.Entrevista;
 import com.DevProj.Vakantes.model.util.enums.Status;
 import com.DevProj.Vakantes.model.vaga.enums.StatusProcesso;
 import jakarta.persistence.*;

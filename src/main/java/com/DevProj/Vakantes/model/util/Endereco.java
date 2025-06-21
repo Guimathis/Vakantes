@@ -1,5 +1,6 @@
 package com.DevProj.Vakantes.model.util;
 
+import com.DevProj.Vakantes.model.empresa.Cliente;
 import jakarta.persistence.*;
 
 @Entity
@@ -10,6 +11,9 @@ public class Endereco {
     @SequenceGenerator(name = "endereco_seq", sequenceName = "util.endereco_seq", allocationSize = 1)
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "endereco_seq")
     private Long id;
+
+    @ManyToOne
+    private Cliente cliente;
 
     private String rua;
     private String numero;
@@ -28,6 +32,14 @@ public class Endereco {
     }
 
     public Endereco() {
+    }
+
+    public Cliente getCliente() {
+        return cliente;
+    }
+
+    public void setCliente(Cliente cliente) {
+        this.cliente = cliente;
     }
 
     public Long getId() {

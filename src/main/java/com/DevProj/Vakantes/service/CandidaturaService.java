@@ -5,6 +5,7 @@ import com.DevProj.Vakantes.model.vaga.Candidatura;
 import com.DevProj.Vakantes.model.vaga.Vaga;
 import com.DevProj.Vakantes.repository.CandidaturaRepository;
 import com.DevProj.Vakantes.service.exceptions.DataBindingViolationException;
+import com.DevProj.Vakantes.service.exceptions.ObjectNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -15,9 +16,11 @@ public class CandidaturaService {
     @Autowired
     private CandidaturaRepository candidaturaRepository;
 
-    public Candidatura findCandidaturaById(Long id) {
-        return candidaturaRepository.findById(id).orElse(null);
+    public Candidatura buscaCandidaturaById(Long id) {
+        return candidaturaRepository.findById(id).orElseThrow(() -> new ObjectNotFoundException("Candidatura não encontrada"));
     }
+
+    public List<Candidatura> buscarPorVagaId(Vaga vaga) {return candidaturaRepository.findCandidaturasByVaga(vaga);}
 
     public List<Candidatura> findAllCandidaturas() {
         return candidaturaRepository.findAll();
@@ -71,4 +74,13 @@ public class CandidaturaService {
         candidaturaRepository.delete(c);
     }
 
+    public void salvar(Candidatura candidatura) {
+        if (candidatura == null) {
+            throw new DataBindingViolationException("Candidatura não pode ser nula");
+        }
+        if (candidatura.getVaga() == null || candidatura.getCandidato() == null) {
+            throw new DataBindingViolationException("Vaga e Candidato são obrigatórios na candidatura");
+        }
+        candidaturaRepository.save(candidatura);
+    }
 }

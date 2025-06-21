@@ -148,7 +148,7 @@ public class VagaController {
             List<MatchingService.CandidatoMatch> candidatosInscritosComPontuacao = matchingService.avaliarCandidatosVaga(codigo);
 
             model.addAttribute("vaga", new VagaDTO(vaga));
-            model.addAttribute("candidatosInscritos", candidatosInscritosComPontuacao);
+            model.addAttribute("candidaturas", candidatosInscritosComPontuacao);
 
             return "entities/vaga/selecao";
         } catch (Exception e) {
@@ -157,8 +157,20 @@ public class VagaController {
         }
     }
 
+    @PostMapping("/selecionar/{codigoVaga}/{candidaturaId}")
+    public String selecionarCandidato(
+            @PathVariable Long codigoVaga,
+            @PathVariable Long candidaturaId,
+            RedirectAttributes redirectAttributes) {
+        try {
+            vagaService.selecionarCandidato(codigoVaga, candidaturaId);
+            redirectAttributes.addFlashAttribute("mensagem", "Candidato selecionado com sucesso! A vaga foi finalizada.");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("mensagem_erro", e.getMessage());
+        }
+        return "redirect:/vaga/detalhes/" + codigoVaga;
+    }
 
-    // DELETA VAGA
     @RequestMapping("/deletar/{id}")
     public String deletarVaga(@PathVariable Long id, RedirectAttributes attributes) {
         try {

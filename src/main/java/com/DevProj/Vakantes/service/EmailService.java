@@ -1,9 +1,16 @@
 package com.DevProj.Vakantes.service;
 
+import com.DevProj.Vakantes.model.candidato.Candidato;
+import com.DevProj.Vakantes.model.vaga.Candidatura;
+import com.DevProj.Vakantes.model.vaga.Vaga;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mail.MailException;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 @Service
 public class EmailService {
@@ -24,5 +31,41 @@ public class EmailService {
                 "Equipe Vakantes");
 
         mailSender.send(mensagem);
+    }
+
+    public void enviarEmailAgendamentoEntrevista(Candidato candidato, Vaga vaga, String dataHora, String local, String observacoes) {
+        SimpleMailMessage mensagem = new SimpleMailMessage();
+        mensagem.setTo(candidato.getContato().getEmail());
+        mensagem.setSubject("Vakantes - Agendamento de Entrevista");
+        mensagem.setText("Olá " + candidato.getNomeCandidato() + ",\n\n" +
+                "Sua entrevista para a vaga: " + vaga.getNome() + ", foi agendada!\n\n" +
+                "Data e horário: " + LocalDateTime.parse(dataHora).format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")) + "\n" +
+                "Local: " + local + "\n" +
+                (observacoes != null && !observacoes.isEmpty() ? "Observações: " + observacoes + "\n" : "") +
+                "Atenciosamente,\n" +
+                "Equipe Vakantes");
+
+        try {
+            mailSender.send(mensagem);
+        } catch (MailException e) {
+            throw new RuntimeException("Ocorreu um erro ao enviar o email de agendamento.");
+        }
+    }
+
+    public void notificarCandidatoSelecionado(Candidatura candidatura) {
+        Candidato candidato = candidatura.getCandidato();
+        Vaga vaga = candidatura.getVaga();
+        SimpleMailMessage mensagem = new SimpleMailMessage();
+        mensagem.setTo(candidato.getContato().getEmail());
+        mensagem.setSubject("Vakantes - Parabéns! Você foi selecionado");
+        mensagem.setText("Olá " + candidato.getNomeCandidato() + ",\n\n" +
+                "Parabéns! Você foi selecionado para a vaga: " + vaga.getNome() + ".\n" +
+                "Em breve " + vaga.getCliente().getNome() +  " em contato para os próximos passos.\n\n" +
+                "Atenciosamente,\nEquipe Vakantes");
+        try {
+            mailSender.send(mensagem);
+        } catch (MailException e) {
+            throw new RuntimeException("Ocorreu um erro ao enviar o email de seleção.");
+        }
     }
 }

@@ -28,6 +28,10 @@
         <div th:replace="~{fragments/mensagemValidacao :: validation}"></div>
 
         <form id="formSalvar" th:action="@{/candidato/salvar}" th:object="${candidato}" method="post">
+          <input type="hidden" th:field="*{candidaturas}" th:value="${candidato.candidaturas}" />
+          <input type="hidden" th:field="*{habilidades}" th:value="${candidato.habilidades}" />
+          <input type="hidden" th:field="*{experiencias}" th:value="${candidato.experiencias}" />
+          <input type="hidden" th:field="*{formacoes}" th:value="${candidato.formacoes}" />
           <div class="row">
             <div class="input-group mb-3">
               <input type="number" class="form-control"
@@ -108,7 +112,7 @@
                 <div class="row">
                   <div class="col-md-6">
                     <input type="hidden" th:field="*{habilidades[__${status.index}__].id}">
-                    <input type="text" class="form-control" th:field="*{habilidades[__${status.index}__].nome}" 
+                    <input type="text" class="form-control" th:field="*{habilidades[__${status.index}__].nome}"
                            placeholder="Nome da habilidade" required>
                   </div>
                   <div class="col-md-3">
@@ -164,11 +168,11 @@
                 <div class="row mb-2">
                   <div class="col-md-4">
                     <label class="form-label">Data de Início:</label>
-                    <input type="date" class="form-control" th:field="*{experiencias[__${status.index}__].dataInicio}" required>
+                    <input type="text" class="form-control" th:field="*{experiencias[__${status.index}__].dataInicio}" required>
                   </div>
                   <div class="col-md-4">
                     <label class="form-label">Data de Término:</label>
-                    <input type="date" class="form-control" th:field="*{experiencias[__${status.index}__].dataFim}"
+                    <input type="text" class="form-control" th:field="*{experiencias[__${status.index}__].dataFim}"
                            th:disabled="*{experiencias[__${status.index}__].atual}">
                   </div>
                   <div class="col-md-4">
@@ -239,11 +243,11 @@
                   </div>
                   <div class="col-md-4">
                     <label class="form-label">Data de Início:</label>
-                    <input type="date" class="form-control" th:field="*{formacoes[__${status.index}__].dataInicio}" required>
+                    <input type="text" class="form-control" th:field="*{formacoes[__${status.index}__].dataInicio}" required>
                   </div>
                   <div class="col-md-4">
                     <label class="form-label">Data de Conclusão:</label>
-                    <input type="date" class="form-control" th:field="*{formacoes[__${status.index}__].dataFim}"
+                    <input type="text" class="form-control" th:field="*{formacoes[__${status.index}__].dataFim}"
                            th:disabled="*{!formacoes[__${status.index}__].concluido}">
                   </div>
                 </div>

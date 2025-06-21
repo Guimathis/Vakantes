@@ -14,4 +14,6 @@ public interface RequisitoRepository extends JpaRepository<Requisito, Long> {
     List<Requisito> findAllByVagaAndStatus(Vaga vaga, Status status);
     Optional<Requisito> findByIdAndStatus(Long id, Status status);
     List<Requisito> findAllByStatus(Status status);
+
+    List<Requisito> findByVagaCodigo(long codigo);
 }

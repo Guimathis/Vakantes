@@ -24,6 +24,12 @@
 		<span th:text="${mensagem_erro}"></span>
 		<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
 	</div>
+	<div class="alert alert-success alert-danger msgValidacao" role="alert"
+		 th:if="${not #strings.isEmpty(mensagem_erro_email)}">
+
+		<span th:text="${mensagem_erro_email}"></span>
+		<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+	</div>
 </div>
 
 

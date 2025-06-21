@@ -1,6 +1,8 @@
 package com.DevProj.Vakantes.model.vaga;
 
 import com.DevProj.Vakantes.model.candidato.Candidato;
+import com.DevProj.Vakantes.model.empresa.Cliente;
+import com.DevProj.Vakantes.model.entrevista.Entrevista;
 import com.DevProj.Vakantes.model.vaga.enums.StatusProcesso;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
@@ -14,6 +16,8 @@ public class VagaDTO {
 
     @NotEmpty(message = "Nome da vaga não pode estar vazio.")
     private String nome;
+
+    private Cliente cliente;
 
     @NotEmpty(message = "Descrição da vaga não pode estar vazia.")
     private String descricao;
@@ -41,12 +45,15 @@ public class VagaDTO {
 
     private StatusProcesso statusProcesso;
 
+    private List<Candidatura> candidaturas = new ArrayList<>();
+
     public VagaDTO() {
     }
 
     public VagaDTO(Vaga vaga) {
         this.codigo = vaga.getCodigo();
         this.nome = vaga.getNome();
+        this.cliente = vaga.getCliente();
         this.descricao = vaga.getDescricao();
         this.data = vaga.getData();
         this.salario = vaga.getSalario();
@@ -57,7 +64,23 @@ public class VagaDTO {
         this.idCliente = vaga.getCliente().getId();
         this.requisitos = vaga.getRequisitos();
         this.statusProcesso = vaga.getStatusProcesso();
-        this.candidatos = vaga.getCandidatos();
+        this.candidaturas = vaga.getCandidaturas();
+    }
+
+    public Cliente getCliente() {
+        return cliente;
+    }
+
+    public void setCliente(Cliente cliente) {
+        this.cliente = cliente;
+    }
+
+    public List<Candidatura> getCandidaturas() {
+        return candidaturas;
+    }
+
+    public void setCandidaturas(List<Candidatura> candidaturas) {
+        this.candidaturas = candidaturas;
     }
 
     public List<Candidato> getCandidatos() {

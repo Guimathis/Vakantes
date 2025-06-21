@@ -15,13 +15,13 @@
        <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav ms-auto">
                 <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="userDropdown"
+                    <a class="nav-link dropdown-toggle card-logo d-flex align-items-center" style="color: #191a1a" href="#" id="userDropdown"
                        role="button"
                        data-bs-toggle="dropdown" aria-expanded="false">
                         <img th:src="${usuarioFoto != null && !usuarioFoto.isBlank()} ? @{'/usuario/' + ${usuario.id} + '/foto'} : ${'/images/perfil-vazio.png'}"
                              class="rounded-circle" width="35" height="35" alt="Foto do Usuário"
                              style="margin-right: 10px;">
-                        <span th:text="${usuarioNome}"></span>
+                        <span style="font-size: large; color: #191a1a" th:text="${usuarioNome}"></span>
                     </a>
                     <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
                         <li><a class="dropdown-item" th:href="@{/usuario/perfil}">Perfil</a></li>

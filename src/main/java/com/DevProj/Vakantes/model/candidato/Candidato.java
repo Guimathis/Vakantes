@@ -1,6 +1,7 @@
 package com.DevProj.Vakantes.model.candidato;
 
 import com.DevProj.Vakantes.model.candidato.enums.SituacaoCandidato;
+import com.DevProj.Vakantes.model.entrevista.Entrevista;
 import com.DevProj.Vakantes.model.util.Contato;
 import com.DevProj.Vakantes.model.util.Endereco;
 import com.DevProj.Vakantes.model.util.enums.Status;
@@ -52,11 +53,11 @@ public class Candidato {
 	@NotNull(message = "A data de nascimento é obrigatória")
 	private String dataNascimento;
 
-	@OneToOne(cascade = CascadeType.ALL)
+	@OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
 	@JoinColumn(name = "contato_id", referencedColumnName = "id")
 	private Contato contato;
 
-	@OneToOne(cascade = CascadeType.ALL)
+	@OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
 	@JoinColumn(name = "endereco_id", referencedColumnName = "id")
 	private Endereco endereco;
 
