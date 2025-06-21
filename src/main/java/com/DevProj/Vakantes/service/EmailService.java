@@ -68,4 +68,16 @@ public class EmailService {
             throw new RuntimeException("Ocorreu um erro ao enviar o email de seleção.");
         }
     }
+
+    public void enviarEmailSimples(String destinatario, String assunto, String mensagemTexto) {
+        SimpleMailMessage mensagem = new SimpleMailMessage();
+        mensagem.setTo(destinatario);
+        mensagem.setSubject(assunto);
+        mensagem.setText(mensagemTexto);
+        try {
+            mailSender.send(mensagem);
+        } catch (MailException e) {
+            throw new RuntimeException("Ocorreu um erro ao enviar o e-mail: " + e.getMessage());
+        }
+    }
 }

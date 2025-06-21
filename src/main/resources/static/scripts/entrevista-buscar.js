@@ -42,6 +42,24 @@ document.addEventListener('DOMContentLoaded', function() {
                 });
         });
     });
+    // Função utilitária para exibir mensagens no fragmento de validação
+    function exibirMensagemValidacao(texto, tipo) {
+        // tipo: 'success' ou 'danger'
+        let container = document.querySelector('.msgValidacao');
+        if (!container) {
+            // Se não existe, cria no topo do .card-body
+            const cardBody = document.getElementById('tb-entrevistas');
+            container = document.createElement('div');
+            container.className = 'alert alert-' + tipo + ' alert-dismissible msgValidacao';
+            container.setAttribute('role', 'alert');
+            cardBody.prepend(container);
+        }
+        container.className = 'alert alert-' + tipo + ' alert-dismissible msgValidacao';
+        container.innerHTML = `
+            <span>${texto}</span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        `;
+    }
     // Submissão do formulário de edição
     var formEditar = document.getElementById('formEditarEntrevista');
     if (formEditar) {
@@ -59,12 +77,49 @@ document.addEventListener('DOMContentLoaded', function() {
             .then(res => res.json())
             .then(resp => {
                 if(resp.sucesso) {
-                    location.reload();
+                    exibirMensagemValidacao('Entrevista editada com sucesso!', 'success');
+                    setTimeout(() => location.reload(), 1200);
                 } else {
-                    alert('Erro ao salvar: ' + (resp.mensagem || ''));
+                    exibirMensagemValidacao('Erro ao salvar: ' + (resp.mensagem || ''), 'danger');
+                }
+            });
+        });
+    }
+    // Comunicação com candidato
+    document.querySelectorAll('.btn-comunicar-candidato').forEach(function(btn) {
+        btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            document.getElementById('comunicarEmail').value = this.getAttribute('data-email');
+            document.getElementById('comunicarMensagem').value = '';
+            var modal = new bootstrap.Modal(document.getElementById('comunicarCandidatoModal'));
+            modal.show();
+        });
+    });
+
+    var formComunicar = document.getElementById('formComunicarCandidato');
+    if (formComunicar) {
+        formComunicar.addEventListener('submit', function(e) {
+            const botaoEnviar = document.getElementById('btn-enviar-mensagem');
+            botaoEnviar.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Enviando...';
+            e.preventDefault();
+            const email = document.getElementById('comunicarEmail').value;
+            const mensagem = document.getElementById('comunicarMensagem').value;
+            fetch('/entrevista/comunicar-candidato', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, mensagem })
+            })
+            .then(res => res.json())
+            .then(resp => {
+                botaoEnviar.innerHTML = 'Enviar';
+                if(resp.sucesso) {
+                    exibirMensagemValidacao('Mensagem enviada com sucesso!', 'success');
+                    var modal = bootstrap.Modal.getInstance(document.getElementById('comunicarCandidatoModal'));
+                    modal.hide();
+                } else {
+                    exibirMensagemValidacao('Erro ao enviar mensagem: ' + (resp.mensagem || ''), 'danger');
                 }
             });
         });
     }
 });
-

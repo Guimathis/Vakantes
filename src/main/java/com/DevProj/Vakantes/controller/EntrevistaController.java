@@ -137,4 +137,20 @@ public class EntrevistaController {
         return resp;
     }
 
+    @PostMapping(value = "/comunicar-candidato", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    public Map<String, Object> comunicarCandidato(@RequestBody Map<String, String> payload) {
+        Map<String, Object> resp = new HashMap<>();
+        try {
+            String email = payload.get("email");
+            String mensagem = payload.get("mensagem");
+            entrevistaService.comunicarCandidatoPorEmail(email, mensagem);
+            resp.put("sucesso", true);
+        } catch (Exception e) {
+            resp.put("sucesso", false);
+            resp.put("mensagem", e.getMessage());
+        }
+        return resp;
+    }
+
 }

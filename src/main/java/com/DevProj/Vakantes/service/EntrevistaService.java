@@ -93,4 +93,13 @@ public class EntrevistaService {
         entrevistaRepository.save(entrevista);
     }
 
+    public void comunicarCandidatoPorEmail(String email, String mensagem) {
+        try {
+            String assunto = "Vakantes - Mensagem do Processo Seletivo";
+            emailService.enviarEmailSimples(email, assunto, mensagem);
+        } catch (Exception e) {
+            throw new RuntimeException("Erro ao enviar e-mail: " + e.getMessage(), e);
+        }
+    }
+
 }

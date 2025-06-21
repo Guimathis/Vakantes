@@ -10,7 +10,7 @@
 </head>
 
 <body>
-<div th:fragment="validation" style="display: flex; justify-content: center;">
+<div id="div-mensagem" th:fragment="validation" style="display: flex; justify-content: center;">
 	<div class="alert alert-success alert-dismissible msgValidacao" role="alert"
 		 th:if="${not #strings.isEmpty(mensagem)}">
 
