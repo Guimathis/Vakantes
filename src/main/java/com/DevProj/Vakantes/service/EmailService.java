@@ -60,7 +60,7 @@ public class EmailService {
         mensagem.setSubject("Vakantes - Parabéns! Você foi selecionado");
         mensagem.setText("Olá " + candidato.getNomeCandidato() + ",\n\n" +
                 "Parabéns! Você foi selecionado para a vaga: " + vaga.getNome() + ".\n" +
-                "Em breve " + vaga.getCliente().getNome() +  " em contato para os próximos passos.\n\n" +
+                "Em breve " + vaga.getCliente().getNome() + " em contato para os próximos passos.\n\n" +
                 "Atenciosamente,\nEquipe Vakantes");
         try {
             mailSender.send(mensagem);
@@ -69,13 +69,14 @@ public class EmailService {
         }
     }
 
-    public void enviarEmailSimples(String destinatario, String assunto, String mensagemTexto) {
+    public boolean enviarEmailSimples(String destinatario, String assunto, String mensagemTexto) {
         SimpleMailMessage mensagem = new SimpleMailMessage();
         mensagem.setTo(destinatario);
         mensagem.setSubject(assunto);
         mensagem.setText(mensagemTexto);
         try {
             mailSender.send(mensagem);
+            return true;
         } catch (MailException e) {
             throw new RuntimeException("Ocorreu um erro ao enviar o e-mail: " + e.getMessage());
         }

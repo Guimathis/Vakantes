@@ -1,8 +1,8 @@
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     const vagaSelect = document.getElementById('vagaSelect');
     const candidatoSelect = document.getElementById('candidatoSelect');
     if (vagaSelect && candidatoSelect) {
-        vagaSelect.addEventListener('change', function() {
+        vagaSelect.addEventListener('change', function () {
             const vagaId = this.value;
             candidatoSelect.innerHTML = '<option>Carregando...</option>';
             if (vagaId) {
@@ -15,7 +15,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         } else {
                             candidatoSelect.innerHTML = '<option value="">Selecione um candidato</option>';
                             candidatoSelect.disabled = false;
-                            data.forEach(function(candidatura) {
+                            data.forEach(function (candidatura) {
                                 candidatoSelect.innerHTML += `<option value="${candidatura.id}">${candidatura.nomeCandidato}</option>`;
                             });
                         }
@@ -26,8 +26,8 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     // Botão Editar abre o modal e preenche os campos
-    document.querySelectorAll('.btn-editar-entrevista').forEach(function(btn) {
-        btn.addEventListener('click', function(e) {
+    document.querySelectorAll('.btn-editar-entrevista').forEach(function (btn) {
+        btn.addEventListener('click', function (e) {
             e.preventDefault();
             const entrevistaId = this.getAttribute('data-entrevista-id');
             fetch(`/entrevista/detalhes-json/${entrevistaId}`)
@@ -42,10 +42,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 });
         });
     });
+
     // Função utilitária para exibir mensagens no fragmento de validação
     function exibirMensagemValidacao(texto, tipo) {
         // tipo: 'success' ou 'danger'
-        let container = document.querySelector('.msgValidacao');
+        let container = document.getElementById('div-mensagem');
         if (!container) {
             // Se não existe, cria no topo do .card-body
             const cardBody = document.getElementById('tb-entrevistas');
@@ -60,10 +61,11 @@ document.addEventListener('DOMContentLoaded', function() {
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         `;
     }
+
     // Submissão do formulário de edição
     var formEditar = document.getElementById('formEditarEntrevista');
     if (formEditar) {
-        formEditar.addEventListener('submit', function(e) {
+        formEditar.addEventListener('submit', function (e) {
             e.preventDefault();
             const id = document.getElementById('editarEntrevistaId').value;
             const local = document.getElementById('editarLocal').value;
@@ -71,26 +73,36 @@ document.addEventListener('DOMContentLoaded', function() {
             const observacoes = document.getElementById('editarObservacoes').value;
             fetch(`/entrevista/editar`, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ id, local, dataHora, observacoes })
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({id, local, dataHora, observacoes})
             })
-            .then(res => res.json())
-            .then(resp => {
-                if(resp.sucesso) {
-                    exibirMensagemValidacao('Entrevista editada com sucesso!', 'success');
-                    setTimeout(() => location.reload(), 1200);
-                } else {
-                    exibirMensagemValidacao('Erro ao salvar: ' + (resp.mensagem || ''), 'danger');
-                }
-            });
+                .then(res => res.json())
+                .then(resp => {
+                    if (resp.sucesso) {
+                        exibirMensagemValidacao('Entrevista editada com sucesso!', 'success');
+                        setTimeout(() => location.reload(), 1200);
+                    } else {
+                        exibirMensagemValidacao('Erro ao salvar: ' + (resp.mensagem || ''), 'danger');
+                    }
+                });
         });
     }
+
     // Comunicação com candidato
-    document.querySelectorAll('.btn-comunicar-candidato').forEach(function(btn) {
-        btn.addEventListener('click', function(e) {
+    document.querySelectorAll('.btn-comunicar-candidato').forEach(function (btn) {
+        btn.addEventListener('click', function (e) {
             e.preventDefault();
             document.getElementById('comunicarEmail').value = this.getAttribute('data-email');
-            document.getElementById('comunicarMensagem').value = '';
+            document.getElementById('comunicarEntrevistaId').value = this.getAttribute('data-entrevista-id');
+            document.getElementById('comunicarNomeSpan').textContent = this.getAttribute('data-nome');
+            document.getElementById('comunicacaoId').value = this.getAttribute('data-comunicacao-id');
+
+            // Se for botão de reenvio, preenche a mensagem
+            if (this.hasAttribute('data-mensagem')) {
+                document.getElementById('comunicarMensagem').value = this.getAttribute('data-mensagem');
+            } else {
+                document.getElementById('comunicarMensagem').value = '';
+            }
             var modal = new bootstrap.Modal(document.getElementById('comunicarCandidatoModal'));
             modal.show();
         });
@@ -98,28 +110,31 @@ document.addEventListener('DOMContentLoaded', function() {
 
     var formComunicar = document.getElementById('formComunicarCandidato');
     if (formComunicar) {
-        formComunicar.addEventListener('submit', function(e) {
+        formComunicar.addEventListener('submit', function (e) {
             const botaoEnviar = document.getElementById('btn-enviar-mensagem');
             botaoEnviar.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Enviando...';
             e.preventDefault();
             const email = document.getElementById('comunicarEmail').value;
             const mensagem = document.getElementById('comunicarMensagem').value;
-            fetch('/entrevista/comunicar-candidato', {
+            const entrevistaId = document.getElementById('comunicarEntrevistaId').value;
+            const comunicacaoId = document.getElementById('comunicacaoId').value;
+            fetch('/comunicacao/comunicar-candidato', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email, mensagem })
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({comunicacaoId, email, mensagem, entrevistaId})
             })
-            .then(res => res.json())
-            .then(resp => {
-                botaoEnviar.innerHTML = 'Enviar';
-                if(resp.sucesso) {
-                    exibirMensagemValidacao('Mensagem enviada com sucesso!', 'success');
+                .then(res => res.json())
+                .then(resp => {
+                    botaoEnviar.innerHTML = 'Enviar';
+
+                    if (resp.sucesso) {
+                        exibirMensagemValidacao('Mensagem enviada com sucesso!', 'success');
+                    } else {
+                        exibirMensagemValidacao(resp.mensagem || '', 'danger');
+                    }
                     var modal = bootstrap.Modal.getInstance(document.getElementById('comunicarCandidatoModal'));
                     modal.hide();
-                } else {
-                    exibirMensagemValidacao('Erro ao enviar mensagem: ' + (resp.mensagem || ''), 'danger');
-                }
-            });
+                });
         });
     }
 });

@@ -6,7 +6,9 @@ import java.util.Optional;
 import com.DevProj.Vakantes.model.util.enums.Status;
 import com.DevProj.Vakantes.model.vaga.Vaga;
 import org.springframework.data.repository.CrudRepository;
+import org.springframework.stereotype.Repository;
 
+@Repository
 public interface VagaRepository extends CrudRepository<Vaga, String> {
 
 	Optional<Vaga> findByCodigoAndStatus(long codigo, Status status);

@@ -1,14 +1,12 @@
 package com.DevProj.Vakantes.controller;
 
+import com.DevProj.Vakantes.model.comunicacao.Comunicacao;
 import com.DevProj.Vakantes.model.entrevista.Entrevista;
 import com.DevProj.Vakantes.model.vaga.Candidatura;
 import com.DevProj.Vakantes.model.vaga.Vaga;
-import com.DevProj.Vakantes.service.CandidatoService;
-import com.DevProj.Vakantes.service.EntrevistaService;
+import com.DevProj.Vakantes.service.*;
 import com.DevProj.Vakantes.repository.CandidatoRepository;
 import com.DevProj.Vakantes.repository.VagaRepository;
-import com.DevProj.Vakantes.service.VagaService;
-import com.DevProj.Vakantes.service.CandidaturaService;
 import com.DevProj.Vakantes.dto.CandidaturaDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -40,10 +38,15 @@ public class EntrevistaController {
 
     @Autowired
     private VagaService vagaService;
+
     @Autowired
     private CandidatoService candidatoService;
+
     @Autowired
     private CandidaturaService candidaturaService;
+
+    @Autowired
+    private ComunicacaoService comunicacaoService;
 
     @PostMapping("/cadastrar")
     public String salvarEntrevista(
@@ -137,20 +140,18 @@ public class EntrevistaController {
         return resp;
     }
 
-    @PostMapping(value = "/comunicar-candidato", consumes = MediaType.APPLICATION_JSON_VALUE)
-    @ResponseBody
-    public Map<String, Object> comunicarCandidato(@RequestBody Map<String, String> payload) {
-        Map<String, Object> resp = new HashMap<>();
+    @GetMapping("/detalhes/{id}")
+    public String detalhesEntrevista(@PathVariable Long id, Model model) {
         try {
-            String email = payload.get("email");
-            String mensagem = payload.get("mensagem");
-            entrevistaService.comunicarCandidatoPorEmail(email, mensagem);
-            resp.put("sucesso", true);
+            Entrevista entrevista = entrevistaService.buscarPorId(id);
+            model.addAttribute("entrevista", entrevista);
+            // Buscar histórico de comunicações
+            List<Comunicacao> comunicacoes = comunicacaoService.buscarPorEntrevista(entrevista);
+            model.addAttribute("comunicacoes", comunicacoes);
+            return "entities/entrevista/detalhes";
         } catch (Exception e) {
-            resp.put("sucesso", false);
-            resp.put("mensagem", e.getMessage());
+            model.addAttribute("mensagem_erro", "Entrevista não encontrada");
+            return "redirect:/entrevista/buscar";
         }
-        return resp;
     }
-
 }
