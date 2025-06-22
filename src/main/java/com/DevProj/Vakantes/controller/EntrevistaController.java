@@ -154,4 +154,13 @@ public class EntrevistaController {
             return "redirect:/entrevista/buscar";
         }
     }
+
+    @GetMapping("/{id}/comunicacoes-html")
+    public String comunicacoesHtml(@PathVariable Long id, Model model) {
+        Entrevista entrevista = entrevistaService.buscarPorId(id);
+        List<Comunicacao> comunicacoes = comunicacaoService.buscarPorEntrevista(entrevista);
+        model.addAttribute("comunicacoes", comunicacoes);
+        model.addAttribute("entrevista", entrevista);
+        return "fragments/comunicacoes :: fragment";
+    }
 }

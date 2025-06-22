@@ -9,7 +9,6 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class ComunicacaoService {
@@ -43,6 +42,7 @@ public class ComunicacaoService {
             throw new ObjectNotFoundException("Ocorreu um erro ao reenviar a mensagem");
         }
         comunicacao.setMensagem(mensagem);
+        comunicacao.setDataComunicacao(LocalDateTime.now());
         boolean enviado = emailService.enviarEmailSimples(comunicacao.getEmail(), "Comunicação sobre entrevista", comunicacao.getMensagem());
         comunicacao.setEnviado(enviado);
         comunicacaoRepository.save(comunicacao);

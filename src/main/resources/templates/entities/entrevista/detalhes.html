@@ -59,7 +59,7 @@
                         Nova
                         Mensagem</a>
                 </div>
-                <div class="card-body">
+                <div class="card-body" id="comunicacoes-historico">
                     <div th:if="${#lists.isEmpty(comunicacoes)}" class="alert alert-info">
                         Nenhuma comunicação registrada.
                     </div>
@@ -109,7 +109,7 @@
                 </div>
                 <div class="modal-body">
                     <input type="hidden" id="comunicarEntrevistaId" name="entrevistaId">
-                    <input type="hidden" id="comunicacaoId" name="comunicacaoId" th:value="0">
+                    <input type="hidden" id="comunicacaoId" name="comunicacaoId" th:value="${0}">
                     <div class="mb-3">
                         <label class="form-label">Candidato: </label>
                         <span id="comunicarNomeSpan"></span>

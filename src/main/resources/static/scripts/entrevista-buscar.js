@@ -96,17 +96,51 @@ document.addEventListener('DOMContentLoaded', function () {
             document.getElementById('comunicarEntrevistaId').value = this.getAttribute('data-entrevista-id');
             document.getElementById('comunicarNomeSpan').textContent = this.getAttribute('data-nome');
             document.getElementById('comunicacaoId').value = this.getAttribute('data-comunicacao-id');
-
-            // Se for botão de reenvio, preenche a mensagem
             if (this.hasAttribute('data-mensagem')) {
                 document.getElementById('comunicarMensagem').value = this.getAttribute('data-mensagem');
             } else {
                 document.getElementById('comunicarMensagem').value = '';
             }
-            var modal = new bootstrap.Modal(document.getElementById('comunicarCandidatoModal'));
+            var modalEl = document.getElementById('comunicarCandidatoModal');
+            var modal = bootstrap.Modal.getOrCreateInstance(modalEl);
             modal.show();
         });
     });
+
+    // Função para atualizar o histórico de comunicações
+    function atualizarHistoricoComunicacoes(entrevistaId) {
+        fetch(`/entrevista/${entrevistaId}/comunicacoes-html`)
+            .then(res => res.text())
+            .then(html => {
+                document.getElementById('comunicacoes-historico').innerHTML = html;
+                // Reatribui eventos aos botões de comunicação após atualizar o HTML
+                atribuirEventosComunicacao();
+            });
+    }
+
+    // Função para atribuir eventos aos botões de comunicação
+    function atribuirEventosComunicacao() {
+        document.querySelectorAll('.btn-comunicar-candidato').forEach(function (btn) {
+            btn.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.getElementById('comunicarEmail').value = this.getAttribute('data-email');
+                document.getElementById('comunicarEntrevistaId').value = this.getAttribute('data-entrevista-id');
+                document.getElementById('comunicarNomeSpan').textContent = this.getAttribute('data-nome');
+                document.getElementById('comunicacaoId').value = this.getAttribute('data-comunicacao-id');
+                if (this.hasAttribute('data-mensagem')) {
+                    document.getElementById('comunicarMensagem').value = this.getAttribute('data-mensagem');
+                } else {
+                    document.getElementById('comunicarMensagem').value = '';
+                }
+                var modalEl = document.getElementById('comunicarCandidatoModal');
+                var modal = bootstrap.Modal.getOrCreateInstance(modalEl);
+                modal.show();
+            });
+        });
+    }
+
+    // Inicializa eventos ao carregar a página
+    atribuirEventosComunicacao();
 
     var formComunicar = document.getElementById('formComunicarCandidato');
     if (formComunicar) {
@@ -126,14 +160,19 @@ document.addEventListener('DOMContentLoaded', function () {
                 .then(res => res.json())
                 .then(resp => {
                     botaoEnviar.innerHTML = 'Enviar';
-
+                    var modalEl = document.getElementById('comunicarCandidatoModal');
+                    var modal = bootstrap.Modal.getInstance(modalEl);
+                    modal.hide();
                     if (resp.sucesso) {
                         exibirMensagemValidacao('Mensagem enviada com sucesso!', 'success');
+                        // Só atualiza o histórico após o modal fechar completamente
+                        modalEl.addEventListener('hidden.bs.modal', function handler() {
+                            atualizarHistoricoComunicacoes(entrevistaId);
+                            modalEl.removeEventListener('hidden.bs.modal', handler);
+                        });
                     } else {
                         exibirMensagemValidacao(resp.mensagem || '', 'danger');
                     }
-                    var modal = bootstrap.Modal.getInstance(document.getElementById('comunicarCandidatoModal'));
-                    modal.hide();
                 });
         });
     }

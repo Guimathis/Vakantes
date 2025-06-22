@@ -1,0 +1,36 @@
+<!-- Fragmento do histórico de comunicações para atualização via AJAX -->
+<div th:fragment="fragment">
+    <div th:if="${#lists.isEmpty(comunicacoes)}" class="alert alert-info">
+        Nenhuma comunicação registrada.
+    </div>
+    <div th:unless="${#lists.isEmpty(comunicacoes)}">
+        <div class="timeline">
+            <div class="timeline-item" th:each="comunicacao : ${comunicacoes}">
+                <div class="timeline-content card mb-3">
+                    <div class="card-body d-flex justify-content-between align-items-center">
+                        <div>
+                            <p th:text="${comunicacao.mensagem}" class="mb-2"></p>
+                            <div class="small text-muted">
+                                <span th:text="'Enviado para: ' + ${comunicacao.email}"></span>
+                                <span th:if="${comunicacao.enviado}"
+                                      class="text-success"> ✓ Enviado</span>
+                                <span th:unless="${comunicacao.enviado}"
+                                      class="text-danger"> ✗ Falha no envio</span>
+                                <button th:if="${!comunicacao.enviado}"
+                                        class="btn btn-sm btn-outline-danger ms-2 btn-comunicar-candidato"
+                                        th:attr="data-comunicacao-id=${comunicacao.id}, data-email=${comunicacao.email},data-nome=${entrevista.candidatura.candidato.nomeCandidato},data-mensagem=${comunicacao.mensagem},data-entrevista-id=${entrevista.id}"
+                                        type="button">
+                                    Reenviar
+                                </button>
+                            </div>
+                        </div>
+                        <div class="timeline-date text-end ms-3"
+                             style="white-space:nowrap; min-width: 160px;"
+                             th:text="${#temporals.format(comunicacao.dataComunicacao, 'dd/MM/yyyy HH:mm')}"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
