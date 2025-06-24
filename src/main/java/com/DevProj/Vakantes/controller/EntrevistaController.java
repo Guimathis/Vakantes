@@ -65,30 +65,6 @@ public class EntrevistaController {
         return "redirect:/entrevista/buscar";
     }
 
-//    @GetMapping("/cadastro/{vagaId}")
-//    public String cadastroEntrevistaVagaExistente(Model model, @PathVariable Long vagaId) {
-//        Vaga vaga;
-//        try {
-//            vaga = vagaService.buscarVagaPorID(vagaId);
-//        } catch (Exception e) {
-//            model.addAttribute("mensagem_erro", "Vaga não encontrada");
-//            return "redirect:/vaga/buscar";
-//        }
-//        model.addAttribute("vaga", vaga);
-//        model.addAttribute("candidatos", candidatoService.buscarTodos());
-//        model.addAttribute("entrevista", new Entrevista());
-//        return "entities/entrevista/cadastro";
-//    }
-//
-//    @GetMapping("/cadastro")
-//    public String cadastroEntrevista(Model model) {
-//        Iterable<Vaga> vagas;
-//        vagas = vagaService.buscarTodas();
-//        model.addAttribute("vagas", vagas);
-//        model.addAttribute("entrevista", new Entrevista());
-//        return "entities/entrevista/cadastro";
-//    }
-
     @GetMapping("/buscar")
     public String listarEntrevistas(Model model) {
         model.addAttribute("entrevistas", entrevistaService.buscarTodas());
