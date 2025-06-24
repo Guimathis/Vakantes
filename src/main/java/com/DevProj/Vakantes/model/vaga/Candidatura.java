@@ -59,7 +59,6 @@ public class Candidatura implements Serializable {
 
     public enum StatusCandidatura {
         INSCRITO("Inscrito"),
-        EM_PROCESSO("Em Processo"),
         REJEITADO("Rejeitado"),
         SELECIONADO("Selecionado");
 
@@ -130,4 +129,9 @@ public class Candidatura implements Serializable {
     public void setStatus(StatusCandidatura status) {
         this.status = status;
     }
+
+    public String getEmailCandidato() {
+        return candidato.getContato().getEmail();
+    }
+
 }

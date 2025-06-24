@@ -125,7 +125,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="submit" class="btn btn-primary">Salvar</button>
+                    <button id="btn-salvar-nova-entrevista" type="submit" class="btn btn-primary">Salvar</button>
                 </div>
             </form>
         </div>
@@ -159,7 +159,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="submit" class="btn btn-primary">Salvar Alterações</button>
+                    <button id="btn-salvar-entrevista" type="submit" class="btn btn-primary">Salvar Alterações</button>
                 </div>
             </form>
         </div>
@@ -178,11 +178,15 @@
                 </div>
                 <div class="modal-body">
                     <input type="hidden" id="comunicarEntrevistaId" name="entrevistaId">
+                    <input type="hidden" id="comunicacaoId" name="comunicacaoId" th:value="${0}">
                     <div class="mb-3">
                         <label class="form-label">Candidato: </label>
                         <span id="comunicarNomeSpan"></span>
                     </div>
-
+                    <div class="mb-3">
+                        <label for="comunicarEmail" class="form-label">E-mail do candidato</label>
+                        <input type="email" class="form-control" id="comunicarEmail" name="email" readonly required>
+                    </div>
                     <div class="mb-3">
                         <label for="comunicarMensagem" class="form-label">Mensagem</label>
                         <textarea class="form-control" id="comunicarMensagem" name="mensagem" rows="5"

@@ -1,5 +1,6 @@
 package com.DevProj.Vakantes.model.entrevista;
 
+import com.DevProj.Vakantes.model.comunicacao.Comunicacao;
 import com.DevProj.Vakantes.model.entrevista.enums.StatusEntrevista;
 import com.DevProj.Vakantes.model.entrevista.enums.StatusNotificacaoEmail;
 import com.DevProj.Vakantes.model.vaga.Candidatura;
@@ -8,7 +9,9 @@ import jakarta.persistence.*;
 import java.io.Serial;
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 @Entity
 @Table(name = "entrevista", schema = "vaga")
@@ -34,15 +37,12 @@ public class Entrevista implements Serializable {
     @Enumerated(EnumType.STRING)
     private StatusEntrevista statusEntrevista;
 
-    @Enumerated(EnumType.STRING)
-    private StatusNotificacaoEmail statusNotificacaoEmail;
-
-    @Column(name = "data_envio_notificacao_email")
-    private LocalDateTime dataEnvioNotificacaoEmail;
-
     @OneToOne
     @JoinColumn(name = "candidatura_id", referencedColumnName = "id", nullable = false, unique = true)
     private Candidatura candidatura;
+
+    @OneToMany(mappedBy = "entrevista")
+    private List<Comunicacao> comunicacoes;
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "criado_em", updatable = false)
@@ -52,14 +52,13 @@ public class Entrevista implements Serializable {
     @Column(name = "atualizado_em")
     private Date atualizadoEm;
 
-    public Entrevista(String local, String observacoes, LocalDateTime parse, Candidatura candidatura, LocalDateTime now, StatusNotificacaoEmail statusNotificacaoEmail) {
+    public Entrevista(String local, String observacoes, LocalDateTime dataHora, Candidatura candidatura, List<Comunicacao> comunicacoes) {
         this.local = local;
+        this.dataHora = dataHora;
         this.observacoes = observacoes;
-        this.dataHora = parse;
-        this.candidatura = candidatura;
-        this.dataEnvioNotificacaoEmail = now;
-        this.statusNotificacaoEmail = statusNotificacaoEmail;
         this.statusEntrevista = StatusEntrevista.AGENDADA;
+        this.candidatura = candidatura;
+        this.comunicacoes = comunicacoes;
     }
 
     @PrePersist
@@ -108,22 +107,6 @@ public class Entrevista implements Serializable {
         this.observacoes = observacoes;
     }
 
-    public StatusNotificacaoEmail getStatusNotificacaoEmail() {
-        return statusNotificacaoEmail;
-    }
-
-    public void setStatusNotificacaoEmail(StatusNotificacaoEmail statusNotificacaoEmail) {
-        this.statusNotificacaoEmail = statusNotificacaoEmail;
-    }
-
-    public LocalDateTime getDataEnvioNotificacaoEmail() {
-        return dataEnvioNotificacaoEmail;
-    }
-
-    public void setDataEnvioNotificacaoEmail(LocalDateTime dataEnvioNotificacaoEmail) {
-        this.dataEnvioNotificacaoEmail = dataEnvioNotificacaoEmail;
-    }
-
     public Candidatura getCandidatura() {
         return candidatura;
     }
@@ -154,5 +137,13 @@ public class Entrevista implements Serializable {
 
     public void setStatusEntrevista(StatusEntrevista statusEntrevista) {
         this.statusEntrevista = statusEntrevista;
+    }
+
+    public List<Comunicacao> getComunicacoes() {
+        return comunicacoes;
+    }
+
+    public void setComunicacoes(List<Comunicacao> comunicacoes) {
+        this.comunicacoes = comunicacoes;
     }
 }

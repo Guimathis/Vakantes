@@ -1,11 +1,10 @@
 package com.DevProj.Vakantes.model.comunicacao;
 
 import com.DevProj.Vakantes.model.entrevista.Entrevista;
+import com.DevProj.Vakantes.model.entrevista.enums.StatusNotificacaoEmail;
 import jakarta.persistence.*;
-import org.springframework.cglib.core.Local;
 
 import java.time.LocalDateTime;
-import java.util.Date;
 
 @Entity
 @Table(name = "comunicacao", schema = "vaga")
@@ -27,19 +26,26 @@ public class Comunicacao {
     @Column(name = "data_comunicacao", nullable = false)
     private LocalDateTime dataComunicacao;
 
-    @Column(name = "enviado", nullable = false)
-    private boolean enviado;
+    @Enumerated(EnumType.STRING)
+    private StatusNotificacaoEmail statusEnvio;
 
     public Comunicacao() {
         this.dataComunicacao = LocalDateTime.now();
     }
 
-    public Comunicacao(Entrevista entrevista, String mensagem, String email, boolean enviado) {
+    public Comunicacao(Entrevista entrevista, String mensagem, String email) {
         this.entrevista = entrevista;
         this.mensagem = mensagem;
         this.email = email;
         this.dataComunicacao = LocalDateTime.now();
-        this.enviado = enviado;
+        this.statusEnvio = StatusNotificacaoEmail.PENDENTE;
+    }
+    public Comunicacao(String mensagem, String email) {
+        this.entrevista = null;
+        this.mensagem = mensagem;
+        this.email = email;
+        this.dataComunicacao = LocalDateTime.now();
+        this.statusEnvio = StatusNotificacaoEmail.PENDENTE;
     }
 
     public Long getId() {
@@ -82,12 +88,11 @@ public class Comunicacao {
         this.dataComunicacao = dataComunicacao;
     }
 
-    public boolean isEnviado() {
-        return enviado;
+    public StatusNotificacaoEmail getStatusEnvio() {
+        return statusEnvio;
     }
 
-    public void setEnviado(boolean enviado) {
-        this.enviado = enviado;
+    public void setStatusEnvio(StatusNotificacaoEmail statusEnvio) {
+        this.statusEnvio = statusEnvio;
     }
-
 }

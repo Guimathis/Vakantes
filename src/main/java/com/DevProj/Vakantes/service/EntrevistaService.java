@@ -1,11 +1,13 @@
 package com.DevProj.Vakantes.service;
 
 import com.DevProj.Vakantes.model.candidato.Candidato;
+import com.DevProj.Vakantes.model.comunicacao.Comunicacao;
 import com.DevProj.Vakantes.model.entrevista.Entrevista;
 import com.DevProj.Vakantes.model.entrevista.enums.StatusEntrevista;
 import com.DevProj.Vakantes.model.entrevista.enums.StatusNotificacaoEmail;
 import com.DevProj.Vakantes.model.vaga.Candidatura;
 import com.DevProj.Vakantes.model.vaga.Vaga;
+import com.DevProj.Vakantes.repository.ComunicacaoRepository;
 import com.DevProj.Vakantes.repository.EntrevistaRepository;
 import com.DevProj.Vakantes.service.exceptions.ObjectNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +17,10 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 
 @Service
 public class EntrevistaService {
@@ -24,16 +29,15 @@ public class EntrevistaService {
     private EntrevistaRepository entrevistaRepository;
 
     @Autowired
-    private VagaService vagaService;
-
-    @Autowired
-    private CandidatoService candidatoService;
-
-    @Autowired
     private EmailService emailService;
 
     @Autowired
     private CandidaturaService candidaturaService;
+
+    @Autowired
+    private ComunicacaoService comunicacaoService;
+    @Autowired
+    private ComunicacaoRepository comunicacaoRepository;
 
     public void salvarEntrevista(Long candidaturaId, String local, String dataHora, String observacoes, RedirectAttributes redirectAttributes) {
         Candidatura candidatura = candidaturaService.buscaCandidaturaById(candidaturaId);
@@ -42,9 +46,17 @@ public class EntrevistaService {
             throw new RuntimeException("O candidato já possui uma entrevista agendada para esta vaga.");
         }
 
+        Comunicacao comunicacao = comunicacaoService.novaComunicacao(candidatura.getCandidato().getContato().getEmail(), observacoes);
+
+        if (comunicacao == null) {
+            throw new RuntimeException("Erro ao criar comunicação para a entrevista.");
+        }
+
         Entrevista entrevista = new Entrevista(local, observacoes, LocalDateTime.parse(dataHora,
-                DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm")), candidatura, LocalDateTime.now(), StatusNotificacaoEmail.PENDENTE);
+                DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm")), candidatura, new ArrayList<>(List.of(comunicacao)));
         candidatura.setEntrevista(entrevista);
+
+        comunicacao.setEntrevista(entrevista);
 
         boolean emailEnviado = false;
         try {
@@ -57,14 +69,14 @@ public class EntrevistaService {
             );
             emailEnviado = true;
         } catch (RuntimeException e) {
-            entrevista.setStatusNotificacaoEmail(StatusNotificacaoEmail.ERRO);
             redirectAttributes.addFlashAttribute("mensagem_erro_email", e.getMessage());
         }
 
         if (emailEnviado) {
-            entrevista.setStatusNotificacaoEmail(StatusNotificacaoEmail.ENVIADO);
+            comunicacao.setStatusEnvio(StatusNotificacaoEmail.ENVIADO);
         }
-
+        comunicacaoService.salvarComunicacao(comunicacao);
+        candidaturaService.salvar(candidatura);
         entrevistaRepository.save(entrevista);
     }
 

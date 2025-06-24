@@ -5,8 +5,6 @@ import com.DevProj.Vakantes.model.entrevista.Entrevista;
 import com.DevProj.Vakantes.model.vaga.Candidatura;
 import com.DevProj.Vakantes.model.vaga.Vaga;
 import com.DevProj.Vakantes.service.*;
-import com.DevProj.Vakantes.repository.CandidatoRepository;
-import com.DevProj.Vakantes.repository.VagaRepository;
 import com.DevProj.Vakantes.dto.CandidaturaDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -19,7 +17,6 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.http.ResponseEntity;
 import org.springframework.http.MediaType;
 
 import java.time.format.DateTimeFormatter;
@@ -68,29 +65,29 @@ public class EntrevistaController {
         return "redirect:/entrevista/buscar";
     }
 
-    @GetMapping("/cadastro/{vagaId}")
-    public String cadastroEntrevistaVagaExistente(@RequestParam("vagaId") Long vagaId, Model model) {
-        Vaga vaga;
-        try {
-            vaga = vagaService.buscarVagaPorID(vagaId);
-        } catch (Exception e) {
-            model.addAttribute("mensagem_erro", "Vaga não encontrada");
-            return "redirect:/vaga/buscar";
-        }
-        model.addAttribute("vaga", vaga);
-        model.addAttribute("candidatos", candidatoService.buscarTodos());
-        model.addAttribute("entrevista", new Entrevista());
-        return "entities/entrevista/cadastro";
-    }
-
-    @GetMapping("/cadastro")
-    public String cadastroEntrevista(Model model) {
-        Iterable<Vaga> vagas;
-        vagas = vagaService.buscarTodas();
-        model.addAttribute("vagas", vagas);
-        model.addAttribute("entrevista", new Entrevista());
-        return "entities/entrevista/cadastro";
-    }
+//    @GetMapping("/cadastro/{vagaId}")
+//    public String cadastroEntrevistaVagaExistente(Model model, @PathVariable Long vagaId) {
+//        Vaga vaga;
+//        try {
+//            vaga = vagaService.buscarVagaPorID(vagaId);
+//        } catch (Exception e) {
+//            model.addAttribute("mensagem_erro", "Vaga não encontrada");
+//            return "redirect:/vaga/buscar";
+//        }
+//        model.addAttribute("vaga", vaga);
+//        model.addAttribute("candidatos", candidatoService.buscarTodos());
+//        model.addAttribute("entrevista", new Entrevista());
+//        return "entities/entrevista/cadastro";
+//    }
+//
+//    @GetMapping("/cadastro")
+//    public String cadastroEntrevista(Model model) {
+//        Iterable<Vaga> vagas;
+//        vagas = vagaService.buscarTodas();
+//        model.addAttribute("vagas", vagas);
+//        model.addAttribute("entrevista", new Entrevista());
+//        return "entities/entrevista/cadastro";
+//    }
 
     @GetMapping("/buscar")
     public String listarEntrevistas(Model model) {
