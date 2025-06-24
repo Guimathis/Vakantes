@@ -100,9 +100,19 @@ public class EntrevistaService {
     public void editarEntrevista(Long id, String local, String dataHora, String observacoes) {
         Entrevista entrevista = buscarPorId(id);
         entrevista.setLocal(local);
-        entrevista.setDataHora(LocalDateTime.parse(dataHora, DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm")));
+        LocalDateTime novaDataHora = LocalDateTime.parse(dataHora, DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm"));
+        entrevista.setDataHora(novaDataHora);
         entrevista.setObservacoes(observacoes);
         entrevistaRepository.save(entrevista);
+        Candidato candidato = entrevista.getCandidatura().getCandidato();
+        Vaga vaga = entrevista.getCandidatura().getVaga();
+        String mensagem = "Os dados da sua entrevista foram alterados!\n\n" +
+                "Novos dados:\n" +
+                "Data e horário: " + novaDataHora.format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")) + "\n" +
+                "Local: " + local + "\n" +
+                (observacoes != null && !observacoes.isEmpty() ? "Observações: " + observacoes + "\n" : "");
+        comunicacaoService.salvarEEnviarComunicacao(entrevista, candidato.getContato().getEmail(), mensagem);
+        emailService.enviarEmailAlteracaoEntrevista(candidato, vaga, novaDataHora, local, observacoes);
     }
 
     public void comunicarCandidatoPorEmail(String email, String mensagem) {

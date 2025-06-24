@@ -81,4 +81,26 @@ public class EmailService {
             throw new RuntimeException("Ocorreu um erro ao enviar o e-mail: " + e.getMessage());
         }
     }
+
+    public void enviarEmailAlteracaoEntrevista(Candidato candidato, Vaga vaga, LocalDateTime dataHora, String local, String observacoes) {
+        SimpleMailMessage mensagem = new SimpleMailMessage();
+        mensagem.setTo(candidato.getContato().getEmail());
+        mensagem.setSubject("Vakantes - Alteração de Entrevista");
+        StringBuilder texto = new StringBuilder();
+        texto.append("Olá ").append(candidato.getNomeCandidato()).append(",\n\n");
+        texto.append("Os dados da sua entrevista para a vaga: ").append(vaga.getNome()).append(" foram alterados!\n\n");
+        texto.append("Novos dados:\n");
+        texto.append("Data e horário: ").append(dataHora.format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"))).append("\n");
+        texto.append("Local: ").append(local).append("\n");
+        if (observacoes != null && !observacoes.isEmpty()) {
+            texto.append("Observações: ").append(observacoes).append("\n");
+        }
+        texto.append("\nAtenciosamente,\nEquipe Vakantes");
+        mensagem.setText(texto.toString());
+        try {
+            mailSender.send(mensagem);
+        } catch (MailException e) {
+            throw new RuntimeException("Ocorreu um erro ao enviar o email de alteração de entrevista.");
+        }
+    }
 }
