@@ -102,6 +102,9 @@ public class VagaService {
     public void removerCandidatura(long codigo, long id) {
         Vaga vaga = vagaRepository.findByCodigoAndStatus(codigo, Status.ATIVO)
                 .orElseThrow(() -> new ObjectNotFoundException("Vaga não encontrada"));
+        if (vaga.getStatusProcesso() == StatusProcesso.FINALIZADA) {
+            throw new DataBindingViolationException("Não é possível remover candidaturas de uma vaga finalizada.");
+        }
         candidaturaService.deleteCandidatura(codigo, id);
         if (vaga.getCandidaturas().isEmpty()) {
             vaga.setStatusProcesso(StatusProcesso.ABERTA);

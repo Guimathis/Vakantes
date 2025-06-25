@@ -7,6 +7,7 @@ import com.DevProj.Vakantes.model.entrevista.enums.StatusEntrevista;
 import com.DevProj.Vakantes.model.entrevista.enums.StatusNotificacaoEmail;
 import com.DevProj.Vakantes.model.vaga.Candidatura;
 import com.DevProj.Vakantes.model.vaga.Vaga;
+import com.DevProj.Vakantes.model.vaga.enums.StatusProcesso;
 import com.DevProj.Vakantes.repository.ComunicacaoRepository;
 import com.DevProj.Vakantes.repository.EntrevistaRepository;
 import com.DevProj.Vakantes.service.exceptions.ObjectNotFoundException;
@@ -38,6 +39,8 @@ public class EntrevistaService {
     private ComunicacaoService comunicacaoService;
     @Autowired
     private ComunicacaoRepository comunicacaoRepository;
+    @Autowired
+    private VagaService vagaService;
 
     public void salvarEntrevista(Long candidaturaId, String local, String dataHora, String observacoes, RedirectAttributes redirectAttributes) {
         Candidatura candidatura = candidaturaService.buscaCandidaturaById(candidaturaId);
@@ -122,6 +125,42 @@ public class EntrevistaService {
         } catch (Exception e) {
             throw new RuntimeException("Erro ao enviar e-mail: " + e.getMessage(), e);
         }
+    }
+
+    public void aprovarCandidaturaNaEntrevista(Long entrevistaId) {
+        Entrevista entrevista = buscarPorId(entrevistaId);
+        if (entrevista == null) {
+            throw new RuntimeException("Entrevista não encontrada.");
+        }
+        Candidatura candidatura = entrevista.getCandidatura();
+        if (candidatura == null) {
+            throw new RuntimeException("Candidatura não encontrada para a entrevista.");
+        }
+        // Atualiza status da candidatura para APROVADA
+        candidatura.setStatus(Candidatura.StatusCandidatura.SELECIONADO);
+        candidaturaService.salvar(candidatura);
+
+        // Fecha a vaga
+        Vaga vaga = candidatura.getVaga();
+        vaga.setStatusProcesso(StatusProcesso.FINALIZADA);
+        vagaService.salvar(vaga);
+
+        // Envia e-mail para a empresa cliente
+        String emailEmpresa = vaga.getCliente().getContato().getEmail();
+        String assunto = "Encaminhamento de Candidato Aprovado - Vakantes";
+        String corpo = "Prezado(a),\n\n" +
+                "O candidato " + candidatura.getCandidato().getNomeCandidato() +
+                " foi aprovado na entrevista para a vaga: " + vaga.getNome() + ".\n\n" +
+                "Informações do candidato:\n" +
+                "Nome: " + candidatura.getCandidato().getNomeCandidato() + "\n" +
+                "E-mail: " + candidatura.getCandidato().getContato().getEmail() + "\n" +
+                "Telefone: " + candidatura.getCandidato().getContato().getTelefone() + "\n\n" +
+                "Informações da vaga:\n" +
+                "Vaga: " + vaga.getNome() + "\n" +
+                "Descrição: " + vaga.getDescricao() + "\n\n" +
+                "Por favor, prossiga com o processo de contratação.\n\n" +
+                "Atenciosamente,\nEquipe Vakantes";
+        emailService.enviarEmailSimples(emailEmpresa, assunto, corpo);
     }
 
 }

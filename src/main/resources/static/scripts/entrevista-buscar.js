@@ -187,4 +187,35 @@ document.addEventListener('DOMContentLoaded', function () {
                 });
         });
     }
+
+    // Aprovação de candidatura na entrevista
+    document.querySelectorAll('.btn-aprovar-entrevista').forEach(function (btn) {
+        btn.addEventListener('click', function (e) {
+            e.preventDefault();
+            const entrevistaId = this.getAttribute('data-entrevista-id');
+            if (!entrevistaId) return;
+            if (!confirm('Deseja realmente aprovar esta candidatura e encaminhar para a empresa?')) return;
+            btn.disabled = true;
+            btn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Aprovando...';
+            fetch(`/entrevista/${entrevistaId}/aprovar`, {
+                method: 'POST'
+            })
+                .then(res => res.json())
+                .then(resp => {
+                    if (resp.sucesso) {
+                        exibirMensagemValidacao(resp.mensagem, 'success');
+                        setTimeout(() => location.reload(), 2000);
+                    } else {
+                        exibirMensagemValidacao('Erro ao aprovar: ' + (resp.mensagem || ''), 'danger');
+                        btn.disabled = false;
+                        btn.innerHTML = '<i class="bi bi-check-circle"></i> Aprovar';
+                    }
+                })
+                .catch(() => {
+                    exibirMensagemValidacao('Erro ao aprovar. Tente novamente.', 'danger');
+                    btn.disabled = false;
+                    btn.innerHTML = '<i class="bi bi-check-circle"></i> Aprovar';
+                });
+        });
+    });
 });

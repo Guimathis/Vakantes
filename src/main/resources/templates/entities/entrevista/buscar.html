@@ -72,6 +72,12 @@
                                            class="btn btn-warning btn-sm mb-1 bi bi-envelope flex-fill btn-comunicar-candidato"
                                            th:attr="data-email=${entrevista.candidatura.candidato.contato.email},data-nome=${entrevista.candidatura.candidato.nomeCandidato},data-entrevista-id=${entrevista.id}">
                                             Comunicar</a>
+                                        <button type="button"
+                                                class="btn btn-outline-success btn-sm mb-1 flex-fill btn-aprovar-entrevista"
+                                                th:attr="data-entrevista-id=${entrevista.id}"
+                                                title="Aprovar e encaminhar para empresa">
+                                            <i class="bi bi-check-circle"></i> Aprovar
+                                        </button>
                                     </div>
                                 </div>
                             </div>

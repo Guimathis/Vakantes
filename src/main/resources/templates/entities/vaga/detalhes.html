@@ -68,13 +68,18 @@
             <div class="mb-4">
                 <h5 class="mb-3">Ações</h5>
                 <div class="d-flex flex-wrap gap-2">
-                    <a class="btn btn-primary btn-sm" href="/candidato/cadastro">
-                        Cadastrar Candidato
-                    </a>
-                    <button type="button" class="btn btn-secondary btn-sm" data-bs-toggle="modal"
-                            data-bs-target="#modalSelecionarCandidato">
-                        Selecionar Candidato
-                    </button>
+                    <div th:if="${vaga.statusProcesso.name() == 'FINALIZADA'}">
+                        <span class="alert alert-warning mb-0">Esta vaga está finalizada e não aceita novos candidatos.</span>
+                    </div>
+                    <div th:unless="${vaga.statusProcesso.name() == 'FINALIZADA'}">
+                        <a class="btn btn-primary btn-sm" href="/candidato/cadastro">
+                            Cadastrar Candidato
+                        </a>
+                        <button type="button" class="btn btn-secondary btn-sm" data-bs-toggle="modal"
+                                data-bs-target="#modalSelecionarCandidato">
+                            Selecionar Candidato
+                        </button>
+                    </div>
                     <a href="/vaga/buscar" class="btn btn-secondary btn-sm">Voltar</a>
                 </div>
             </div>
@@ -112,7 +117,8 @@
                                           method="post" style="display: inline;" class="form-remover-candidatura">
                                         <input type="hidden" name="_method" value="delete">
                                         <button type="button" class="btn btn-danger btn-sm bi bi-trash btn-confirmar-remocao"
-                                                title="Remover Candidato"></button>
+                                                title="Remover Candidato"
+                                                th:disabled="${vaga.statusProcesso.name() == 'FINALIZADA'}"></button>
                                     </form>
                                 </div>
                             </td>

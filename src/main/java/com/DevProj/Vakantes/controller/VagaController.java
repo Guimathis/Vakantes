@@ -4,6 +4,7 @@ import com.DevProj.Vakantes.model.empresa.Cliente;
 import com.DevProj.Vakantes.model.util.enums.Status;
 import com.DevProj.Vakantes.model.vaga.Vaga;
 import com.DevProj.Vakantes.model.vaga.VagaDTO;
+import com.DevProj.Vakantes.model.vaga.enums.StatusProcesso;
 import com.DevProj.Vakantes.repository.CandidatoRepository;
 import com.DevProj.Vakantes.repository.ClienteRepository;
 import com.DevProj.Vakantes.repository.VagaRepository;
@@ -108,8 +109,12 @@ public class VagaController {
     // Métodos que atualizam vaga
     // formulário edição de vaga
     @GetMapping(value = "/editar/{codigo}")
-    public String editarVaga(Model model, @PathVariable Long codigo) {
+    public String editarVaga(Model model, @PathVariable Long codigo, RedirectAttributes redirectAttributes) {
         Vaga vaga = vr.findByCodigoAndStatus(codigo, Status.ATIVO).orElseThrow(() -> new ObjectNotFoundException("Vaga não encontrada"));
+        if (vaga.getStatusProcesso() != StatusProcesso.ABERTA) {
+            redirectAttributes.addFlashAttribute("mensagem_erro", "A vaga não pode ser editada pois já está em processo de seleção ou finalizada.");
+            return "redirect:/vaga/buscar";
+        }
         VagaDTO vagaDTO = new VagaDTO(vaga);
         model.addAttribute("vaga", vagaDTO);
         model.addAttribute("clientes", clienteService.buscarTodos());

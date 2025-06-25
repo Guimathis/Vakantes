@@ -57,7 +57,7 @@
                                     </div>
                                     <div class="card-body">
                                         <div class="mb-2">
-                                            <strong>Descrição:</strong> <span th:text="${vaga.descricao}"></span>
+                                            <strong>Cliente:</strong> <span th:text="${vaga.cliente.nome}"></span>
                                         </div>
                                         <div class="mb-2">
                                             <strong>Salário:</strong> <span th:text="${vaga.salario}"></span>
@@ -65,14 +65,20 @@
                                         <div class="mb-2">
                                             <strong>Expira em:</strong> <span th:text="${vaga.data}"></span>
                                         </div>
+                                        <div class="mb-2">
+                                            <strong>Localização:</strong> <span th:text="${vaga.localizacao}"></span>
+                                        </div>
+                                        <div class="mb-2">
+                                            <strong>Modalidade:</strong> <span th:text="${vaga.modalidadeTrabalho}"></span>
+                                        </div>
                                     </div>
                                     <div class="card-footer bg-white border-top-0 d-flex flex-wrap justify-content-center gap-2">
                                         <a th:href="@{/vaga/buscar/{codigo}(codigo=${vaga.codigo})}"
-                                           class="btn btn-primary btn-sm mb-1 bi bi-pencil flex-fill "> Editar</a>
+                                           class="btn btn-primary btn-sm mb-1 bi bi-pencil flex-fill "> Visualizar</a>
                                         <a th:href="@{/vaga/detalhes/{codigo}(codigo=${vaga.codigo})}"
                                            class="btn btn-success btn-sm mb-1 bi bi-plus-lg flex-fill "> Candidato</a>
-                                        <a th:href="@{/vaga/selecao/{codigo}(codigo=${vaga.codigo})}"
-                                           class="btn btn-info btn-sm mb-1 text-white bi bi-check-all flex-fill "> Seleção</a>
+<!--                                        <a th:href="@{/vaga/selecao/{codigo}(codigo=${vaga.codigo})}"-->
+<!--                                           class="btn btn-info btn-sm mb-1 text-white bi bi-check-all flex-fill "> Seleção</a>-->
                                     </div>
                                 </div>
                             </div>

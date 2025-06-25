@@ -46,6 +46,10 @@ public class CandidaturaService {
     public void criarCandidaturas(Vaga vaga, List<Candidato> candidatos) {
         validarCandidaturas(vaga, candidatos);
 
+        if (vaga.getStatusProcesso() == com.DevProj.Vakantes.model.vaga.enums.StatusProcesso.FINALIZADA) {
+            throw new DataBindingViolationException("Não é possível cadastrar candidaturas para uma vaga finalizada.");
+        }
+
         candidatos.forEach(candidato -> {
             Candidatura novaCandidatura = new Candidatura(vaga, candidato);
             candidato.adicionarCandidatura(novaCandidatura);
@@ -70,6 +74,10 @@ public class CandidaturaService {
         Candidatura c = candidaturaRepository.findCandidaturaByVagaCodigoAndCandidatoId(codigo, id);
         if (c == null) {
             throw new DataBindingViolationException("Candidatura não encontrada");
+        }
+        // Validação: não permitir exclusão se a vaga estiver finalizada
+        if (c.getVaga() != null && c.getVaga().getStatusProcesso() == com.DevProj.Vakantes.model.vaga.enums.StatusProcesso.FINALIZADA) {
+            throw new DataBindingViolationException("Não é possível remover candidatos de uma vaga finalizada.");
         }
         candidaturaRepository.delete(c);
     }

@@ -136,4 +136,19 @@ public class EntrevistaController {
         model.addAttribute("entrevista", entrevista);
         return "fragments/comunicacoes :: fragment";
     }
+
+    @PostMapping("/{id}/aprovar")
+    @ResponseBody
+    public Map<String, Object> aprovarCandidaturaNaEntrevista(@PathVariable Long id) {
+        Map<String, Object> resp = new HashMap<>();
+        try {
+            entrevistaService.aprovarCandidaturaNaEntrevista(id);
+            resp.put("sucesso", true);
+            resp.put("mensagem", "Candidatura aprovada e empresa notificada por e-mail.");
+        } catch (Exception e) {
+            resp.put("sucesso", false);
+            resp.put("mensagem", e.getMessage());
+        }
+        return resp;
+    }
 }
