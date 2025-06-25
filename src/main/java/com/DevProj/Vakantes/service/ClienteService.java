@@ -27,6 +27,7 @@ public class ClienteService {
     private ValidationService validationService;
 
     public void salvarCliente(Cliente cliente) throws DataBindingViolationException {
+        cliente.getEndereco().setCliente(cliente);
         validarCliente(cliente);
         clienteRepository.save(cliente);
     }

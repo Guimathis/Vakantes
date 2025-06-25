@@ -129,6 +129,7 @@ public class VagaController {
         VagaDTO vagaDTO = new VagaDTO(vaga);
         model.addAttribute("vaga", vagaDTO);
         model.addAttribute("candidatosSistema", candidatoRepository.findAll());
+        model.addAttribute("enderecos", vagaDTO.getCliente().getEnderecos());
         return "entities/vaga/detalhes";
     }
 

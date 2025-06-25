@@ -8,6 +8,8 @@ import com.DevProj.Vakantes.model.util.enums.Status;
 import com.DevProj.Vakantes.model.vaga.Vaga;
 import jakarta.persistence.*;
 
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -67,7 +69,7 @@ public class Cliente {
     }
 
     public List<Endereco> getEnderecos() {
-        return enderecos;
+        return Collections.singletonList(endereco);
     }
 
     public void setEnderecos(List<Endereco> enderecos) {

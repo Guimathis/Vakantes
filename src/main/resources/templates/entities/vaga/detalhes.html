@@ -116,10 +116,27 @@
                                     <form th:action="@{'/vaga/' + ${vaga.codigo} + '/remover/' + ${candidatura.candidato.id}}"
                                           method="post" style="display: inline;" class="form-remover-candidatura">
                                         <input type="hidden" name="_method" value="delete">
-                                        <button type="button" class="btn btn-danger btn-sm bi bi-trash btn-confirmar-remocao"
+                                        <button type="button"
+                                                class="btn btn-danger btn-sm bi bi-trash btn-confirmar-remocao"
                                                 title="Remover Candidato"
                                                 th:disabled="${vaga.statusProcesso.name() == 'FINALIZADA'}"></button>
                                     </form>
+                                    <!-- Botão para cadastrar ou visualizar entrevista -->
+                                    <th:block th:if="${candidatura.entrevista != null}">
+                                        <button type="button"
+                                                th:href="@{/entrevista/editar/{id}(id=${candidatura.entrevista.id})}"
+                                                title="Visualizar Entrevista"
+                                           class="btn btn-info btn-sm bi bi-eye btn-editar-entrevista"
+                                           th:attr="data-entrevista-id=${candidatura.entrevista.id}"></button>
+                                    </th:block>
+                                    <th:block th:unless="${candidatura.entrevista != null}">
+                                        <button type="button"
+                                                class="btn btn-primary btn-sm bi bi-calendar-plus btn-cadastrar-entrevista"
+                                                title="Cadastrar Entrevista"
+                                                data-bs-toggle="modal" data-bs-target="#modalCadastrarEntrevista"
+                                                th:disabled="${vaga.statusProcesso.name() == 'FINALIZADA'}"
+                                                th:attr="data-candidato-id=${candidatura.candidato.id},data-candidatura-id=${candidatura.id},data-candidato-nome=${candidatura.candidato.nomeCandidato}"></button>
+                                    </th:block>
                                 </div>
                             </td>
                         </tr>
@@ -206,25 +223,43 @@
     </div>
 </div>
 
-<div class="modal fade" id="modalVisualizarEntrevista" tabindex="-1" aria-labelledby="modalVisualizarEntrevistaLabel"
+<!-- Modal Editar Entrevista (importado de entrevista/buscar.html) -->
+<div class="modal fade" id="editarEntrevistaModal" tabindex="-1" aria-labelledby="editarEntrevistaModalLabel"
      aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-dialog">
         <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="modalVisualizarEntrevistaLabel">Entrevista</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
-            </div>
-            <div class="modal-body">
-                <p><strong>Local:</strong> <span id="visualizarLocal"></span></p>
-                <p><strong>Data e Hora:</strong> <span id="visualizarDataHora"></span></p>
-                <p><strong>Observações:</strong> <span id="visualizarObservacoes"></span></p>
-            </div>
+            <form id="formEditarEntrevista">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editarEntrevistaModalLabel">Editar Entrevista</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" id="editarEntrevistaId" name="id">
+                    <div class="mb-3">
+                        <label for="editarLocal" class="form-label">Local</label>
+                        <input type="text" class="form-control" id="editarLocal" name="local" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editarDataHora" class="form-label">Data e Hora</label>
+                        <input type="datetime-local" class="form-control" id="editarDataHora" name="dataHora" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editarObservacoes" class="form-label">Observações</label>
+                        <textarea class="form-control" id="editarObservacoes" name="observacoes"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button id="btn-salvar-entrevista" type="submit" class="btn btn-primary">Salvar Alterações</button>
+                </div>
+            </form>
         </div>
     </div>
 </div>
 
 <!-- Adiciona o modal de confirmação de remoção de candidatura -->
-<div class="modal fade" id="modalConfirmarRemocao" tabindex="-1" aria-labelledby="modalConfirmarRemocaoLabel" aria-hidden="true">
+<div class="modal fade" id="modalConfirmarRemocao" tabindex="-1" aria-labelledby="modalConfirmarRemocaoLabel"
+     aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
@@ -249,27 +284,6 @@
         crossorigin="anonymous"></script>
 <script src="https://unpkg.com/imask"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        // Confirmação de remoção de candidatura
-        let formParaRemover = null;
-        var removerBtns = document.querySelectorAll('.btn-confirmar-remocao');
-        removerBtns.forEach(function (btn) {
-            btn.addEventListener('click', function (e) {
-                e.preventDefault();
-                formParaRemover = btn.closest('form');
-                var modal = new bootstrap.Modal(document.getElementById('modalConfirmarRemocao'));
-                modal.show();
-            });
-        });
-        document.getElementById('btnRemoverConfirmado').addEventListener('click', function () {
-            if (formParaRemover) {
-                formParaRemover.submit();
-            }
-            var modal = bootstrap.Modal.getInstance(document.getElementById('modalConfirmarRemocao'));
-            modal.hide();
-        });
-    });
-</script>
+<script src="/scripts/vaga-detalhes.js"></script>
 </body>
 </html>

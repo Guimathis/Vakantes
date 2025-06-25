@@ -47,7 +47,6 @@ public class EntrevistaController {
 
     @PostMapping("/cadastrar")
     public String salvarEntrevista(
-            @RequestParam("vagaId") Long vagaId,
             @RequestParam("local") String local,
             @RequestParam("dataHora") String dataHora,
             @RequestParam("candidaturaId") Long candidaturaId,
