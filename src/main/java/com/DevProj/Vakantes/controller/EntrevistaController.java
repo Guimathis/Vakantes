@@ -1,6 +1,7 @@
 package com.DevProj.Vakantes.controller;
 
 import com.DevProj.Vakantes.model.comunicacao.Comunicacao;
+import com.DevProj.Vakantes.model.empresa.Cliente;
 import com.DevProj.Vakantes.model.entrevista.Entrevista;
 import com.DevProj.Vakantes.model.vaga.Candidatura;
 import com.DevProj.Vakantes.model.vaga.Vaga;
@@ -102,6 +103,13 @@ public class EntrevistaController {
             String local = payload.get("local");
             String dataHora = payload.get("dataHora");
             String observacoes = payload.get("observacoes");
+            Entrevista entrevista = entrevistaService.buscarPorId(id);
+            if (entrevista.getCandidatura() != null && entrevista.getCandidatura().getStatus() != null &&
+                !entrevista.getCandidatura().getStatus().name().equals("INSCRITO")) {
+                resp.put("sucesso", false);
+                resp.put("mensagem", "Não é possível editar uma entrevista já realizada ou finalizada.");
+                return resp;
+            }
             entrevistaService.editarEntrevista(id, local, dataHora, observacoes);
             resp.put("sucesso", true);
             resp.put("mensagem", true);
@@ -149,5 +157,41 @@ public class EntrevistaController {
             resp.put("mensagem", e.getMessage());
         }
         return resp;
+    }
+
+    @PostMapping(value = "/realizar", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    public Map<String, Object> realizarEntrevista(@RequestBody Map<String, String> payload) {
+        Map<String, Object> resp = new HashMap<>();
+        try {
+            Long entrevistaId = Long.parseLong(payload.get("entrevistaId"));
+            Long candidaturaId = Long.parseLong(payload.get("candidaturaId"));
+            String status = payload.get("status");
+            String observacoes = payload.get("observacoes");
+            entrevistaService.realizarEntrevista(entrevistaId, candidaturaId, status, observacoes);
+            resp.put("sucesso", true);
+        } catch (Exception e) {
+            resp.put("sucesso", false);
+            resp.put("mensagem", e.getMessage());
+        }
+        return resp;
+    }
+
+    @GetMapping("/enderecos")
+    @ResponseBody
+    public List<Map<String, Object>> getEnderecosPorVaga(@RequestParam("vagaId") Long vagaId) {
+        Vaga vaga = vagaService.buscarVagaPorID(vagaId);
+        Cliente cliente = vaga.getCliente();
+        List<Map<String, Object>> enderecos = new java.util.ArrayList<>();
+        if (cliente != null && cliente.getEnderecos() != null) {
+            for (com.DevProj.Vakantes.model.util.Endereco endereco : cliente.getEnderecos()) {
+                Map<String, Object> enderecoMap = new HashMap<>();
+                enderecoMap.put("id", endereco.getId());
+                enderecoMap.put("descricao", endereco.getRua() + ", " + endereco.getNumero() +
+                        " - " + endereco.getBairro() + ", " + endereco.getCidade() + "/" + endereco.getEstado());
+                enderecos.add(enderecoMap);
+            }
+        }
+        return enderecos;
     }
 }

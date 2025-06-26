@@ -163,4 +163,50 @@ public class EntrevistaService {
         emailService.enviarEmailSimples(emailEmpresa, assunto, corpo);
     }
 
+    public void realizarEntrevista(Long entrevistaId, Long candidaturaId, String status, String observacoes) {
+        Entrevista entrevista = buscarPorId(entrevistaId);
+        Candidatura candidatura = entrevista.getCandidatura();
+        if (candidatura == null || !candidatura.getId().equals(candidaturaId)) {
+            throw new RuntimeException("Candidatura não encontrada para a entrevista.");
+        }
+        if ("REJEITADO".equalsIgnoreCase(status)) {
+            candidatura.setStatus(Candidatura.StatusCandidatura.REJEITADO);
+            candidaturaService.salvar(candidatura);
+            // Envia e-mail de reprovação ao candidato
+            String assunto = "Vakantes - Resultado do Processo Seletivo";
+            String corpo = "Olá, " + candidatura.getCandidato().getNomeCandidato() + ",\n\n" +
+                    "Agradecemos sua participação no processo seletivo para a vaga '" + candidatura.getVaga().getNome() + "'.\n" +
+                    "Após análise, informamos que você não foi selecionado para a próxima etapa.\n\n" +
+                    "Observação da empresa: " + observacoes + "\n\nDesejamos sucesso em sua carreira!\nEquipe Vakantes";
+            emailService.enviarEmailSimples(candidatura.getCandidato().getContato().getEmail(), assunto, corpo);
+        } else if ("SELECIONADO".equalsIgnoreCase(status)) {
+            candidatura.setStatus(Candidatura.StatusCandidatura.SELECIONADO);
+            candidaturaService.salvar(candidatura);
+            // Rejeita todas as outras candidaturas da mesma vaga
+            Vaga vaga = candidatura.getVaga();
+            List<Candidatura> candidaturasDaVaga = candidaturaService.buscarPorVagaId(vaga);
+            for (Candidatura outra : candidaturasDaVaga) {
+                if (!outra.getId().equals(candidatura.getId())) {
+                    outra.setStatus(Candidatura.StatusCandidatura.REJEITADO);
+                    candidaturaService.salvar(outra);
+                    // Envia e-mail de reprovação para os outros candidatos
+                    String assuntoReprovado = "Vakantes - Resultado do Processo Seletivo";
+                    String corpoReprovado = "Olá, " + outra.getCandidato().getNomeCandidato() + ",\n\n" +
+                        "Agradecemos sua participação no processo seletivo para a vaga '" + vaga.getNome() + "'.\n" +
+                        "Após análise, informamos que você não foi selecionado para a próxima etapa.\n\n" +
+                        "Desejamos sucesso em sua carreira!\nEquipe Vakantes";
+                    emailService.enviarEmailSimples(outra.getCandidato().getContato().getEmail(), assuntoReprovado, corpoReprovado);
+                }
+            }
+            // Envia e-mail de aprovação ao candidato selecionado
+            String assunto = "Vakantes - Parabéns! Você foi selecionado";
+            String corpo = "Olá, " + candidatura.getCandidato().getNomeCandidato() + ",\n\n" +
+                    "Parabéns! Você foi selecionado para a vaga '" + vaga.getNome() + "'.\n" +
+                    "Observação da empresa: " + observacoes + "\n\nEntraremos em contato para os próximos passos.\nEquipe Vakantes";
+            emailService.enviarEmailSimples(candidatura.getCandidato().getContato().getEmail(), assunto, corpo);
+        } else {
+            throw new RuntimeException("Status inválido para resultado da entrevista.");
+        }
+    }
+
 }

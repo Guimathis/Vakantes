@@ -63,9 +63,11 @@
                                         </div>
                                     </div>
                                     <div class="card-footer bg-white border-top-0 d-flex flex-wrap justify-content-center gap-2">
-                                        <a th:href="@{/entrevista/editar/{id}(id=${entrevista.id})}"
+                                        <a th:if="${entrevista.candidatura.status.name() == 'INSCRITO'}"
+                                           th:href="@{/entrevista/editar/{id}(id=${entrevista.id})}"
                                            class="btn btn-primary btn-sm mb-1 bi bi-pencil flex-fill btn-editar-entrevista"
                                            th:attr="data-entrevista-id=${entrevista.id}"> Editar</a>
+
                                         <a th:href="@{/entrevista/detalhes/{id}(id=${entrevista.id})}"
                                            class="btn btn-success btn-sm mb-1 bi bi-eye flex-fill "> Detalhes</a>
                                         <a href="#"
@@ -73,10 +75,21 @@
                                            th:attr="data-email=${entrevista.candidatura.candidato.contato.email},data-nome=${entrevista.candidatura.candidato.nomeCandidato},data-entrevista-id=${entrevista.id}">
                                             Comunicar</a>
                                         <button type="button"
-                                                class="btn btn-outline-success btn-sm mb-1 flex-fill btn-aprovar-entrevista"
-                                                th:attr="data-entrevista-id=${entrevista.id}"
-                                                title="Aprovar e encaminhar para empresa">
-                                            <i class="bi bi-check-circle"></i> Aprovar
+                                                th:if="${entrevista.candidatura.status.name() == 'INSCRITO'}"
+                                                class="btn btn-outline-success btn-sm mb-1 flex-fill btn-realizar-entrevista"
+                                                th:attr="data-entrevista-id=${entrevista.id},data-candidatura-id=${entrevista.candidatura.id},data-candidato-nome=${entrevista.candidatura.candidato.nomeCandidato}"
+                                                title="Realizar resultado da entrevista">
+                                            <i class="bi bi-check-circle"></i> Realizar
+                                        </button>
+                                        <button type="button"
+                                                th:if="${entrevista.candidatura.status.name() == 'SELECIONADO'}"
+                                                class="btn btn-success btn-sm mb-1 flex-fill" disabled>
+                                            <i class="bi bi-check-circle"></i> &nbsp; Aprovado
+                                        </button>
+                                        <button type="button"
+                                                th:if="${entrevista.candidatura.status.name() == 'REJEITADO'}"
+                                                class="btn btn-danger btn-sm mb-1 flex-fill" disabled>
+                                            <i class="bi bi-x-circle"></i> &nbsp; Rejeitado
                                         </button>
                                     </div>
                                 </div>
@@ -117,9 +130,12 @@
                         </select>
                     </div>
                     <div class="mb-3">
-                        <label for="local" class="form-label">Local</label>
-                        <input type="text" class="form-control" id="local" name="local" required>
+                        <label for="enderecoSelect" class="form-label">Endereço da Empresa</label>
+                        <select class="form-select" id="enderecoSelect" name="local" required disabled>
+                            <option value="">Selecione uma vaga</option>
+                        </select>
                     </div>
+                    <div class="mb-3">
                     <div class="mb-3">
                         <label for="dataHora" class="form-label">Data e Hora</label>
                         <input type="datetime-local" class="form-control" id="dataHora" name="dataHora" required>
@@ -202,6 +218,40 @@
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
                     <button id="btn-enviar-mensagem" type="submit" class="btn btn-primary">Enviar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Resultado Entrevista -->
+<div class="modal fade" id="modalResultadoEntrevista" tabindex="-1" aria-labelledby="modalResultadoEntrevistaLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form id="formResultadoEntrevista">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalResultadoEntrevistaLabel">Resultado da Entrevista</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" id="resultadoEntrevistaId" name="entrevistaId">
+                    <input type="hidden" id="resultadoCandidaturaId" name="candidaturaId">
+                    <div class="mb-3">
+                        <label for="resultadoStatus" class="form-label">Resultado</label>
+                        <select class="form-select" id="resultadoStatus" name="status" required>
+                            <option value="">Selecione o resultado</option>
+                            <option value="REJEITADO">Rejeitado</option>
+                            <option value="SELECIONADO">Selecionado</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="resultadoObservacoes" class="form-label">Observações para o candidato</label>
+                        <textarea class="form-control" id="resultadoObservacoes" name="observacoes" required></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button id="btn-salvar-resultado-entrevista" type="submit" class="btn btn-success">Salvar Resultado</button>
                 </div>
             </form>
         </div>

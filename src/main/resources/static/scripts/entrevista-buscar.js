@@ -5,6 +5,11 @@ document.addEventListener('DOMContentLoaded', function () {
         vagaSelect.addEventListener('change', function () {
             const vagaId = this.value;
             candidatoSelect.innerHTML = '<option>Carregando...</option>';
+            // Novo: endereçoSelect
+            const enderecoSelect = document.getElementById('enderecoSelect');
+            if (enderecoSelect) {
+                enderecoSelect.innerHTML = '<option>Carregando...</option>';
+            }
             if (vagaId) {
                 fetch(`/entrevista/candidatos?vagaId=${vagaId}`)
                     .then(response => response.json())
@@ -20,8 +25,26 @@ document.addEventListener('DOMContentLoaded', function () {
                             });
                         }
                     });
+                // Novo: buscar endereços da vaga
+                if (enderecoSelect) {
+                    fetch(`/entrevista/enderecos?vagaId=${vagaId}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            enderecoSelect.innerHTML = '';
+                            if (data.length === 0) {
+                                enderecoSelect.innerHTML = '<option value="">Nenhum endereço cadastrado para esta vaga</option>';
+                            } else {
+                                enderecoSelect.innerHTML = '<option value="">Selecione um endereço</option>';
+                                enderecoSelect.disabled = false;
+                                data.forEach(function (endereco) {
+                                    enderecoSelect.innerHTML += `<option value="${endereco.descricao}">${endereco.descricao}</option>`;
+                                });
+                            }
+                        });
+                }
             } else {
                 candidatoSelect.innerHTML = '<option value="">Selecione uma vaga</option>';
+                if (enderecoSelect) enderecoSelect.innerHTML = '<option value="">Selecione uma vaga</option>';
             }
         });
     }
@@ -40,6 +63,21 @@ document.addEventListener('DOMContentLoaded', function () {
                     var modal = new bootstrap.Modal(document.getElementById('editarEntrevistaModal'));
                     modal.show();
                 });
+        });
+    });
+
+    // Botão Realizar abre o modal de resultado
+    document.querySelectorAll('.btn-realizar-entrevista').forEach(function (btn) {
+        btn.addEventListener('click', function (e) {
+            e.preventDefault();
+            const entrevistaId = this.getAttribute('data-entrevista-id');
+            const candidaturaId = this.getAttribute('data-candidatura-id');
+            document.getElementById('resultadoEntrevistaId').value = entrevistaId;
+            document.getElementById('resultadoCandidaturaId').value = candidaturaId;
+            document.getElementById('resultadoStatus').value = '';
+            document.getElementById('resultadoObservacoes').value = '';
+            var modal = new bootstrap.Modal(document.getElementById('modalResultadoEntrevista'));
+            modal.show();
         });
     });
 
@@ -218,4 +256,43 @@ document.addEventListener('DOMContentLoaded', function () {
                 });
         });
     });
+
+    // Submissão do resultado da entrevista
+    var formResultado = document.getElementById('formResultadoEntrevista');
+    if (formResultado) {
+        formResultado.addEventListener('submit', function (e) {
+            e.preventDefault();
+            var btnSalvar = document.getElementById('btn-salvar-resultado-entrevista');
+            btnSalvar.disabled = true;
+            btnSalvar.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Salvando...';
+            const entrevistaId = document.getElementById('resultadoEntrevistaId').value;
+            const candidaturaId = document.getElementById('resultadoCandidaturaId').value;
+            const status = document.getElementById('resultadoStatus').value;
+            const observacoes = document.getElementById('resultadoObservacoes').value;
+            fetch('/entrevista/realizar', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({entrevistaId, candidaturaId, status, observacoes})
+            })
+                .then(res => res.json())
+                .then(resp => {
+                    if (resp.sucesso) {
+                        exibirMensagemValidacao('Resultado salvo e comunicado ao candidato!', 'success');
+                        var modalEl = document.getElementById('modalResultadoEntrevista');
+                        var modal = bootstrap.Modal.getInstance(modalEl);
+                        modal.hide();
+                        setTimeout(() => location.reload(), 3000);
+                    } else {
+                        exibirMensagemValidacao('Erro ao salvar: ' + (resp.mensagem || ''), 'danger');
+                    }
+                    btnSalvar.disabled = false;
+                    btnSalvar.innerHTML = 'Salvar Resultado';
+                })
+                .catch(() => {
+                    exibirMensagemValidacao('Erro ao salvar. Tente novamente.', 'danger');
+                    btnSalvar.disabled = false;
+                    btnSalvar.innerHTML = 'Salvar Resultado';
+                });
+        });
+    }
 });

@@ -48,6 +48,7 @@ public class Cliente {
     private List<Vaga> vagas;
 
     @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
     private Status status;
 
     @Temporal(TemporalType.TIMESTAMP)

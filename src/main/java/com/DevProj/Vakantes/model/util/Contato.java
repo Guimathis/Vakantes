@@ -18,7 +18,7 @@ public class Contato {
     @Column(name = "telefone")
     private String telefone;
 
-    @Column(name = "email", nullable = false, unique = true)
+    @Column(name = "email", nullable = false)
     @NotBlank(message = "O e-mail é obrigatório")
     @Email(message = "Formato de e-mail inválido")
     private String email;

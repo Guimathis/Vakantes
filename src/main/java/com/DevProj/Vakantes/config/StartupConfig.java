@@ -2,6 +2,7 @@ package com.DevProj.Vakantes.config;
 
 import com.DevProj.Vakantes.model.usuario.Usuario;
 import com.DevProj.Vakantes.model.usuario.enums.UserRole;
+import com.DevProj.Vakantes.model.util.Contato;
 import com.DevProj.Vakantes.model.util.enums.Status;
 import com.DevProj.Vakantes.repository.UsuarioRepository;
 import org.springframework.boot.CommandLineRunner;
@@ -20,8 +21,10 @@ public class StartupConfig {
             if (admin == null) {
                 // Criando usuário padrão ADMIN
                 Usuario user = new Usuario();
+                Contato contato = new Contato("(67) 99999-9999", "vakantesvagas@gmail.com");
+                user.setContato(contato);
                 user.setNomeCompleto("Administrador");
-                user.setEmail("admin@vaka.com");
+                user.setEmail("vakantesvagas@gmail.com");
                 user.setSenha(passwordEncoder.encode("admin")); // Criptografando a senha
                 user.setUserRole(UserRole.ADMIN);
                 user.setStatus(Status.ATIVO);
@@ -34,6 +37,8 @@ public class StartupConfig {
             if (usuario == null) {
                 // Criando usuário padrão ADMIN
                 Usuario user = new Usuario();
+                Contato contato = new Contato("(67) 99999-9999", "vakantesvagas@gmail.com");
+                user.setContato(contato);
                 user.setNomeCompleto("Usuario");
                 user.setEmail("user@vaka.com");
                 user.setSenha(passwordEncoder.encode("admin")); // Criptografando a senha
