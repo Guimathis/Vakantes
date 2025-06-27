@@ -41,7 +41,7 @@ public class Entrevista implements Serializable {
     @JoinColumn(name = "candidatura_id", referencedColumnName = "id", nullable = false, unique = true)
     private Candidatura candidatura;
 
-    @OneToMany(mappedBy = "entrevista")
+    @OneToMany(mappedBy = "entrevista" , cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Comunicacao> comunicacoes;
 
     @Temporal(TemporalType.TIMESTAMP)

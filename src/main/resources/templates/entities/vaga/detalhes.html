@@ -94,23 +94,29 @@
                 <h4 class="mb-3">Candidatos Inscritos</h4>
                 <div class="table-responsive">
                     <table class="table table-striped table-hover">
-                        <thead class="table-light">
+                        <thead class="table-light" >
                         <tr>
                             <th>Nome</th>
                             <th>CPF</th>
                             <th>E-mail</th>
                             <th>Contato</th>
                             <th>Data de nascimento</th>
+                            <th>Status do processo</th>
                             <th>Ações</th>
                         </tr>
                         </thead>
                         <tbody>
-                        <tr th:each="candidatura : ${vaga.getCandidaturas()}">
+                        <tr th:each="candidatura : ${candidaturasOrdenadas}">
                             <td th:text="${candidatura.candidato.nomeCandidato}"></td>
                             <td th:text="${candidatura.candidato.cpf}"></td>
                             <td th:text="${candidatura.candidato.contato.email}"></td>
                             <td th:text="${candidatura.candidato.contato.telefone}"></td>
                             <td th:text="${candidatura.candidato.dataNascimento}"></td>
+                            <td>
+                                <span th:text="${candidatura.status.getDescricao()}"
+                                      th:classappend="${candidatura.status.getDescricao().toLowerCase() == 'selecionado'} ? 'badge bg-success text-white' : 'badge bg-danger text-white'">
+                                </span>
+                            </td>
                             <td>
                                 <div class="d-flex gap-1">
                                     <form th:action="@{'/vaga/' + ${vaga.codigo} + '/remover/' + ${candidatura.candidato.id}}"

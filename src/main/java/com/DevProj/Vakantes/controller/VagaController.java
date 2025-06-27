@@ -2,6 +2,7 @@ package com.DevProj.Vakantes.controller;
 
 import com.DevProj.Vakantes.model.empresa.Cliente;
 import com.DevProj.Vakantes.model.util.enums.Status;
+import com.DevProj.Vakantes.model.vaga.Candidatura;
 import com.DevProj.Vakantes.model.vaga.Vaga;
 import com.DevProj.Vakantes.model.vaga.VagaDTO;
 import com.DevProj.Vakantes.model.vaga.enums.StatusProcesso;
@@ -141,6 +142,13 @@ public class VagaController {
     @GetMapping(value = "/detalhes/{codigo}")
     public String detalhesVaga(Model model, @PathVariable Long codigo) {
         Vaga vaga = vr.findByCodigoAndStatus(codigo, Status.ATIVO).orElseThrow(() -> new ObjectNotFoundException("Vaga não encontrada"));
+        List<Candidatura> candidaturas = vaga.getCandidaturas();
+        candidaturas.sort((c1, c2) -> {
+            boolean c1Selecionado = "selecionado".equalsIgnoreCase(c1.getStatus().getDescricao());
+            boolean c2Selecionado = "selecionado".equalsIgnoreCase(c2.getStatus().getDescricao());
+            return Boolean.compare(c2Selecionado, c1Selecionado);
+        });
+        model.addAttribute("candidaturasOrdenadas", candidaturas);
         VagaDTO vagaDTO = new VagaDTO(vaga);
         model.addAttribute("vaga", vagaDTO);
         model.addAttribute("candidatosSistema", candidatoRepository.findAll());

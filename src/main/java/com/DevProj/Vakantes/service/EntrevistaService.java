@@ -59,6 +59,12 @@ public class EntrevistaService {
                 DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm")), candidatura, new ArrayList<>(List.of(comunicacao)));
         candidatura.setEntrevista(entrevista);
 
+        Vaga vaga = candidatura.getVaga();
+        if(vaga.getStatusProcesso() == StatusProcesso.SELECAO){
+            vaga.setStatusProcesso(StatusProcesso.ENTREVISTA);
+            vagaService.salvar(vaga);
+        }
+
         comunicacao.setEntrevista(entrevista);
 
         boolean emailEnviado = false;
@@ -186,8 +192,9 @@ public class EntrevistaService {
         } else if ("SELECIONADO".equalsIgnoreCase(status)) {
             candidatura.setStatus(Candidatura.StatusCandidatura.SELECIONADO);
             candidaturaService.salvar(candidatura);
-            // Rejeita todas as outras candidaturas da mesma vaga
             Vaga vaga = candidatura.getVaga();
+            vaga.setStatusProcesso(StatusProcesso.FINALIZADA);
+            // Rejeita todas as outras candidaturas da mesma vaga
             List<Candidatura> candidaturasDaVaga = candidaturaService.buscarPorVagaId(vaga);
             for (Candidatura outra : candidaturasDaVaga) {
                 if (!outra.getId().equals(candidatura.getId())) {

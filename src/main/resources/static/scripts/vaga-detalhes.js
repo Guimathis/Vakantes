@@ -123,4 +123,25 @@ document.addEventListener('DOMContentLoaded', function () {
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         `;
     }
+
+    // Confirmação de remoção de candidatura
+    document.querySelectorAll('.btn-confirmar-remocao').forEach(function (btn) {
+        btn.addEventListener('click', function (e) {
+            e.preventDefault();
+            // Salva o formulário relacionado ao botão clicado
+            var form = btn.closest('form');
+            // Exibe o modal de confirmação
+            var modal = new bootstrap.Modal(document.getElementById('modalConfirmarRemocao'));
+            modal.show();
+            // Ao confirmar remoção, submete o formulário
+            var btnRemover = document.getElementById('btnRemoverConfirmado');
+            // Remove event listeners antigos para evitar múltiplos submits
+            btnRemover.replaceWith(btnRemover.cloneNode(true));
+            btnRemover = document.getElementById('btnRemoverConfirmado');
+            btnRemover.addEventListener('click', function () {
+                modal.hide();
+                form.submit();
+            });
+        });
+    });
 });

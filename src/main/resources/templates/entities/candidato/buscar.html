@@ -56,7 +56,6 @@
             </div>
         </div>
 
-        <!-- Right panel with entity list -->
         <div class="col-md-9">
             <div class="card shadow-lg">
                 <div class="card-header text-center">
@@ -71,7 +70,7 @@
                         <div class="row row-cols-1 row-cols-md-3 g-4">
                             <div class="col" th:each="candidato : ${candidatos}">
                                 <div class="card h-100 shadow-sm">
-                                    <div class="card-header bg-primary text-white">
+                                    <div class="card-header bg-light d-flex justify-content-between align-items-center">
                                         <h5 class="card-title mb-0" th:text="${candidato.nomeCandidato}"></h5>
                                     </div>
                                     <div class="card-body">
