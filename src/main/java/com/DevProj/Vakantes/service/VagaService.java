@@ -39,6 +39,10 @@ public class VagaService {
         return vagaRepository.findAllByStatus(Status.ATIVO);
     }
 
+    public List<Vaga> buscarComFiltros(Long clienteId, String vagaNome, Long candidatoId) {
+        return vagaRepository.findByFilters(Status.ATIVO, clienteId, vagaNome, candidatoId);
+    }
+
     public Vaga buscarVagaPorID(Long id) {
         return vagaRepository.findByCodigoAndStatus(id, Status.ATIVO)
                 .orElseThrow(() -> new ObjectNotFoundException("Vaga não encontrada"));

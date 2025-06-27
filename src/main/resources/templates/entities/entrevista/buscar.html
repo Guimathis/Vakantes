@@ -26,6 +26,70 @@
                     <a href="/home/index" class="btn btn-secondary">Voltar</a>
                 </div>
             </div>
+
+            <!-- Filtros -->
+            <div class="card shadow-lg mt-3">
+                <div class="card-header text-center">
+                    <h5>Filtros</h5>
+                </div>
+                <div class="card-body">
+                    <form th:action="@{/entrevista/buscar}" method="get">
+                        <div class="mb-3">
+                            <label for="clienteId" class="form-label">Cliente</label>
+                            <select id="clienteId" name="clienteId" class="form-select">
+                                <option value="">Todos os clientes</option>
+                                <option th:each="cliente : ${clientes}" 
+                                        th:value="${cliente.id}" 
+                                        th:text="${cliente.nome}"
+                                        th:selected="${param.clienteId != null && param.clienteId[0] == cliente.id.toString()}">
+                                </option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="vagaId" class="form-label">Vaga</label>
+                            <select id="vagaId" name="vagaId" class="form-select">
+                                <option value="">Todas as vagas</option>
+                                <option th:each="vaga : ${vagas}" 
+                                        th:value="${vaga.codigo}" 
+                                        th:text="${vaga.nome}"
+                                        th:selected="${param.vagaId != null && param.vagaId[0] == vaga.codigo.toString()}">
+                                </option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="candidatoId" class="form-label">Candidato</label>
+                            <select id="candidatoId" name="candidatoId" class="form-select">
+                                <option value="">Todos os candidatos</option>
+                                <option th:each="candidato : ${candidatos}" 
+                                        th:value="${candidato.id}" 
+                                        th:text="${candidato.nomeCandidato}"
+                                        th:selected="${param.candidatoId != null && param.candidatoId[0] == candidato.id.toString()}">
+                                </option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="status" class="form-label">Status da Candidatura</label>
+                            <select id="status" name="status" class="form-select">
+                                <option value="">Todos os status</option>
+                                <option value="INSCRITO" 
+                                        th:selected="${param.status != null ? param.status[0] == 'INSCRITO' : statusDefault}">
+                                    Inscrito
+                                </option>
+                                <option value="SELECIONADO" 
+                                        th:selected="${param.status != null && param.status[0] == 'SELECIONADO'}">
+                                    Selecionado
+                                </option>
+                                <option value="REJEITADO" 
+                                        th:selected="${param.status != null && param.status[0] == 'REJEITADO'}">
+                                    Rejeitado
+                                </option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">Filtrar</button>
+                        <a th:href="@{/entrevista/buscar}" class="btn btn-secondary w-100 mt-2">Limpar Filtros</a>
+                    </form>
+                </div>
+            </div>
         </div>
         <div class="col-md-9">
             <div class="card shadow-lg">
@@ -53,6 +117,10 @@
                                         <div class="mb-2">
                                             <strong>Candidato:</strong> <span
                                                 th:text="${entrevista.candidatura.candidato.nomeCandidato}"></span>
+                                        </div>
+                                        <div class="mb-2">
+                                            <strong>Cliente:</strong> <span
+                                                th:text="${entrevista.candidatura.vaga.cliente.nome}"></span>
                                         </div>
                                         <div class="mb-2">
                                             <strong>Local:</strong> <span th:text="${entrevista.local}"></span>
@@ -135,7 +203,6 @@
                             <option value="">Selecione uma vaga</option>
                         </select>
                     </div>
-                    <div class="mb-3">
                     <div class="mb-3">
                         <label for="dataHora" class="form-label">Data e Hora</label>
                         <input type="datetime-local" class="form-control" id="dataHora" name="dataHora" required>

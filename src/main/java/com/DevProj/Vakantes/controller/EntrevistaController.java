@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.http.MediaType;
 
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
@@ -46,6 +47,9 @@ public class EntrevistaController {
     @Autowired
     private ComunicacaoService comunicacaoService;
 
+    @Autowired
+    private ClienteService clienteService;
+
     @PostMapping("/cadastrar")
     public String salvarEntrevista(
             @RequestParam("local") String local,
@@ -66,9 +70,43 @@ public class EntrevistaController {
     }
 
     @GetMapping("/buscar")
-    public String listarEntrevistas(Model model) {
-        model.addAttribute("entrevistas", entrevistaService.buscarTodas());
+    public String listarEntrevistas(
+            @RequestParam(required = false) Long clienteId,
+            @RequestParam(required = false) Long vagaId,
+            @RequestParam(required = false) Long candidatoId,
+            @RequestParam(required = false) String status,
+            Model model) {
+
+        // Adicionar listas para os dropdowns
+        model.addAttribute("clientes", clienteService.buscarTodos());
         model.addAttribute("vagas", vagaService.buscarTodas());
+        model.addAttribute("candidatos", candidatoService.buscarTodos());
+
+        // Converter datas de string para LocalDateTime se fornecidas
+        LocalDateTime dataInicioObj = null;
+        LocalDateTime dataFimObj = null;
+
+        try {
+
+            // Definir o status padrão como INSCRITO se não for especificado
+            Candidatura.StatusCandidatura statusFilter = null;
+            if (status != null) {
+                if (status.equals("INSCRITO") || status.equals("SELECIONADO") || status.equals("REJEITADO")) {
+                    statusFilter = Candidatura.StatusCandidatura.valueOf(status);
+                }
+            } else {
+                // Aplicar filtro padrão INSCRITO apenas se nenhum status foi especificado
+                statusFilter = Candidatura.StatusCandidatura.INSCRITO;
+                model.addAttribute("statusDefault", true);
+            }
+
+            // Aplicar filtros
+            model.addAttribute("entrevistas", entrevistaService.buscarComFiltros(clienteId, vagaId, candidatoId, statusFilter));
+        } catch (Exception e) {
+            model.addAttribute("mensagem_erro", "Erro ao aplicar filtros: " + e.getMessage());
+            model.addAttribute("entrevistas", entrevistaService.buscarTodas());
+        }
+
         return "entities/entrevista/buscar";
     }
 

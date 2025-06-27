@@ -92,6 +92,10 @@ public class EntrevistaService {
         return entrevistaRepository.findAll();
     }
 
+    public List<Entrevista> buscarComFiltros(Long clienteId, Long vagaId, Long candidatoId, Candidatura.StatusCandidatura status) {
+        return entrevistaRepository.findByFilters(clienteId, vagaId, candidatoId, status);
+    }
+
     public boolean candidaturaPossuiEntrevistaAgendada(Candidatura candidatura) {
         if (candidatura == null || candidatura.getEntrevista() == null) {
             return false;

@@ -91,8 +91,23 @@ public class VagaController {
 
     // LISTA VAGAS
     @GetMapping("/buscar")
-    public String listaVaga(Model model) {
-        model.addAttribute("vagas", vagaService.buscarTodas());
+    public String listaVaga(
+            @RequestParam(required = false) Long clienteId,
+            @RequestParam(required = false) String vagaNome,
+            @RequestParam(required = false) Long candidatoId,
+            Model model) {
+
+        // Adicionar listas para os dropdowns
+        model.addAttribute("clientes", clienteService.buscarTodos());
+        model.addAttribute("candidatos", candidatoRepository.findAll());
+
+        // Aplicar filtros se algum parâmetro foi fornecido
+        if (clienteId != null || (vagaNome != null && !vagaNome.isEmpty()) || candidatoId != null) {
+            model.addAttribute("vagas", vagaService.buscarComFiltros(clienteId, vagaNome, candidatoId));
+        } else {
+            model.addAttribute("vagas", vagaService.buscarTodas());
+        }
+
         return "entities/vaga/buscar";
     }
 
