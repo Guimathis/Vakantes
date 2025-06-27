@@ -181,7 +181,7 @@
      aria-labelledby="modalCadastrarEntrevistaLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
-            <form th:action="@{/entrevista/cadastrar}" method="post">
+            <form id="formNovaEntrevista" th:action="@{/entrevista/cadastrar}" method="post">
                 <div class="modal-header">
                     <h5 class="modal-title" id="modalCadastrarEntrevistaLabel">Cadastrar Entrevista</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
@@ -216,7 +216,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="submit" class="btn btn-success">Salvar Entrevista</button>
+                    <button id="btn-salvar-nova-entrevista" type="submit" class="btn btn-success">Salvar</button>
                 </div>
             </form>
         </div>

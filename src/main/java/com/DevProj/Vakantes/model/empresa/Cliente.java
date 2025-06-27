@@ -59,6 +59,15 @@ public class Cliente {
     @Column(name = "atualizado_em", nullable = true)
     private Date atualizadoEm;
 
+    public Cliente(String nome, TipoPessoa tipoPessoa, String s, Status status) {
+        this.nome = nome;
+        this.tipoPessoa = tipoPessoa;
+        this.documento = s;
+        this.status = status;
+        this.endereco = new Endereco();
+        this.contato = new Contato();
+    }
+
     @PrePersist
     protected void onCreate() {
         criadoEm = new Date();
