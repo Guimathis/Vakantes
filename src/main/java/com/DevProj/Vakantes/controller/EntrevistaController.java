@@ -82,10 +82,6 @@ public class EntrevistaController {
         model.addAttribute("vagas", vagaService.buscarTodas());
         model.addAttribute("candidatos", candidatoService.buscarTodos());
 
-        // Converter datas de string para LocalDateTime se fornecidas
-        LocalDateTime dataInicioObj = null;
-        LocalDateTime dataFimObj = null;
-
         try {
 
             // Definir o status padrão como INSCRITO se não for especificado

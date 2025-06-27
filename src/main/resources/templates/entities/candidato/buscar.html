@@ -17,7 +17,6 @@
 
 <div class="container-fluid flex-grow-1" style="padding-top: 15px; padding-bottom: 15px;">
     <div class="row">
-        <!-- Left panel with buttons -->
         <div class="col-md-3 mb-3">
             <div class="card shadow-lg">
                 <div class="card-header text-center">
@@ -26,6 +25,33 @@
                 <div class="card-body d-flex flex-column gap-2">
                     <a href="/candidato/cadastro" class="btn btn-primary bi bi-plus-lg"> Novo Candidato</a>
                     <a href="/home/index" class="btn btn-secondary">Voltar</a>
+                </div>
+            </div>
+            <div class="card shadow-lg mt-3">
+                <div class="card-header text-center">
+                    <h5>Filtros</h5>
+                </div>
+                <div class="card-body">
+                    <form th:action="@{/candidato/buscar}" method="get">
+                        <div class="mb-3">
+                            <label for="candidatoNome" class="form-label">Cliente</label>
+                            <input type="text" id="candidatoNome" name="candidatoNome" class="form-control"
+                                   th:value="${param.candidatoNome != null ? param.candidatoNome[0] : null}">
+                        </div>
+                        <div class="mb-3">
+                            <label for="cidade" class="form-label">Cidade</label>
+                            <select id="cidade" name="cidade" class="form-select">
+                                <option value="">Todas as cidades</option>
+                                <option th:each="cidade : ${cidades}"
+                                        th:value="${cidade}"
+                                        th:text="${cidade}"
+                                        th:selected="${param.cidade != null && param.cidade[0] == cidade}">
+                                </option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">Filtrar</button>
+                        <a th:href="@{/candidato/buscar}" class="btn btn-secondary w-100 mt-2">Limpar Filtros</a>
+                    </form>
                 </div>
             </div>
         </div>
@@ -56,17 +82,19 @@
                                             <strong>RG:</strong> <span th:text="${candidato.rg}"></span>
                                         </div>
                                         <div class="mb-2">
-                                            <strong>Data de Nascimento:</strong> <span th:text="${candidato.dataNascimento}"></span>
+                                            <strong>Data de Nascimento:</strong> <span
+                                                th:text="${candidato.dataNascimento}"></span>
                                         </div>
                                         <div class="mb-2">
-                                            <strong>Endereço:</strong> 
+                                            <strong>Endereço:</strong>
                                             <span th:text="${candidato.endereco.rua + ', ' + candidato.endereco.numero + ' - ' + candidato.endereco.cidade + '/' + candidato.endereco.estado}"></span>
                                         </div>
                                         <div class="mb-2">
                                             <strong>CEP:</strong> <span th:text="${candidato.endereco.cep}"></span>
                                         </div>
                                         <div class="mb-2">
-                                            <strong>Telefone:</strong> <span th:text="${candidato.contato.telefone}"></span>
+                                            <strong>Telefone:</strong> <span
+                                                th:text="${candidato.contato.telefone}"></span>
                                         </div>
                                     </div>
                                     <div class="card-footer bg-white border-top-0 d-flex justify-content-center">

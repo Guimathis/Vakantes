@@ -11,6 +11,8 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.util.List;
+
 
 @Controller
 @RequestMapping("/candidato")
@@ -50,8 +52,16 @@ public class CandidatoController {
     }
 
     @GetMapping("/buscar")
-    public String listaCandidatos(Model model) {
-        model.addAttribute("candidatos", candidatoService.buscarTodos());
+    public String listaCandidatos(
+            @RequestParam(required = false) String candidatoNome,
+            @RequestParam(required = false) String cidade,
+            Model model) {
+        model.addAttribute("cidades", candidatoService.buscarCidades());
+        if (candidatoNome != null && !candidatoNome.isEmpty() || cidade != null && !cidade.isEmpty()) {
+            model.addAttribute("candidatos", candidatoService.buscarComFiltros(candidatoNome, cidade));
+        } else {
+            model.addAttribute("candidatos", candidatoService.buscarTodos());
+        }
         return "entities/candidato/buscar";
     }
 

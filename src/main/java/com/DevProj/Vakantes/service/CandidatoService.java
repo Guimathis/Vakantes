@@ -174,4 +174,21 @@ public class CandidatoService {
     public void saveAll(List<Candidato> candidatos) {
         candidatoRepository.saveAll(candidatos);
     }
+
+    public List<String> buscarCidades() {
+        List<String> cidades = new ArrayList<>();
+        candidatoRepository.findAll().forEach(candidato -> {
+            if (candidato.getEndereco() != null && candidato.getEndereco().getCidade() != null) {
+                String cidade = candidato.getEndereco().getCidade();
+                if (!cidades.contains(cidade)) {
+                    cidades.add(cidade);
+                }
+            }
+        });
+        return cidades;
+    }
+
+    public List<Candidato> buscarComFiltros(String candidatoNome, String cidade) {
+        return candidatoRepository.findByFilters(Status.ATIVO, candidatoNome, cidade.isEmpty() ? null : cidade);
+    }
 }
