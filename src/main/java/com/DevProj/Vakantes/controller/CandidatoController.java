@@ -1,12 +1,13 @@
 package com.DevProj.Vakantes.controller;
 
 import com.DevProj.Vakantes.model.candidato.Candidato;
-import com.DevProj.Vakantes.model.usuario.Usuario;
 import com.DevProj.Vakantes.service.CandidatoService;
 import com.DevProj.Vakantes.service.exceptions.DataBindingViolationException;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -29,8 +30,11 @@ public class CandidatoController {
     }
 
     @PostMapping("/salvar")
-    public String salvar(Candidato candidato, RedirectAttributes attributes) {
+    public String salvar(@Valid Candidato candidato, BindingResult result, RedirectAttributes attributes) {
         try {
+            if (result.hasErrors()) {
+                attributes.addFlashAttribute("mensagem_erro", result.getAllErrors().get(0).getDefaultMessage());
+            }
             if (candidato.getId() == null) {
                 candidatoService.cadastrar(candidato);
                 attributes.addFlashAttribute("mensagem", "Candidato cadastrado com sucesso!");
@@ -48,15 +52,23 @@ public class CandidatoController {
     }
 
     @GetMapping("/buscar")
-    public String listaCandidatos(Model model) {
-        model.addAttribute("candidatos", candidatoService.buscarTodos());
+    public String listaCandidatos(
+            @RequestParam(required = false) String candidatoNome,
+            @RequestParam(required = false) String cidade,
+            Model model) {
+        model.addAttribute("cidades", candidatoService.buscarCidades());
+        if (candidatoNome != null && !candidatoNome.isEmpty() || cidade != null && !cidade.isEmpty()) {
+            model.addAttribute("candidatos", candidatoService.buscarComFiltros(candidatoNome, cidade));
+        } else {
+            model.addAttribute("candidatos", candidatoService.buscarTodos());
+        }
         return "entities/candidato/buscar";
     }
 
     @GetMapping("/buscar/{id}")
     public String buscarCandidato(@PathVariable Long id, Model model, RedirectAttributes attributes) {
         try {
-            model.addAttribute("candidato", candidatoService.buscarClientePorId(id));
+            model.addAttribute("candidato", candidatoService.buscarCandidatoPorId(id));
             model.addAttribute("editar", false);
         } catch (Exception e) {
             attributes.addFlashAttribute("mensagem_erro", e.getMessage());
@@ -67,7 +79,7 @@ public class CandidatoController {
     @GetMapping(value = "/editar/{id}")
     public String editarCandidato(Model model, @PathVariable long id, RedirectAttributes attributes) {
         try {
-            model.addAttribute("candidato", candidatoService.buscarClientePorId(id));
+            model.addAttribute("candidato", candidatoService.buscarCandidatoPorId(id));
             model.addAttribute("editar", true);
         } catch (Exception e) {
             attributes.addFlashAttribute("mensagem_erro", e.getMessage());

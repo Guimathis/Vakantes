@@ -2,8 +2,10 @@ package com.DevProj.Vakantes.controller;
 
 import com.DevProj.Vakantes.model.empresa.Cliente;
 import com.DevProj.Vakantes.model.util.enums.Status;
+import com.DevProj.Vakantes.model.vaga.Candidatura;
 import com.DevProj.Vakantes.model.vaga.Vaga;
 import com.DevProj.Vakantes.model.vaga.VagaDTO;
+import com.DevProj.Vakantes.model.vaga.enums.StatusProcesso;
 import com.DevProj.Vakantes.repository.CandidatoRepository;
 import com.DevProj.Vakantes.repository.ClienteRepository;
 import com.DevProj.Vakantes.repository.VagaRepository;
@@ -90,8 +92,23 @@ public class VagaController {
 
     // LISTA VAGAS
     @GetMapping("/buscar")
-    public String listaVaga(Model model) {
-        model.addAttribute("vagas", vagaService.buscarTodas());
+    public String listaVaga(
+            @RequestParam(required = false) Long clienteId,
+            @RequestParam(required = false) String vagaNome,
+            @RequestParam(required = false) Long candidatoId,
+            Model model) {
+
+        // Adicionar listas para os dropdowns
+        model.addAttribute("clientes", clienteService.buscarTodos());
+        model.addAttribute("candidatos", candidatoRepository.findAll());
+
+        // Aplicar filtros se algum parâmetro foi fornecido
+        if (clienteId != null || (vagaNome != null && !vagaNome.isEmpty()) || candidatoId != null) {
+            model.addAttribute("vagas", vagaService.buscarComFiltros(clienteId, vagaNome, candidatoId));
+        } else {
+            model.addAttribute("vagas", vagaService.buscarTodas());
+        }
+
         return "entities/vaga/buscar";
     }
 
@@ -108,8 +125,12 @@ public class VagaController {
     // Métodos que atualizam vaga
     // formulário edição de vaga
     @GetMapping(value = "/editar/{codigo}")
-    public String editarVaga(Model model, @PathVariable Long codigo) {
+    public String editarVaga(Model model, @PathVariable Long codigo, RedirectAttributes redirectAttributes) {
         Vaga vaga = vr.findByCodigoAndStatus(codigo, Status.ATIVO).orElseThrow(() -> new ObjectNotFoundException("Vaga não encontrada"));
+        if (vaga.getStatusProcesso() != StatusProcesso.ABERTA) {
+            redirectAttributes.addFlashAttribute("mensagem_erro", "A vaga não pode ser editada pois já está em processo de seleção ou finalizada.");
+            return "redirect:/vaga/buscar";
+        }
         VagaDTO vagaDTO = new VagaDTO(vaga);
         model.addAttribute("vaga", vagaDTO);
         model.addAttribute("clientes", clienteService.buscarTodos());
@@ -121,9 +142,17 @@ public class VagaController {
     @GetMapping(value = "/detalhes/{codigo}")
     public String detalhesVaga(Model model, @PathVariable Long codigo) {
         Vaga vaga = vr.findByCodigoAndStatus(codigo, Status.ATIVO).orElseThrow(() -> new ObjectNotFoundException("Vaga não encontrada"));
+        List<Candidatura> candidaturas = vaga.getCandidaturas();
+        candidaturas.sort((c1, c2) -> {
+            boolean c1Selecionado = "selecionado".equalsIgnoreCase(c1.getStatus().getDescricao());
+            boolean c2Selecionado = "selecionado".equalsIgnoreCase(c2.getStatus().getDescricao());
+            return Boolean.compare(c2Selecionado, c1Selecionado);
+        });
+        model.addAttribute("candidaturasOrdenadas", candidaturas);
         VagaDTO vagaDTO = new VagaDTO(vaga);
         model.addAttribute("vaga", vagaDTO);
         model.addAttribute("candidatosSistema", candidatoRepository.findAll());
+        model.addAttribute("enderecos", vagaDTO.getCliente().getEnderecos());
         return "entities/vaga/detalhes";
     }
 
@@ -148,7 +177,7 @@ public class VagaController {
             List<MatchingService.CandidatoMatch> candidatosInscritosComPontuacao = matchingService.avaliarCandidatosVaga(codigo);
 
             model.addAttribute("vaga", new VagaDTO(vaga));
-            model.addAttribute("candidatosInscritos", candidatosInscritosComPontuacao);
+            model.addAttribute("candidaturas", candidatosInscritosComPontuacao);
 
             return "entities/vaga/selecao";
         } catch (Exception e) {
@@ -157,8 +186,20 @@ public class VagaController {
         }
     }
 
+    @PostMapping("/selecionar/{codigoVaga}/{candidaturaId}")
+    public String selecionarCandidato(
+            @PathVariable Long codigoVaga,
+            @PathVariable Long candidaturaId,
+            RedirectAttributes redirectAttributes) {
+        try {
+            vagaService.selecionarCandidato(codigoVaga, candidaturaId);
+            redirectAttributes.addFlashAttribute("mensagem", "Candidato selecionado com sucesso! A vaga foi finalizada.");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("mensagem_erro", e.getMessage());
+        }
+        return "redirect:/vaga/detalhes/" + codigoVaga;
+    }
 
-    // DELETA VAGA
     @RequestMapping("/deletar/{id}")
     public String deletarVaga(@PathVariable Long id, RedirectAttributes attributes) {
         try {

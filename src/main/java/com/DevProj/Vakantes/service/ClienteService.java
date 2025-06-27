@@ -27,6 +27,7 @@ public class ClienteService {
     private ValidationService validationService;
 
     public void salvarCliente(Cliente cliente) throws DataBindingViolationException {
+        cliente.getEndereco().setCliente(cliente);
         validarCliente(cliente);
         clienteRepository.save(cliente);
     }
@@ -132,5 +133,9 @@ public class ClienteService {
 
         cliente.setStatus(Status.INATIVO);
         clienteRepository.save(cliente);
+    }
+
+    public List<Cliente> buscarComFiltros(String nomeCliente, TipoPessoa tipoPessoa) {
+        return clienteRepository.findByFilters(Status.ATIVO, nomeCliente, tipoPessoa);
     }
 }

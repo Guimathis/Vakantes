@@ -2,6 +2,7 @@ package com.DevProj.Vakantes.model.vaga;
 
 import com.DevProj.Vakantes.model.candidato.Candidato;
 import com.DevProj.Vakantes.model.empresa.Cliente;
+import com.DevProj.Vakantes.model.entrevista.Entrevista;
 import com.DevProj.Vakantes.model.util.enums.Status;
 import com.DevProj.Vakantes.model.vaga.enums.StatusProcesso;
 import jakarta.persistence.*;
@@ -11,6 +12,7 @@ import jakarta.validation.constraints.NotNull;
 import java.io.Serial;
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -72,6 +74,21 @@ public class Vaga implements Serializable {
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "atualizado_em", nullable = true)
     private Date atualizadoEm;
+
+    public Vaga(String nome, String descricao, LocalDate data, double salario, String exp, String contrato,
+                String modalidade, String loc, Cliente cliente, Status status, StatusProcesso statusProcesso) {
+        this.nome = nome;
+        this.descricao = descricao;
+        this.data = data.toString();
+        this.salario = BigDecimal.valueOf(salario);
+        this.nivelExperiencia = exp;
+        this.tipoContrato = contrato;
+        this.modalidadeTrabalho = modalidade;
+        this.localizacao = loc;
+        this.cliente = cliente;
+        this.status = status;
+        this.statusProcesso = statusProcesso;
+    }
 
     @PrePersist
     protected void onCreate() {

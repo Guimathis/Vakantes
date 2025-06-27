@@ -2,9 +2,9 @@ package com.DevProj.Vakantes.service;
 
 import com.DevProj.Vakantes.model.candidato.Candidato;
 import com.DevProj.Vakantes.model.util.enums.Status;
+import com.DevProj.Vakantes.model.vaga.Candidatura;
 import com.DevProj.Vakantes.model.vaga.Vaga;
 import com.DevProj.Vakantes.repository.CandidatoRepository;
-import com.DevProj.Vakantes.repository.VagaRepository;
 import com.DevProj.Vakantes.service.exceptions.DataBindingViolationException;
 import com.DevProj.Vakantes.service.exceptions.ObjectNotFoundException;
 import jakarta.persistence.EntityNotFoundException;
@@ -21,14 +21,20 @@ public class CandidatoService {
     @Autowired
     private CandidatoRepository candidatoRepository;
 
-    @Autowired
-    private VagaRepository vagaRepository;
+//    @Autowired
+//    private VagaService vagaService;
 
     @Autowired
     private ValidationService validationService;
 
     @Autowired
     CandidaturaService candidaturaService;
+
+    public void salvar(Candidato candidato) throws DataBindingViolationException {
+        validarCandidato(candidato);
+        updateHabForExp(candidato);
+        candidatoRepository.save(candidato);
+    }
 
     public void cadastrar(Candidato candidato) throws DataBindingViolationException {
         validarCandidato(candidato);
@@ -40,6 +46,11 @@ public class CandidatoService {
         validarCandidato(candidato);
         updateHabForExp(candidato);
         candidatoRepository.save(candidato);
+    }
+
+    public Candidato buscarCandidatoPorId(String id) {
+        return candidatoRepository.findById(id)
+                .orElseThrow(() -> new ObjectNotFoundException("Candidato não encontrado"));
     }
 
     public List<Candidato> buscarTodosPorCpfs(List<String> cpfs) {
@@ -133,7 +144,7 @@ public class CandidatoService {
     }
 
 
-    public Object buscarClientePorId(Long id) {
+    public Object buscarCandidatoPorId(Long id) {
         return candidatoRepository.findByIdAndStatus(id, Status.ATIVO)
                 .orElseThrow(() -> new ObjectNotFoundException("Ocorreu um problema ao buscar o candidato"));
     }
@@ -149,28 +160,35 @@ public class CandidatoService {
         return ativos;
     }
 
-    @Transactional
-    public void deletarCandidato(String id) {
-        Candidato candidato = candidatoRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Candidato não encontrado"));
-        for (Vaga vaga : candidaturaService.buscarVagasPorCandidato(candidato.getCpf())) {
-            vaga.getCandidatos().remove(candidato);
-            vagaRepository.save(vaga);
-        }
-    }
-
     public void deletar(Long id) {
         Candidato candidato = candidatoRepository.findByIdAndStatus(id, Status.ATIVO)
                 .orElseThrow(() -> new ObjectNotFoundException("Ocorreu um problema ao deletar o candidato"));
-        for (Vaga vaga : candidaturaService.buscarVagasPorCandidato(candidato.getCpf())) {
-            vaga.getCandidatos().remove(candidato);
-            vagaRepository.save(vaga);
-        }
+        candidato.getCandidaturas().forEach(candidatura -> {
+            candidaturaService.deleteCandidatura(candidatura.getVaga().getCodigo(), candidato.getId());
+        });
+
         candidato.setStatus(Status.INATIVO);
         candidatoRepository.save(candidato);
     }
 
     public void saveAll(List<Candidato> candidatos) {
         candidatoRepository.saveAll(candidatos);
+    }
+
+    public List<String> buscarCidades() {
+        List<String> cidades = new ArrayList<>();
+        candidatoRepository.findAll().forEach(candidato -> {
+            if (candidato.getEndereco() != null && candidato.getEndereco().getCidade() != null) {
+                String cidade = candidato.getEndereco().getCidade();
+                if (!cidades.contains(cidade)) {
+                    cidades.add(cidade);
+                }
+            }
+        });
+        return cidades;
+    }
+
+    public List<Candidato> buscarComFiltros(String candidatoNome, String cidade) {
+        return candidatoRepository.findByFilters(Status.ATIVO, candidatoNome, cidade.isEmpty() ? null : cidade);
     }
 }

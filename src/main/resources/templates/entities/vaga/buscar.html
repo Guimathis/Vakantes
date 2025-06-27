@@ -32,6 +32,46 @@
                     <a href="/home/index" class="btn btn-secondary">Voltar</a>
                 </div>
             </div>
+
+            <!-- Filtros -->
+            <div class="card shadow-lg mt-3">
+                <div class="card-header text-center">
+                    <h5>Filtros</h5>
+                </div>
+                <div class="card-body">
+                    <form th:action="@{/vaga/buscar}" method="get">
+                        <div class="mb-3">
+                            <label for="clienteId" class="form-label">Cliente</label>
+                            <select id="clienteId" name="clienteId" class="form-select">
+                                <option value="">Todos os clientes</option>
+                                <option th:each="cliente : ${clientes}" 
+                                        th:value="${cliente.id}" 
+                                        th:text="${cliente.nome}"
+                                        th:selected="${param.clienteId != null && param.clienteId[0] == cliente.id.toString()}">
+                                </option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="vagaNome" class="form-label">Vaga</label>
+                            <input type="text" id="vagaNome" name="vagaNome" class="form-control" 
+                                   th:value="${param.vagaNome != null ? param.vagaNome[0] : ''}">
+                        </div>
+                        <div class="mb-3">
+                            <label for="candidatoId" class="form-label">Candidato</label>
+                            <select id="candidatoId" name="candidatoId" class="form-select">
+                                <option value="">Todos os candidatos</option>
+                                <option th:each="candidato : ${candidatos}" 
+                                        th:value="${candidato.id}" 
+                                        th:text="${candidato.nomeCandidato}"
+                                        th:selected="${param.candidatoId != null && param.candidatoId[0] == candidato.id.toString()}">
+                                </option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">Filtrar</button>
+                        <a th:href="@{/vaga/buscar}" class="btn btn-secondary w-100 mt-2">Limpar Filtros</a>
+                    </form>
+                </div>
+            </div>
         </div>
 
         <div class="col-md-9">
@@ -57,7 +97,7 @@
                                     </div>
                                     <div class="card-body">
                                         <div class="mb-2">
-                                            <strong>Descrição:</strong> <span th:text="${vaga.descricao}"></span>
+                                            <strong>Cliente:</strong> <span th:text="${vaga.cliente.nome}"></span>
                                         </div>
                                         <div class="mb-2">
                                             <strong>Salário:</strong> <span th:text="${vaga.salario}"></span>
@@ -65,14 +105,20 @@
                                         <div class="mb-2">
                                             <strong>Expira em:</strong> <span th:text="${vaga.data}"></span>
                                         </div>
+                                        <div class="mb-2">
+                                            <strong>Localização:</strong> <span th:text="${vaga.localizacao}"></span>
+                                        </div>
+                                        <div class="mb-2">
+                                            <strong>Modalidade:</strong> <span th:text="${vaga.modalidadeTrabalho}"></span>
+                                        </div>
                                     </div>
                                     <div class="card-footer bg-white border-top-0 d-flex flex-wrap justify-content-center gap-2">
                                         <a th:href="@{/vaga/buscar/{codigo}(codigo=${vaga.codigo})}"
-                                           class="btn btn-primary btn-sm mb-1 bi bi-pencil flex-fill "> Editar</a>
+                                           class="btn btn-primary btn-sm mb-1 bi bi-pencil flex-fill ">  Visualizar</a>
                                         <a th:href="@{/vaga/detalhes/{codigo}(codigo=${vaga.codigo})}"
-                                           class="btn btn-success btn-sm mb-1 bi bi-plus-lg flex-fill "> Candidato</a>
-                                        <a th:href="@{/vaga/selecao/{codigo}(codigo=${vaga.codigo})}"
-                                           class="btn btn-info btn-sm mb-1 text-white bi bi-check-all flex-fill "> Seleção</a>
+                                           class="btn btn-success btn-sm mb-1 bi bi-plus-lg flex-fill "> Candidaturas</a>
+<!--                                        <a th:href="@{/vaga/selecao/{codigo}(codigo=${vaga.codigo})}"-->
+<!--                                           class="btn btn-info btn-sm mb-1 text-white bi bi-check-all flex-fill "> Seleção</a>-->
                                     </div>
                                 </div>
                             </div>

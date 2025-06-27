@@ -1,6 +1,5 @@
 <!DOCTYPE html>
-<html lang="pt-br" xmlns:th="http://www.thymeleaf.org"
-      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" xmlns="http://www.w3.org/1999/html">
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/html">
 
 <head>
     <meta charset="utf-8">
@@ -28,9 +27,10 @@
 
         <div class="card-body" th:object="${vaga}">
 
-            <div class="row mb-4">
+            <div class="row">
                 <div class="col-md-4 mb-3">
                     <p><strong>Vaga:</strong> <span th:text="*{nome}"></span></p>
+                    <p><strong>Empresa:</strong> <span th:text="*{cliente.nome}"></span></p>
                     <p><strong>Salário:</strong> R$ <span th:text="*{salario}"></span></p>
                     <p>
                         <strong>Status:</strong>
@@ -39,7 +39,7 @@
                     </p>
                 </div>
                 <div class="col-md-4 mb-3">
-                    <p><strong>Descrição do cargo:</strong> <span th:text="*{descricao}"></span></p>
+                    <p><strong>Cargo:</strong> <span th:text="*{descricao}"></span></p>
                     <p><strong>Expira em:</strong> <span th:text="*{data}"></span></p>
                     <p><strong>Nível de Experiência:</strong> <span th:text="*{nivelExperiencia}"></span></p>
                 </div>
@@ -68,12 +68,18 @@
             <div class="mb-4">
                 <h5 class="mb-3">Ações</h5>
                 <div class="d-flex flex-wrap gap-2">
-                    <a class="btn btn-primary btn-sm" href="/candidato/cadastro">
-                        Cadastrar Candidato
-                    </a>
-                    <button type="button" class="btn btn-secondary btn-sm" data-bs-toggle="modal" data-bs-target="#modalSelecionarCandidato">
-                        Selecionar Candidato
-                    </button>
+                    <div th:if="${vaga.statusProcesso.name() == 'FINALIZADA'}">
+                        <span class="alert alert-warning mb-0">Esta vaga está finalizada e não aceita novos candidatos.</span>
+                    </div>
+                    <div th:unless="${vaga.statusProcesso.name() == 'FINALIZADA'}">
+                        <a class="btn btn-primary btn-sm" href="/candidato/cadastro">
+                            Cadastrar Candidato
+                        </a>
+                        <button type="button" class="btn btn-secondary btn-sm" data-bs-toggle="modal"
+                                data-bs-target="#modalSelecionarCandidato">
+                            Selecionar Candidato
+                        </button>
+                    </div>
                     <a href="/vaga/buscar" class="btn btn-secondary btn-sm">Voltar</a>
                 </div>
             </div>
@@ -88,35 +94,62 @@
                 <h4 class="mb-3">Candidatos Inscritos</h4>
                 <div class="table-responsive">
                     <table class="table table-striped table-hover">
-                        <thead class="table-light">
+                        <thead class="table-light" >
                         <tr>
                             <th>Nome</th>
                             <th>CPF</th>
                             <th>E-mail</th>
                             <th>Contato</th>
                             <th>Data de nascimento</th>
+                            <th>Status do processo</th>
                             <th>Ações</th>
                         </tr>
                         </thead>
                         <tbody>
-                        <tr th:each="candidato : ${vaga.candidatos}">
-                            <td th:text="${candidato.nomeCandidato}"></td>
-                            <td th:text="${candidato.cpf}"></td>
-                            <td th:text="${candidato.contato.email}"></td>
-                            <td th:text="${candidato.contato.telefone}"></td>
-                            <td th:text="${candidato.dataNascimento}"></td>
+                        <tr th:each="candidatura : ${candidaturasOrdenadas}">
+                            <td th:text="${candidatura.candidato.nomeCandidato}"></td>
+                            <td th:text="${candidatura.candidato.cpf}"></td>
+                            <td th:text="${candidatura.candidato.contato.email}"></td>
+                            <td th:text="${candidatura.candidato.contato.telefone}"></td>
+                            <td th:text="${candidatura.candidato.dataNascimento}"></td>
                             <td>
-                                <form th:action="@{'/vaga/' + ${vaga.codigo} + '/remover/' + ${candidato.id}}   " method="post">
-                                    <input type="hidden" name="_method" value="delete">
-                                    <button type="submit" class="btn btn-danger btn-sm bi bi-trash"></button>
-                                </form>
+                                <span th:text="${candidatura.status.getDescricao()}"
+                                      th:classappend="${candidatura.status.getDescricao().toLowerCase() == 'selecionado'} ? 'badge bg-success text-white' : 'badge bg-danger text-white'">
+                                </span>
+                            </td>
+                            <td>
+                                <div class="d-flex gap-1">
+                                    <form th:action="@{'/vaga/' + ${vaga.codigo} + '/remover/' + ${candidatura.candidato.id}}"
+                                          method="post" style="display: inline;" class="form-remover-candidatura">
+                                        <input type="hidden" name="_method" value="delete">
+                                        <button type="button"
+                                                class="btn btn-danger btn-sm bi bi-trash btn-confirmar-remocao"
+                                                title="Remover Candidato"
+                                                th:disabled="${vaga.statusProcesso.name() == 'FINALIZADA'}"></button>
+                                    </form>
+                                    <!-- Botão para cadastrar ou visualizar entrevista -->
+                                    <th:block th:if="${candidatura.entrevista != null}">
+                                        <button type="button"
+                                                th:href="@{/entrevista/editar/{id}(id=${candidatura.entrevista.id})}"
+                                                title="Visualizar Entrevista"
+                                           class="btn btn-info btn-sm bi bi-eye btn-editar-entrevista"
+                                           th:attr="data-entrevista-id=${candidatura.entrevista.id}"></button>
+                                    </th:block>
+                                    <th:block th:unless="${candidatura.entrevista != null}">
+                                        <button type="button"
+                                                class="btn btn-primary btn-sm bi bi-calendar-plus btn-cadastrar-entrevista"
+                                                title="Cadastrar Entrevista"
+                                                data-bs-toggle="modal" data-bs-target="#modalCadastrarEntrevista"
+                                                th:disabled="${vaga.statusProcesso.name() == 'FINALIZADA'}"
+                                                th:attr="data-candidato-id=${candidatura.candidato.id},data-candidatura-id=${candidatura.id},data-candidato-nome=${candidatura.candidato.nomeCandidato}"></button>
+                                    </th:block>
+                                </div>
                             </td>
                         </tr>
                         </tbody>
                     </table>
                 </div>
             </div>
-
         </div>
     </div>
 </div>
@@ -149,6 +182,106 @@
     </div>
 </div>
 
+<!-- Modal para cadastrar nova entrevista -->
+<div class="modal fade" id="modalCadastrarEntrevista" tabindex="-1"
+     aria-labelledby="modalCadastrarEntrevistaLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <form id="formNovaEntrevista" th:action="@{/entrevista/cadastrar}" method="post">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalCadastrarEntrevistaLabel">Cadastrar Entrevista</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" name="vagaId" th:value="${vaga.codigo}"/>
+                    <input type="hidden" name="candidatoId" id="candidatoEntrevistaId" required>
+                    <input type="hidden" name="candidaturaId" id="candidaturaEntrevistaId" required>
+                    <div class="mb-3">
+                        <p><strong>Candidato:</strong> <span id="candidatoEntrevista"></span></p>
+                    </div>
+                    <div class="mb-3">
+                        <label for="localEntrevista" class="form-label">Local</label>
+                        <select class="form-select" id="localEntrevista" name="local" required>
+                            <option value="" disabled selected>Selecione um endereço</option>
+                            <option th:each="endereco : ${vaga.cliente.enderecos}"
+                                    th:value="${endereco.rua + ', ' + endereco.numero + ' - ' + endereco.bairro + ', ' + endereco.cidade + ' - ' + endereco.estado}"
+                                    th:text="${endereco.rua + ', ' + endereco.numero  + ' - ' + endereco.bairro + ', ' + endereco.cidade + ' - ' + endereco.estado}">
+                            </option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="dataHoraEntrevista" class="form-label">Data e Hora</label>
+                        <input type="datetime-local" class="form-control" id="dataHoraEntrevista" name="dataHora"
+                               required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="observacoesEntrevista" class="form-label">Observações</label>
+                        <textarea class="form-control" id="observacoesEntrevista" name="observacoes"
+                                  maxlength="500"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button id="btn-salvar-nova-entrevista" type="submit" class="btn btn-success">Salvar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Editar Entrevista (importado de entrevista/buscar.html) -->
+<div class="modal fade" id="editarEntrevistaModal" tabindex="-1" aria-labelledby="editarEntrevistaModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form id="formEditarEntrevista">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editarEntrevistaModalLabel">Editar Entrevista</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" id="editarEntrevistaId" name="id">
+                    <div class="mb-3">
+                        <label for="editarLocal" class="form-label">Local</label>
+                        <input type="text" class="form-control" id="editarLocal" name="local" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editarDataHora" class="form-label">Data e Hora</label>
+                        <input type="datetime-local" class="form-control" id="editarDataHora" name="dataHora" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editarObservacoes" class="form-label">Observações</label>
+                        <textarea class="form-control" id="editarObservacoes" name="observacoes"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button id="btn-salvar-entrevista" type="submit" class="btn btn-primary">Salvar Alterações</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Adiciona o modal de confirmação de remoção de candidatura -->
+<div class="modal fade" id="modalConfirmarRemocao" tabindex="-1" aria-labelledby="modalConfirmarRemocaoLabel"
+     aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalConfirmarRemocaoLabel">Confirmar Remoção</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+            </div>
+            <div class="modal-body">
+                Tem certeza que deseja remover esta candidatura?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-danger" id="btnRemoverConfirmado">Remover</button>
+            </div>
+        </div>
+    </div>
+</div>
 
 <div th:replace="~{fragments/footer :: footer}"></div>
 
@@ -157,5 +290,6 @@
         crossorigin="anonymous"></script>
 <script src="https://unpkg.com/imask"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="/scripts/vaga-detalhes.js"></script>
 </body>
 </html>

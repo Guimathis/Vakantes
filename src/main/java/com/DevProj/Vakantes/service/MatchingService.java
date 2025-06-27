@@ -3,6 +3,7 @@ package com.DevProj.Vakantes.service;
 import com.DevProj.Vakantes.model.candidato.Candidato;
 import com.DevProj.Vakantes.model.candidato.Habilidade;
 import com.DevProj.Vakantes.model.util.enums.Status;
+import com.DevProj.Vakantes.model.vaga.Candidatura;
 import com.DevProj.Vakantes.model.vaga.Requisito;
 import com.DevProj.Vakantes.model.vaga.Vaga;
 import com.DevProj.Vakantes.repository.CandidatoRepository;
@@ -38,16 +39,16 @@ public class MatchingService {
         List<CandidatoMatch> matches = new ArrayList<>();
 
         // Usar apenas os candidatos já cadastrados na vaga
-        List<Candidato> candidatosJaCadastrados = vaga.getCandidatos();
+        List<Candidatura> candidatosJaCadastrados = vaga.getCandidaturas();
 
-        for (Candidato candidato : candidatosJaCadastrados) {
+        for (Candidatura candidatura : candidatosJaCadastrados) {
             // Verificar se o candidato está ativo
-            if (candidato.getStatus() == Status.ATIVO) {
-                int pontuacao = calcularPontuacao(vaga, candidato);
-                Map<String, String> detalhes = calcularDetalhesCompatibilidade(vaga, candidato);
+            if (candidatura.getCandidato().getStatus() == Status.ATIVO) {
+                int pontuacao = calcularPontuacao(vaga, candidatura.getCandidato());
+                Map<String, String> detalhes = calcularDetalhesCompatibilidade(vaga, candidatura.getCandidato());
 
                 // Adicionar o candidato à lista de matches independentemente da pontuação
-                matches.add(new CandidatoMatch(candidato, pontuacao, detalhes));
+                matches.add(new CandidatoMatch(candidatura, pontuacao, detalhes));
             }
         }
 
@@ -251,18 +252,22 @@ public class MatchingService {
 
     // Classes auxiliares para retornar resultados de matching
     public static class CandidatoMatch {
-        private Candidato candidato;
+        private Candidatura candidatura;
         private int pontuacao;
         private Map<String, String> detalhesCompatibilidade;
 
-        public CandidatoMatch(Candidato candidato, int pontuacao, Map<String, String> detalhesCompatibilidade) {
-            this.candidato = candidato;
+        public CandidatoMatch(Candidatura candidatura, int pontuacao, Map<String, String> detalhesCompatibilidade) {
+            this.candidatura = candidatura;
             this.pontuacao = pontuacao;
             this.detalhesCompatibilidade = detalhesCompatibilidade;
         }
 
-        public Candidato getCandidato() {
-            return candidato;
+        public Candidatura getCandidatura() {
+            return candidatura;
+        }
+
+        public void setCandidatura(Candidatura candidatura) {
+            this.candidatura = candidatura;
         }
 
         public int getPontuacao() {

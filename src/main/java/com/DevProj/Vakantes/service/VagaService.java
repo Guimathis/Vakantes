@@ -2,10 +2,12 @@ package com.DevProj.Vakantes.service;
 
 import com.DevProj.Vakantes.model.candidato.Candidato;
 import com.DevProj.Vakantes.model.util.enums.Status;
+import com.DevProj.Vakantes.model.vaga.Candidatura;
 import com.DevProj.Vakantes.model.vaga.enums.StatusProcesso;
 import com.DevProj.Vakantes.model.vaga.Requisito;
 import com.DevProj.Vakantes.model.vaga.Vaga;
 import com.DevProj.Vakantes.model.vaga.VagaDTO;
+import com.DevProj.Vakantes.repository.RequisitoRepository;
 import com.DevProj.Vakantes.repository.VagaRepository;
 import com.DevProj.Vakantes.service.exceptions.DataBindingViolationException;
 import com.DevProj.Vakantes.service.exceptions.ObjectNotFoundException;
@@ -29,9 +31,16 @@ public class VagaService {
     @Autowired
     private ClienteService clienteService;
 
+    @Autowired
+    private EmailService emailService;
+
 
     public Iterable<Vaga> buscarTodas() {
         return vagaRepository.findAllByStatus(Status.ATIVO);
+    }
+
+    public List<Vaga> buscarComFiltros(Long clienteId, String vagaNome, Long candidatoId) {
+        return vagaRepository.findByFilters(Status.ATIVO, clienteId, vagaNome, candidatoId);
     }
 
     public Vaga buscarVagaPorID(Long id) {
@@ -39,7 +48,7 @@ public class VagaService {
                 .orElseThrow(() -> new ObjectNotFoundException("Vaga não encontrada"));
     }
 
-    public void salvarVaga(Vaga vaga) {
+    public void salvar(Vaga vaga) {
         vagaRepository.save(vaga);
     }
 
@@ -49,7 +58,7 @@ public class VagaService {
         candidaturaService.criarCandidaturas(vaga, candidatos);
         atualizarStatusVaga(vaga);
         candidatoService.saveAll(candidatos);
-        salvarVaga(vaga);
+        salvar(vaga);
     }
 
     private void atualizarStatusVaga(Vaga vaga) {
@@ -78,7 +87,8 @@ public class VagaService {
                 vaga.getRequisitos().add(novoRequisito);
             }
         }
-
+        List<Candidatura> candidaturasByVagaId = candidaturaService.findCandidaturasByVagaId(vaga.getCodigo());
+        vaga.getCandidaturas().addAll(candidaturasByVagaId);
         vagaRepository.save(vaga);
         return vaga.getCodigo();
     }
@@ -96,10 +106,39 @@ public class VagaService {
     public void removerCandidatura(long codigo, long id) {
         Vaga vaga = vagaRepository.findByCodigoAndStatus(codigo, Status.ATIVO)
                 .orElseThrow(() -> new ObjectNotFoundException("Vaga não encontrada"));
-        candidaturaService.deleteCandidatura(codigo, id);
-        if(vaga.getCandidaturas().isEmpty()) {
-            vaga.setStatusProcesso(StatusProcesso.ABERTA);
-            salvarVaga(vaga);
+        if (vaga.getStatusProcesso() == StatusProcesso.FINALIZADA) {
+            throw new DataBindingViolationException("Não é possível remover candidaturas de uma vaga finalizada.");
         }
+        candidaturaService.deleteCandidatura(codigo, id);
+        if (vaga.getCandidaturas().isEmpty()) {
+            vaga.setStatusProcesso(StatusProcesso.ABERTA);
+            salvar(vaga);
+        }
+    }
+
+    public void selecionarCandidato(Long vagaId, Long candidaturaId) {
+        Vaga vaga = vagaRepository.findByCodigoAndStatus(vagaId, Status.ATIVO)
+                .orElseThrow(() -> new ObjectNotFoundException("Vaga não encontrada"));
+
+        Candidatura candidaturaSelecionada = candidaturaService.buscaCandidaturaById(candidaturaId);
+
+        // Atualizar status do candidato selecionado
+        candidaturaSelecionada.setStatus(Candidatura.StatusCandidatura.SELECIONADO);
+        candidaturaService.salvar(candidaturaSelecionada);
+
+        // Rejeitar outros candidatos
+        vaga.getCandidaturas().stream()
+                .filter(c -> !c.getId().equals(candidaturaId))
+                .forEach(c -> {
+                    c.setStatus(Candidatura.StatusCandidatura.REJEITADO);
+                    candidaturaService.salvar(c);
+                });
+
+        // Finalizar vaga
+        vaga.setStatusProcesso(StatusProcesso.FINALIZADA);
+        vagaRepository.save(vaga);
+
+        // Opcionalmente enviar notificações
+        emailService.notificarCandidatoSelecionado(candidaturaSelecionada);
     }
 }

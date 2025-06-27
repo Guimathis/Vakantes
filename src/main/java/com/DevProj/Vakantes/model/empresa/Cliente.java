@@ -8,6 +8,8 @@ import com.DevProj.Vakantes.model.util.enums.Status;
 import com.DevProj.Vakantes.model.vaga.Vaga;
 import jakarta.persistence.*;
 
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -31,6 +33,9 @@ public class Cliente {
     @JoinColumn(name = "endereco_id", referencedColumnName = "id")
     private Endereco endereco;
 
+    @OneToMany(mappedBy = "cliente", cascade = CascadeType.ALL)
+    private List<Endereco> enderecos;
+
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "contato_id", referencedColumnName = "id")
     private Contato contato;
@@ -43,6 +48,7 @@ public class Cliente {
     private List<Vaga> vagas;
 
     @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
     private Status status;
 
     @Temporal(TemporalType.TIMESTAMP)
@@ -53,6 +59,15 @@ public class Cliente {
     @Column(name = "atualizado_em", nullable = true)
     private Date atualizadoEm;
 
+    public Cliente(String nome, TipoPessoa tipoPessoa, String s, Status status) {
+        this.nome = nome;
+        this.tipoPessoa = tipoPessoa;
+        this.documento = s;
+        this.status = status;
+        this.endereco = new Endereco();
+        this.contato = new Contato();
+    }
+
     @PrePersist
     protected void onCreate() {
         criadoEm = new Date();
@@ -61,6 +76,14 @@ public class Cliente {
     @PreUpdate
     protected void onUpdate() {
         atualizadoEm = new Date();
+    }
+
+    public List<Endereco> getEnderecos() {
+        return Collections.singletonList(endereco);
+    }
+
+    public void setEnderecos(List<Endereco> enderecos) {
+        this.enderecos = enderecos;
     }
 
     public Cliente() {

@@ -1,9 +1,16 @@
 package com.DevProj.Vakantes.service;
 
+import com.DevProj.Vakantes.model.candidato.Candidato;
+import com.DevProj.Vakantes.model.vaga.Candidatura;
+import com.DevProj.Vakantes.model.vaga.Vaga;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mail.MailException;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 @Service
 public class EmailService {
@@ -24,5 +31,76 @@ public class EmailService {
                 "Equipe Vakantes");
 
         mailSender.send(mensagem);
+    }
+
+    public void enviarEmailAgendamentoEntrevista(Candidato candidato, Vaga vaga, String dataHora, String local, String observacoes) {
+        SimpleMailMessage mensagem = new SimpleMailMessage();
+        mensagem.setTo(candidato.getContato().getEmail());
+        mensagem.setSubject("Vakantes - Agendamento de Entrevista");
+        mensagem.setText("Olá " + candidato.getNomeCandidato() + ",\n\n" +
+                "Sua entrevista para a vaga: " + vaga.getNome() + ", foi agendada!\n\n" +
+                "Data e horário: " + LocalDateTime.parse(dataHora).format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")) + "\n" +
+                "Local: " + local + "\n" +
+                (observacoes != null && !observacoes.isEmpty() ? "Observações: " + observacoes + "\n" : "") +
+                "Atenciosamente,\n" +
+                "Equipe Vakantes");
+
+        try {
+            mailSender.send(mensagem);
+        } catch (MailException e) {
+            throw new RuntimeException("Ocorreu um erro ao enviar o email de agendamento.");
+        }
+    }
+
+    public void notificarCandidatoSelecionado(Candidatura candidatura) {
+        Candidato candidato = candidatura.getCandidato();
+        Vaga vaga = candidatura.getVaga();
+        SimpleMailMessage mensagem = new SimpleMailMessage();
+        mensagem.setTo(candidato.getContato().getEmail());
+        mensagem.setSubject("Vakantes - Parabéns! Você foi selecionado");
+        mensagem.setText("Olá " + candidato.getNomeCandidato() + ",\n\n" +
+                "Parabéns! Você foi selecionado para a vaga: " + vaga.getNome() + ".\n" +
+                "Em breve " + vaga.getCliente().getNome() + " em contato para os próximos passos.\n\n" +
+                "Atenciosamente,\nEquipe Vakantes");
+        try {
+            mailSender.send(mensagem);
+        } catch (MailException e) {
+            throw new RuntimeException("Ocorreu um erro ao enviar o email de seleção.");
+        }
+    }
+
+    public boolean enviarEmailSimples(String destinatario, String assunto, String mensagemTexto) {
+        SimpleMailMessage mensagem = new SimpleMailMessage();
+        mensagem.setTo(destinatario);
+        mensagem.setSubject(assunto);
+        mensagem.setText(mensagemTexto);
+        try {
+            mailSender.send(mensagem);
+            return true;
+        } catch (MailException e) {
+            throw new RuntimeException("Ocorreu um erro ao enviar o e-mail: " + e.getMessage());
+        }
+    }
+
+    public void enviarEmailAlteracaoEntrevista(Candidato candidato, Vaga vaga, LocalDateTime dataHora, String local, String observacoes) {
+        SimpleMailMessage mensagem = new SimpleMailMessage();
+        mensagem.setTo(candidato.getContato().getEmail());
+        mensagem.setSubject("Vakantes - Alteração de Entrevista");
+        StringBuilder texto = new StringBuilder();
+        texto.append("Olá ").append(candidato.getNomeCandidato()).append(",\n\n");
+        texto.append("Os dados da sua entrevista para a vaga: ").append(vaga.getNome()).append(" foram alterados!\n\n");
+        texto.append("Novos dados:\n");
+        texto.append("Data e horário: ").append(dataHora.format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"))).append("\n");
+        texto.append("Local: ").append(local).append("\n");
+        if (observacoes != null && !observacoes.isEmpty()) {
+            texto.append("Observações: ").append(observacoes).append("\n");
+        }
+        texto.append("\nAtenciosamente,\nEquipe Vakantes");
+        mensagem.setText(texto.toString());
+        try {
+            mailSender.send(mensagem);
+        } catch (MailException e) {
+            throw new RuntimeException("Ocorreu um erro ao enviar o email de alteração de entrevista.");
+        }
     }
 }

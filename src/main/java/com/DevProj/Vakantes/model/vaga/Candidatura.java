@@ -1,6 +1,7 @@
 package com.DevProj.Vakantes.model.vaga;
 
 import com.DevProj.Vakantes.model.candidato.Candidato;
+import com.DevProj.Vakantes.model.entrevista.Entrevista;
 import jakarta.persistence.*;
 
 import java.io.Serial;
@@ -16,7 +17,7 @@ public class Candidatura implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
 
     @ManyToOne
     private Vaga vaga;
@@ -29,8 +30,14 @@ public class Candidatura implements Serializable {
     private Date criadoEm;
 
     @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "atualizado_em", nullable = true)
+    @Column(name = "atualizado_em")
     private Date atualizadoEm;
+
+    @OneToOne(mappedBy = "candidatura", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Entrevista entrevista;
+
+    @Enumerated(EnumType.STRING)
+    private StatusCandidatura status = StatusCandidatura.INSCRITO;
 
     @PrePersist
     protected void onCreate() {
@@ -50,11 +57,28 @@ public class Candidatura implements Serializable {
         this.candidato = candidato;
     }
 
-    public long getId() {
+    public enum StatusCandidatura {
+        INSCRITO("Inscrito"),
+        REJEITADO("Rejeitado"),
+        SELECIONADO("Selecionado");
+
+        private final String descricao;
+
+        StatusCandidatura(String descricao) {
+            this.descricao = descricao;
+        }
+
+        public String getDescricao() {
+            return descricao;
+        }
+    }
+
+
+    public Long getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -89,4 +113,25 @@ public class Candidatura implements Serializable {
     public void setAtualizadoEm(Date atualizadoEm) {
         this.atualizadoEm = atualizadoEm;
     }
+
+    public Entrevista getEntrevista() {
+        return entrevista;
+    }
+
+    public void setEntrevista(Entrevista entrevista) {
+        this.entrevista = entrevista;
+    }
+
+    public StatusCandidatura getStatus() {
+        return status;
+    }
+
+    public void setStatus(StatusCandidatura status) {
+        this.status = status;
+    }
+
+    public String getEmailCandidato() {
+        return candidato.getContato().getEmail();
+    }
+
 }

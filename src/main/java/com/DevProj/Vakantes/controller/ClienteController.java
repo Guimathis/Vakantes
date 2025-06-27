@@ -3,7 +3,6 @@ package com.DevProj.Vakantes.controller;
 import com.DevProj.Vakantes.model.empresa.Cliente;
 import com.DevProj.Vakantes.model.usuario.Usuario;
 import com.DevProj.Vakantes.model.empresa.enums.TipoPessoa;
-import com.DevProj.Vakantes.model.usuario.enums.UserRole;
 import com.DevProj.Vakantes.service.ClienteService;
 import com.DevProj.Vakantes.service.exceptions.DataBindingViolationException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,15 +54,18 @@ public class ClienteController {
         }
     }
 
-@GetMapping("/buscar")
-public String listarClientes(Model model, @ModelAttribute("currentUser") Usuario currentUser) {
-    if (currentUser.getUserRole().equals(UserRole.ADMIN)) {
-        model.addAttribute("clientes", clienteService.buscarTodos());
-    } else {
-        model.addAttribute("clientes", clienteService.buscarClientePorResponsavel(currentUser));
+    @GetMapping("/buscar")
+    public String listarClientes(
+            @RequestParam(required = false) String clienteNome,
+            @RequestParam(required = false) String tipo,
+            Model model) {
+        if (clienteNome != null && !clienteNome.isEmpty() || tipo != null && !tipo.isEmpty()) {
+            model.addAttribute("clientes", clienteService.buscarComFiltros(clienteNome, tipo != null && !tipo.isEmpty() ? TipoPessoa.valueOf(tipo) : null ));
+        } else {
+            model.addAttribute("clientes", clienteService.buscarTodos());
+        }
+        return "entities/cliente/buscar";
     }
-    return "entities/cliente/buscar";
-}
 
     @GetMapping("/buscar/{id}")
     public String listarCliente(@PathVariable Long id, Model model) {

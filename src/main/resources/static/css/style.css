@@ -36,6 +36,7 @@ main {
 
 .msgValidacao{
     margin-top: 16px;
+    text-align: center;
 }
 
 /* canditados-recomendados */
@@ -69,3 +70,6 @@ main {
 .cancelada {
     background-color: #dc3545;
 }
+
+
+
