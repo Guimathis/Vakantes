@@ -134,4 +134,8 @@ public class ClienteService {
         cliente.setStatus(Status.INATIVO);
         clienteRepository.save(cliente);
     }
+
+    public List<Cliente> buscarComFiltros(String nomeCliente, TipoPessoa tipoPessoa) {
+        return clienteRepository.findByFilters(Status.ATIVO, nomeCliente, tipoPessoa);
+    }
 }
