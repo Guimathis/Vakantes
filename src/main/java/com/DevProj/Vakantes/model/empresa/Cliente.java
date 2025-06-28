@@ -30,18 +30,18 @@ public class Cliente {
     private String documento; // Pode ser CPF ou CNPJ
 
     @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "endereco_id", referencedColumnName = "id")
+    @JoinColumn(name = "endereco_id")
     private Endereco endereco;
 
     @OneToMany(mappedBy = "cliente", cascade = CascadeType.ALL)
     private List<Endereco> enderecos;
 
     @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "contato_id", referencedColumnName = "id")
+    @JoinColumn(name = "contato_id")
     private Contato contato;
 
     @OneToOne
-    @JoinColumn(name = "responsavel_id", referencedColumnName = "id", unique = false)
+    @JoinColumn(name = "responsavel_id", unique = false)
     private Usuario usuarioResponsavel;
 
     @OneToMany(mappedBy = "cliente", cascade = CascadeType.REMOVE)
